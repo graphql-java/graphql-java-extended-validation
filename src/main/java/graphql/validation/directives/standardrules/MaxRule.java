@@ -18,6 +18,12 @@ public class MaxRule extends AbstractDirectiveValidationRule {
         super("Max");
     }
 
+    @Override
+    public String getDirectiveDeclarationSDL() {
+        return String.format("directive @%s(value : Int = %d, message : String = \"%s\") " +
+                        "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
+                getName(), Integer.MAX_VALUE, "graphql.validation.Max.message");
+    }
 
     @Override
     protected boolean appliesToType(GraphQLInputType argumentType) {

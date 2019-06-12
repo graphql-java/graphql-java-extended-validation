@@ -26,7 +26,7 @@ import static java.util.Collections.singletonList;
 
 public abstract class AbstractDirectiveValidationRule implements DirectiveValidationRule {
 
-    protected final String name;
+    private final String name;
 
     public AbstractDirectiveValidationRule(String name) {
         this.name = name;
@@ -42,7 +42,7 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
         boolean applicable = appliesToType(argument.getType());
         if (!applicable) {
             String argType = argument.getType().getName();
-            Assert.assertShouldNeverHappen("The directive %s cannot be placed in arguments of type %s", getName(), argType);
+            Assert.assertShouldNeverHappen("The directive %s cannot be placed on arguments of type %s", getName(), argType);
         }
         return true;
     }
@@ -74,7 +74,9 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
 
     protected int getIntArg(GraphQLDirective directive, String argName, int defaultValue) {
         GraphQLArgument argument = directive.getArgument(argName);
-        Assert.assertNotNull(argument);
+        if (argument == null) {
+            return defaultValue;
+        }
         Number value = (Number) argument.getValue();
         if (value == null) {
             return defaultValue;
@@ -111,7 +113,7 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
 
     protected List<GraphQLError> mkError(ValidationRuleEnvironment ruleEnvironment, GraphQLDirective directive, Map<String, Object> msgParams) {
         String messageTemplate = getMessageTemplate(directive);
-        GraphQLError error = ruleEnvironment.getInterpolator().interpolate(messageTemplate, msgParams);
+        GraphQLError error = ruleEnvironment.getInterpolator().interpolate(messageTemplate, msgParams, ruleEnvironment);
         return singletonList(error);
     }
 

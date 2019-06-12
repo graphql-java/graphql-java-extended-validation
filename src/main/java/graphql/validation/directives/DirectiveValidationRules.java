@@ -29,6 +29,14 @@ public class DirectiveValidationRules implements ValidationRule {
         return directiveRules;
     }
 
+    public String getDirectivesDeclarationSDL() {
+        StringBuilder sb = new StringBuilder();
+        for (DirectiveValidationRule value : directiveRules.values()) {
+            sb.append("\n   ").append(value.getDirectiveDeclarationSDL()).append("\n");
+        }
+        return sb.toString();
+    }
+
     public static Builder newDirectiveValidationRules() {
         return new Builder();
     }

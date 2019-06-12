@@ -14,6 +14,8 @@ public interface DirectiveValidationRule extends ValidationRule {
 
     String getName();
 
+    String getDirectiveDeclarationSDL();
+
     @Override
     default boolean appliesToArgument(GraphQLArgument argument, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
         return false;

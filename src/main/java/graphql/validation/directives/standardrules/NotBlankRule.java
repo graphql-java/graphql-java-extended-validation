@@ -19,6 +19,13 @@ public class NotBlankRule extends AbstractDirectiveValidationRule {
 
 
     @Override
+    public String getDirectiveDeclarationSDL() {
+        return String.format("directive @%s(message : String = \"%s\") " +
+                        "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
+                getName(), "graphql.validation.NotBlank.message");
+    }
+
+    @Override
     protected boolean appliesToType(GraphQLInputType argumentType) {
         return appliesToTypes(argumentType, Scalars.GraphQLString);
     }

@@ -18,6 +18,13 @@ public class NotEmptyRule extends AbstractDirectiveValidationRule {
 
 
     @Override
+    public String getDirectiveDeclarationSDL() {
+        return String.format("directive @%s(message : String = \"%s\") " +
+                        "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
+                getName(), "graphql.validation.NotEmpty.message");
+    }
+
+    @Override
     protected boolean appliesToType(GraphQLInputType argumentType) {
         return isStringOrListOrMap(argumentType);
     }
@@ -29,11 +36,11 @@ public class NotEmptyRule extends AbstractDirectiveValidationRule {
         GraphQLInputType argumentType = ruleEnvironment.getArgumentType();
 
         GraphQLDirective ruleDirective = getArgDirective(ruleEnvironment, getName());
-        int valLen = getStringOrObjectOrMapLength(argumentType, argumentValue);
+        int size = getStringOrObjectOrMapLength(argumentType, argumentValue);
 
-        if (valLen <= 0) {
+        if (size <= 0) {
             return mkError(ruleEnvironment, ruleDirective, mkMessageParams(
-                    "length", valLen,
+                    "size", size,
                     "argumentValue", argumentValue));
         }
         return Collections.emptyList();

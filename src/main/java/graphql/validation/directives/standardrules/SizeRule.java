@@ -10,13 +10,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-// @Size(min : Int = 0, max : Int = 9999999, message : String = "graphql.validation.Size.message"
 public class SizeRule extends AbstractDirectiveValidationRule {
 
     public SizeRule() {
         super("Size");
     }
 
+
+    @Override
+    public String getDirectiveDeclarationSDL() {
+        return String.format("directive @%s(min : Int = %d, max : Int = %d, message : String = \"%s\") " +
+                        "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
+                getName(), 0, Integer.MAX_VALUE, "graphql.validation.Size.message");
+    }
 
     @Override
     protected boolean appliesToType(GraphQLInputType argumentType) {
@@ -33,18 +39,18 @@ public class SizeRule extends AbstractDirectiveValidationRule {
         int max = getIntArg(sizeDirective, "max", Integer.MAX_VALUE);
 
 
-        int valLen = getStringOrObjectOrMapLength(argType, argumentValue);
+        int size = getStringOrObjectOrMapLength(argType, argumentValue);
 
         Map<String, Object> msgParams = mkMessageParams(
                 "min", min,
                 "max", max,
-                "length", valLen,
+                "size", size,
                 "argumentValue", argumentValue);
 
-        if (valLen < min) {
+        if (size < min) {
             return mkError(ruleEnvironment, sizeDirective, msgParams);
         }
-        if (valLen > max) {
+        if (size > max) {
             return mkError(ruleEnvironment, sizeDirective, msgParams);
         }
         return Collections.emptyList();
