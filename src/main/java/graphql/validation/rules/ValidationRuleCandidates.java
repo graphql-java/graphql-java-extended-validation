@@ -46,7 +46,7 @@ public class ValidationRuleCandidates {
 
     public List<ValidationRule> getRulesFor(GraphQLArgument fieldArg, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
         return rules.stream()
-                .filter(rule -> rule.appliesToArgument(fieldArg, fieldDefinition, fieldsContainer))
+                .filter(rule -> rule.appliesToType(fieldArg, fieldDefinition, fieldsContainer))
                 .collect(Collectors.toList());
     }
 

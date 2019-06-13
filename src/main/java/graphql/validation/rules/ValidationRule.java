@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ValidationRule {
 
-    boolean appliesToArgument(GraphQLArgument argument, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer);
+    boolean appliesToType(GraphQLArgument argument, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer);
 
     List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment);
 }

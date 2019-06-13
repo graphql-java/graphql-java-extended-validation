@@ -1,9 +1,7 @@
 package graphql.validation.directives;
 
 import graphql.GraphQLError;
-import graphql.schema.GraphQLArgument;
-import graphql.schema.GraphQLFieldDefinition;
-import graphql.schema.GraphQLFieldsContainer;
+import graphql.schema.GraphQLInputType;
 import graphql.validation.rules.ValidationRule;
 import graphql.validation.rules.ValidationRuleEnvironment;
 
@@ -16,10 +14,7 @@ public interface DirectiveValidationRule extends ValidationRule {
 
     String getDirectiveDeclarationSDL();
 
-    @Override
-    default boolean appliesToArgument(GraphQLArgument argument, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
-        return false;
-    }
+    boolean appliesToType(GraphQLInputType inputType);
 
     @Override
     default List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment) {

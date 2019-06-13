@@ -10,13 +10,12 @@ import graphql.schema.GraphQLFieldsContainer;
 import graphql.schema.GraphQLInputObjectType;
 import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLScalarType;
-import graphql.schema.GraphQLTypeUtil;
 import graphql.validation.rules.ValidationRuleEnvironment;
+import graphql.validation.util.Util;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,61 +37,79 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
     }
 
     @Override
-    public boolean appliesToArgument(GraphQLArgument argument, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
-        boolean applicable = appliesToType(argument.getType());
-        if (!applicable) {
-            String argType = argument.getType().getName();
-            Assert.assertShouldNeverHappen("The directive %s cannot be placed on arguments of type %s", getName(), argType);
-        }
-        return true;
+    public boolean appliesToType(GraphQLArgument argument, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
+        return appliesToType(Util.unwrapNonNull(argument.getType()));
     }
 
-    protected abstract boolean appliesToType(GraphQLInputType inputType);
-
-
-    @Override
-    public List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment) {
-        return Collections.emptyList();
-    }
-
-    protected boolean appliesToTypes(GraphQLInputType argumentType, GraphQLScalarType... scalarTypes) {
-        GraphQLInputType unwrappedType = unwrap(argumentType);
+    protected boolean isOneOfTheseTypes(GraphQLInputType inputType, GraphQLScalarType... scalarTypes) {
+        GraphQLInputType unwrappedType = Util.unwrapNonNull(inputType);
         for (GraphQLScalarType scalarType : scalarTypes) {
             if (unwrappedType.getName().equals(scalarType.getName())) {
                 return true;
             }
         }
         return false;
-
     }
 
-
-    protected GraphQLDirective getArgDirective(ValidationRuleEnvironment ruleEnvironment, String name) {
-        GraphQLDirective directive = ruleEnvironment.getArgument().getDirective(name);
-        return Assert.assertNotNull(directive);
-    }
-
-    protected int getIntArg(GraphQLDirective directive, String argName, int defaultValue) {
+    protected int getIntArg(GraphQLDirective directive, String argName) {
         GraphQLArgument argument = directive.getArgument(argName);
         if (argument == null) {
-            return defaultValue;
+            return assertExpectedArgType(argName, "Int");
         }
         Number value = (Number) argument.getValue();
         if (value == null) {
-            return defaultValue;
+            value = (Number) argument.getDefaultValue();
+            if (value == null) {
+                return assertExpectedArgType(argName, "Int");
+            }
         }
         return value.intValue();
     }
 
-    protected String getStrArg(GraphQLDirective directive, String name) {
-        return (String) directive.getArgument(name).getValue();
+    protected String getStrArg(GraphQLDirective directive, String argName) {
+        GraphQLArgument argument = directive.getArgument(argName);
+        if (argument == null) {
+            return assertExpectedArgType(argName, "String");
+        }
+        String value = (String) argument.getValue();
+        if (value == null) {
+            value = (String) argument.getDefaultValue();
+            if (value == null) {
+                return assertExpectedArgType(argName, "String");
+            }
+        }
+        return value;
+    }
+
+    protected boolean getBoolArg(GraphQLDirective directive, String argName) {
+        GraphQLArgument argument = directive.getArgument(argName);
+        if (argument == null) {
+            return assertExpectedArgType(argName, "Boolean");
+        }
+        Object value = argument.getValue();
+        if (value == null) {
+            value = argument.getDefaultValue();
+            if (value == null) {
+                return assertExpectedArgType(argName, "Boolean");
+            }
+        }
+        return Boolean.parseBoolean(String.valueOf(value));
     }
 
     protected String getMessageTemplate(GraphQLDirective directive) {
-        String msg = getStrArg(directive, "message");
-        return Assert.assertNotNull(msg, "A validation directive MUST have a message argument with a default");
+        String msg = null;
+        GraphQLArgument arg = directive.getArgument("message");
+        if (arg != null) {
+            msg = (String) arg.getValue();
+            if (msg == null) {
+                msg = (String) arg.getDefaultValue();
+            }
+        }
+        if (msg == null) {
+            msg = "graphql.validation." + getName() + ".message";
+        }
+        return msg;
     }
-
 
     protected Map<String, Object> mkMessageParams(Object... args) {
         Assert.assertTrue(args.length % 2 == 0, "You MUST pass in an even number of arguments");
@@ -107,19 +124,14 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
         return params;
     }
 
-    protected GraphQLInputType unwrap(GraphQLInputType inputType) {
-        return (GraphQLInputType) GraphQLTypeUtil.unwrapAll(inputType);
-    }
-
     protected List<GraphQLError> mkError(ValidationRuleEnvironment ruleEnvironment, GraphQLDirective directive, Map<String, Object> msgParams) {
         String messageTemplate = getMessageTemplate(directive);
         GraphQLError error = ruleEnvironment.getInterpolator().interpolate(messageTemplate, msgParams, ruleEnvironment);
         return singletonList(error);
     }
 
-
     protected boolean isStringOrListOrMap(GraphQLInputType argumentType) {
-        GraphQLInputType unwrappedType = unwrap(argumentType);
+        GraphQLInputType unwrappedType = Util.unwrapOneAndAllNonNull(argumentType);
         return Scalars.GraphQLString.equals(unwrappedType) ||
                 isList(argumentType) ||
                 (unwrappedType instanceof GraphQLInputObjectType);
@@ -131,9 +143,14 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
         return (Map) value;
     }
 
-    protected BigDecimal asBigDecimal(Object value) {
+    protected BigDecimal asBigDecimal(Object value) throws NumberFormatException {
+        if (value == null) {
+            return Assert.assertShouldNeverHappen("Validation cant handle null objects BigDecimals");
+        }
         String bdStr = "";
         if (value instanceof Number) {
+            bdStr = value.toString();
+        } else if (value instanceof String) {
             bdStr = value.toString();
         } else {
             Assert.assertShouldNeverHappen("Validation cant handle objects of type '%s' as BigDecimals", value.getClass().getSimpleName());
@@ -141,15 +158,24 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
         return new BigDecimal(bdStr);
     }
 
+    protected boolean asBoolean(Object value) {
+        if (value == null) {
+            return Assert.assertShouldNeverHappen("Validation cant handle null objects Booleans");
+        }
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        } else {
+            return Assert.assertShouldNeverHappen("Validation cant handle objects of type '%s' as Booleans", value.getClass().getSimpleName());
+        }
+    }
 
-    protected int getStringOrObjectOrMapLength(GraphQLInputType argType, Object argumentValue) {
-        GraphQLInputType unwrappedType = unwrap(argType);
+    protected int getStringOrObjectOrMapLength(GraphQLInputType inputType, Object argumentValue) {
         int valLen;
         if (argumentValue == null) {
             valLen = 0;
-        } else if (Scalars.GraphQLString.equals(unwrappedType)) {
+        } else if (Scalars.GraphQLString.equals(Util.unwrapNonNull(inputType))) {
             valLen = String.valueOf(argumentValue).length();
-        } else if (isList(argType)) {
+        } else if (isList(inputType)) {
             valLen = getListLength(argumentValue);
         } else {
             valLen = getObjectLen(argumentValue);
@@ -165,7 +191,6 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
         return map.size();
     }
 
-
     private int getListLength(Object value) {
         if (value instanceof Collection) {
             return ((Collection) value).size();
@@ -179,6 +204,10 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
             return Array.getLength(value);
         }
         return 0;
+    }
+
+    private <T> T assertExpectedArgType(String argName, String typeName) {
+        return Assert.assertShouldNeverHappen("A validation directive MUST have a '%s' argument of type '%s' with a default value", argName, typeName);
     }
 
 }

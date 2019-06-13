@@ -50,7 +50,7 @@ public class ValidationRules {
             ValidationRuleEnvironment ruleEnvironment = ValidationRuleEnvironment.newValidationRuleEnvironment()
                     .dataFetchingEnvironment(env)
                     .argument(fieldArg)
-                    .argumentValue(argValue)
+                    .fieldOrArgumentValue(argValue)
                     .messageInterpolator(interpolator)
                     .build();
 

@@ -10,7 +10,6 @@ import graphql.validation.rules.ValidationRuleEnvironment;
 import java.util.Collections;
 import java.util.List;
 
-// @Max(value : String = "0", message : String = "graphql.validation.Max.message"
 public class NotBlankRule extends AbstractDirectiveValidationRule {
 
     public NotBlankRule() {
@@ -20,27 +19,26 @@ public class NotBlankRule extends AbstractDirectiveValidationRule {
 
     @Override
     public String getDirectiveDeclarationSDL() {
-        return String.format("directive @%s(message : String = \"%s\") " +
+        return String.format("directive @NotBlank(message : String = \"%s\") " +
                         "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
-                getName(), "graphql.validation.NotBlank.message");
+                "graphql.validation.NotBlank.message");
     }
 
     @Override
-    protected boolean appliesToType(GraphQLInputType argumentType) {
-        return appliesToTypes(argumentType, Scalars.GraphQLString);
+    public boolean appliesToType(GraphQLInputType inputType) {
+        return isOneOfTheseTypes(inputType, Scalars.GraphQLString);
     }
 
 
     @Override
     public List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment) {
-        Object argumentValue = ruleEnvironment.getArgumentValue();
+        Object argumentValue = ruleEnvironment.getFieldOrArgumentValue();
 
-        GraphQLDirective notBlankDir = getArgDirective(ruleEnvironment, getName());
-
+        GraphQLDirective directive = ruleEnvironment.getContextObject(GraphQLDirective.class);
 
         if (argumentValue == null || isBlank(argumentValue)) {
-            return mkError(ruleEnvironment, notBlankDir, mkMessageParams(
-                    "argumentValue", argumentValue));
+            return mkError(ruleEnvironment, directive, mkMessageParams(
+                    "fieldOrArgumentValue", argumentValue));
 
         }
         return Collections.emptyList();

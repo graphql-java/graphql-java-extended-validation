@@ -1,40 +1,31 @@
 package graphql.validation.directives.standardrules
 
 
-import graphql.validation.rules.ValidationRuleEnvironment
+import graphql.validation.directives.BaseDirectiveRuleTest
+import graphql.validation.directives.DirectiveValidationRule
 import spock.lang.Unroll
 
-class SizeRuleTest extends DirectiveRuleTest {
+class SizeRuleTest extends BaseDirectiveRuleTest {
 
 
     @Unroll
-    def "size rule constraints"() {
+    def "simple argument size rule constraints"() {
 
-        def rule = new SizeRule()
+        DirectiveValidationRule ruleUnderTest = new SizeRule()
 
         expect:
 
-        def schema = buildSchema(rule, fieldDeclaration)
-
-        ValidationRuleEnvironment ruleEnvironment = buildEnv(schema, "testArg", argVal)
-
-        assert rule.appliesToArgument(ruleEnvironment.getArgument(), ruleEnvironment.getFieldDefinition(), ruleEnvironment.getFieldsContainer())
-
-        def errors = rule.runValidation(ruleEnvironment)
-        errors.size() == expectedSize
-        if (expectedSize > 0) {
-            def message = errors[0].message
-            assert message == expectedMessage, "expecting '" + expectedMessage + "' but got '" + message + "'"
-        }
+        def errors = runRules(ruleUnderTest, fieldDeclaration, "arg", argVal)
+        assertErrors(errors, expectedMessage)
 
         where:
 
-        fieldDeclaration                                                        | argVal          | expectedSize | expectedMessage
-        "field( testArg : String @Size(max : 10) ) : String"                    | "1234567891011" | 1            | "graphql.validation.Size.message:min=0;max=10;size=13;argumentValue=1234567891011;"
-        "field( testArg : String @Size(max : 100) ) : String"                   | "1234567891011" | 0            | ""
-        "field( testArg : String @Size(max : 10, min : 5) ) : String"           | "123"           | 1            | "graphql.validation.Size.message:min=5;max=10;size=3;argumentValue=123;"
+        fieldDeclaration                                                    | argVal          | expectedMessage
+        "field( arg : String @Size(max : 10) ) : ID"                    | "1234567891011" | "Size;path=/testArg;val:1234567891011;\t"
+        "field( arg : String @Size(max : 100) ) : ID"                   | "1234567891011" | ""
+        "field( arg : String @Size(max : 10, min : 5) ) : ID"           | "123"           | "Size;path=/testArg;val:123;\t"
 
-        'field( testArg : String @Size(min : 5, message : "custom") ) : String' | "123"           | 1            | "custom:min=5;max=2147483647;size=3;argumentValue=123;"
-        "field( testArg : String @Size(min : 5) ) : String"                     | null            | 1            | "graphql.validation.Size.message:min=5;max=2147483647;size=0;argumentValue=null;"
+        'field( arg : String @Size(min : 5, message : "custom") ) : ID' | "123"           | "custom;path=/testArg;val:123;\t"
+        "field( arg : String @Size(min : 5) ) : ID"                     | null            | "Size;path=/testArg;val:null;\t"
     }
 }
