@@ -1,6 +1,5 @@
 package graphql.validation.directives.standardrules;
 
-import graphql.Assert;
 import graphql.GraphQLError;
 import graphql.Scalars;
 import graphql.schema.GraphQLDirective;
@@ -28,6 +27,7 @@ public class DigitsRule extends AbstractDirectiveValidationRule {
     @Override
     public boolean appliesToType(GraphQLInputType inputType) {
         return isOneOfTheseTypes(inputType,
+                Scalars.GraphQLString,
                 Scalars.GraphQLByte,
                 Scalars.GraphQLShort,
                 Scalars.GraphQLInt,
@@ -42,33 +42,35 @@ public class DigitsRule extends AbstractDirectiveValidationRule {
     @Override
     public List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment) {
         Object argumentValue = ruleEnvironment.getFieldOrArgumentValue();
+        if (argumentValue == null) {
+            return Collections.emptyList();
+        }
 
         GraphQLDirective directive = ruleEnvironment.getContextObject(GraphQLDirective.class);
         int maxIntegerLength = getIntArg(directive, "integer");
         int maxFractionLength = getIntArg(directive, "fraction");
 
-        if (argumentValue == null) {
-            return Collections.emptyList();
+        boolean isOk;
+        try {
+            BigDecimal bigNum = asBigDecimal(argumentValue);
+            isOk = isOk(bigNum, maxIntegerLength, maxFractionLength);
+        } catch (NumberFormatException e) {
+            isOk = false;
         }
 
-        BigDecimal bigNum;
-        if (argumentValue instanceof BigDecimal) {
-            bigNum = (BigDecimal) argumentValue;
-        } else if (argumentValue instanceof Number) {
-            bigNum = new BigDecimal(argumentValue.toString()).stripTrailingZeros();
-        } else {
-            return Assert.assertShouldNeverHappen("You MUST provide a Number of the Digits directive rule");
-        }
-
-        int integerPartLength = bigNum.precision() - bigNum.scale();
-        int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
-
-        if (!(maxIntegerLength >= integerPartLength && maxFractionLength >= fractionPartLength)) {
+        if (!isOk) {
             return mkError(ruleEnvironment, directive, mkMessageParams(
                     "integer", maxIntegerLength,
-                    "fraction", fractionPartLength,
+                    "fraction", maxFractionLength,
                     "fieldOrArgumentValue", argumentValue));
         }
         return Collections.emptyList();
+    }
+
+    private boolean isOk(BigDecimal bigNum, int maxIntegerLength, int maxFractionLength) {
+        int integerPartLength = bigNum.precision() - bigNum.scale();
+        int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
+
+        return maxIntegerLength >= integerPartLength && maxFractionLength >= fractionPartLength;
     }
 }

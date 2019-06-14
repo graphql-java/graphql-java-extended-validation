@@ -147,6 +147,9 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
         if (value == null) {
             return Assert.assertShouldNeverHappen("Validation cant handle null objects BigDecimals");
         }
+        if (value instanceof BigDecimal) {
+            return (BigDecimal) value;
+        }
         String bdStr = "";
         if (value instanceof Number) {
             bdStr = value.toString();
