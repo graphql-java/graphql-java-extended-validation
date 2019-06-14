@@ -4,12 +4,16 @@ import graphql.GraphQLError;
 import graphql.Scalars;
 import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLInputType;
+import graphql.schema.GraphQLScalarType;
 import graphql.validation.directives.AbstractDirectiveValidationRule;
 import graphql.validation.rules.ValidationRuleEnvironment;
 
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 public class DigitsRule extends AbstractDirectiveValidationRule {
 
@@ -38,6 +42,24 @@ public class DigitsRule extends AbstractDirectiveValidationRule {
         );
     }
 
+    @Override
+    public List<String> getApplicableTypeNames() {
+        return Stream.of(Scalars.GraphQLString,
+                Scalars.GraphQLByte,
+                Scalars.GraphQLShort,
+                Scalars.GraphQLInt,
+                Scalars.GraphQLLong,
+                Scalars.GraphQLBigDecimal,
+                Scalars.GraphQLBigInteger,
+                Scalars.GraphQLFloat)
+                .map(GraphQLScalarType::getName)
+                .collect(toList());
+    }
+
+    @Override
+    public String getDescription() {
+        return "The element must be a number inside the specified `integer` and `fraction` range.";
+    }
 
     @Override
     public List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment) {

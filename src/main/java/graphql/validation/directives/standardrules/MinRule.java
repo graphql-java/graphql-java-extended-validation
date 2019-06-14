@@ -14,6 +14,11 @@ public class MinRule extends AbstractMinMaxRule {
     }
 
     @Override
+    public String getDescription() {
+        return "The element must be a number whose value must be greater than or equal to the specified minimum.";
+    }
+
+    @Override
     protected boolean isOK(int comparisonResult) {
         return comparisonResult >= 0;
     }

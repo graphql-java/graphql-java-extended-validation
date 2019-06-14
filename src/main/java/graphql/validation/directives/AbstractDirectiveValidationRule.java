@@ -2,6 +2,7 @@ package graphql.validation.directives;
 
 import graphql.Assert;
 import graphql.GraphQLError;
+import graphql.PublicSpi;
 import graphql.Scalars;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLDirective;
@@ -23,6 +24,7 @@ import java.util.Map;
 import static graphql.schema.GraphQLTypeUtil.isList;
 import static java.util.Collections.singletonList;
 
+@PublicSpi
 public abstract class AbstractDirectiveValidationRule implements DirectiveValidationRule {
 
     private final String name;
@@ -41,6 +43,14 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
         return appliesToType(Util.unwrapNonNull(argument.getType()));
     }
 
+    /**
+     * Returns true of the input type is one of the specified scalar types, regardless of non null ness
+     *
+     * @param inputType   the type to check
+     * @param scalarTypes the array of scalar types
+     *
+     * @return true ifits oneof them
+     */
     protected boolean isOneOfTheseTypes(GraphQLInputType inputType, GraphQLScalarType... scalarTypes) {
         GraphQLInputType unwrappedType = Util.unwrapNonNull(inputType);
         for (GraphQLScalarType scalarType : scalarTypes) {
@@ -51,6 +61,14 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
         return false;
     }
 
+    /**
+     * Returns an integer argument from a directive (or its default) and throws an assertion of the argument is null
+     *
+     * @param directive the directive to check
+     * @param argName   the argument name
+     *
+     * @return a non null value
+     */
     protected int getIntArg(GraphQLDirective directive, String argName) {
         GraphQLArgument argument = directive.getArgument(argName);
         if (argument == null) {
@@ -66,6 +84,14 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
         return value.intValue();
     }
 
+    /**
+     * Returns an String argument from a directive (or its default) and throws an assertion of the argument is null
+     *
+     * @param directive the directive to check
+     * @param argName   the argument name
+     *
+     * @return a non null value
+     */
     protected String getStrArg(GraphQLDirective directive, String argName) {
         GraphQLArgument argument = directive.getArgument(argName);
         if (argument == null) {
@@ -81,6 +107,14 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
         return value;
     }
 
+    /**
+     * Returns an boolean argument from a directive (or its default) and throws an assertion of the argument is null
+     *
+     * @param directive the directive to check
+     * @param argName   the argument name
+     *
+     * @return a non null value
+     */
     protected boolean getBoolArg(GraphQLDirective directive, String argName) {
         GraphQLArgument argument = directive.getArgument(argName);
         if (argument == null) {
@@ -96,6 +130,14 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
         return Boolean.parseBoolean(String.valueOf(value));
     }
 
+    /**
+     * Returns the "message : String" argument from a directive or makes up one
+     * called "graphql.validation.{name}.message"
+     *
+     * @param directive the directive to check
+     *
+     * @return a non null value
+     */
     protected String getMessageTemplate(GraphQLDirective directive) {
         String msg = null;
         GraphQLArgument arg = directive.getArgument("message");
@@ -111,6 +153,13 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
         return msg;
     }
 
+    /**
+     * Creates a map of named parameters for message interpolation
+     *
+     * @param args must be even with a String as even params and values as odd params
+     *
+     * @return a map of message parameters
+     */
     protected Map<String, Object> mkMessageParams(Object... args) {
         Assert.assertTrue(args.length % 2 == 0, "You MUST pass in an even number of arguments");
         Map<String, Object> params = new LinkedHashMap<>();
@@ -124,25 +173,51 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
         return params;
     }
 
+    /**
+     * Creates  a new {@link graphql.GraphQLError}
+     *
+     * @param ruleEnvironment the current rules environment
+     * @param directive       the directive being run
+     * @param msgParams       the map of parameters
+     *
+     * @return a list of a single error
+     */
     protected List<GraphQLError> mkError(ValidationRuleEnvironment ruleEnvironment, GraphQLDirective directive, Map<String, Object> msgParams) {
         String messageTemplate = getMessageTemplate(directive);
         GraphQLError error = ruleEnvironment.getInterpolator().interpolate(messageTemplate, msgParams, ruleEnvironment);
         return singletonList(error);
     }
 
-    protected boolean isStringOrListOrMap(GraphQLInputType argumentType) {
-        GraphQLInputType unwrappedType = Util.unwrapOneAndAllNonNull(argumentType);
+    /**
+     * Return true if the type is a String or List type or {@link graphql.schema.GraphQLInputObjectType}, regardless of non null ness
+     *
+     * @param inputType the type to check
+     *
+     * @return true if one of the above
+     */
+    protected boolean isStringOrListOrMap(GraphQLInputType inputType) {
+        GraphQLInputType unwrappedType = Util.unwrapOneAndAllNonNull(inputType);
         return Scalars.GraphQLString.equals(unwrappedType) ||
-                isList(argumentType) ||
+                isList(inputType) ||
                 (unwrappedType instanceof GraphQLInputObjectType);
     }
 
+    /**
+     * Casts the object as a Map with an assertion of it is not one
+     *
+     * @return a Map
+     */
     @SuppressWarnings("ConstantConditions")
     protected Map asMap(Object value) {
         Assert.assertTrue(value instanceof Map, "The argument value MUST be a Map value");
         return (Map) value;
     }
 
+    /**
+     * Makes the object a BigDecimal with an assertion if we have no conversion of it
+     *
+     * @return a BigDecimal
+     */
     protected BigDecimal asBigDecimal(Object value) throws NumberFormatException {
         if (value == null) {
             return Assert.assertShouldNeverHappen("Validation cant handle null objects BigDecimals");
@@ -161,6 +236,11 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
         return new BigDecimal(bdStr);
     }
 
+    /**
+     * Makes the object a boolean with an assertion if we have no conversion of it
+     *
+     * @return a boolean
+     */
     protected boolean asBoolean(Object value) {
         if (value == null) {
             return Assert.assertShouldNeverHappen("Validation cant handle null objects Booleans");
@@ -172,16 +252,24 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
         }
     }
 
-    protected int getStringOrObjectOrMapLength(GraphQLInputType inputType, Object argumentValue) {
+    /**
+     * Returns the length of a String of the size of a list or size of a Map
+     *
+     * @param inputType the input type
+     * @param value     the value
+     *
+     * @return the length of a String or Map or List
+     */
+    protected int getStringOrObjectOrMapLength(GraphQLInputType inputType, Object value) {
         int valLen;
-        if (argumentValue == null) {
+        if (value == null) {
             valLen = 0;
         } else if (Scalars.GraphQLString.equals(Util.unwrapNonNull(inputType))) {
-            valLen = String.valueOf(argumentValue).length();
+            valLen = String.valueOf(value).length();
         } else if (isList(inputType)) {
-            valLen = getListLength(argumentValue);
+            valLen = getListLength(value);
         } else {
-            valLen = getObjectLen(argumentValue);
+            valLen = getObjectLen(value);
         }
         return valLen;
     }

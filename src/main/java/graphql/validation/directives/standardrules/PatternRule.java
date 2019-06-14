@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Collections.emptyList;
+
 public class PatternRule extends AbstractDirectiveValidationRule {
 
     public PatternRule() {
@@ -22,9 +24,14 @@ public class PatternRule extends AbstractDirectiveValidationRule {
 
     @Override
     public String getDirectiveDeclarationSDL() {
-        return String.format("directive @Pattern(pattern : String! =\".*\", message : String = \"%s\") " +
+        return String.format("directive @Pattern(regexp : String! =\".*\", message : String = \"%s\") " +
                         "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
                 "graphql.validation.Pattern.message");
+    }
+
+    @Override
+    public String getDescription() {
+        return "The String must match the specified regular expression, which follows the Java regular expression conventions.";
     }
 
     @Override
@@ -34,23 +41,31 @@ public class PatternRule extends AbstractDirectiveValidationRule {
         );
     }
 
+    @Override
+    public List<String> getApplicableTypeNames() {
+        return Collections.singletonList(Scalars.GraphQLString.getName());
+    }
 
     @Override
     public List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment) {
         Object argumentValue = ruleEnvironment.getFieldOrArgumentValue();
+        if (argumentValue == null) {
+            return emptyList();
+        }
+        String strValue = String.valueOf(argumentValue);
 
         GraphQLDirective directive = ruleEnvironment.getContextObject(GraphQLDirective.class);
 
-        String patternArg = getStrArg(directive, "pattern");
+        String patternArg = getStrArg(directive, "regexp");
         Pattern pattern = cachedPattern(patternArg);
 
-        Matcher matcher = pattern.matcher(String.valueOf(argumentValue));
+        Matcher matcher = pattern.matcher(strValue);
         if (!matcher.matches()) {
             return mkError(ruleEnvironment, directive, mkMessageParams(
-                    "pattern", patternArg,
+                    "regexp", patternArg,
                     "fieldOrArgumentValue", argumentValue));
         }
-        return Collections.emptyList();
+        return emptyList();
     }
 
     private final static Map<String, Pattern> SEEN_PATTERNS = new HashMap<>();

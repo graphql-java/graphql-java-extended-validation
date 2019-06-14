@@ -16,6 +16,11 @@ public class NegativeRule extends AbstractPositiveNegativeRule {
     }
 
     @Override
+    public String getDescription() {
+        return "The element must be a negative number.";
+    }
+
+    @Override
     protected boolean isOK(BigDecimal bigDecimal) {
         return bigDecimal.compareTo(BigDecimal.ZERO) < 0;
     }

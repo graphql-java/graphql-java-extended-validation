@@ -1,11 +1,13 @@
 package graphql.validation.directives.standardrules;
 
 import graphql.GraphQLError;
+import graphql.Scalars;
 import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLInputType;
 import graphql.validation.directives.AbstractDirectiveValidationRule;
 import graphql.validation.rules.ValidationRuleEnvironment;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,10 +26,19 @@ public class NotEmptyRule extends AbstractDirectiveValidationRule {
     }
 
     @Override
+    public String getDescription() {
+        return "The element must have a non zero size.";
+    }
+
+    @Override
     public boolean appliesToType(GraphQLInputType inputType) {
         return isStringOrListOrMap(inputType);
     }
 
+    @Override
+    public List<String> getApplicableTypeNames() {
+        return Arrays.asList(Scalars.GraphQLString.getName(), "Lists", "Input Objects");
+    }
 
     @Override
     public List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment) {

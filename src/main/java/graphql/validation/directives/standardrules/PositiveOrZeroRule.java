@@ -16,6 +16,11 @@ public class PositiveOrZeroRule extends AbstractPositiveNegativeRule {
     }
 
     @Override
+    public String getDescription() {
+        return "The element must be a positive number or zero.";
+    }
+
+    @Override
     protected boolean isOK(BigDecimal bigDecimal) {
         return bigDecimal.compareTo(BigDecimal.ZERO) >= 0;
     }

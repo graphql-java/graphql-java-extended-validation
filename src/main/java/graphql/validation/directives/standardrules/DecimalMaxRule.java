@@ -14,6 +14,10 @@ public class DecimalMaxRule extends AbstractDecimalMinMaxRule {
     }
 
     @Override
+    public String getDescription() {
+        return "The element must be a number whose value must be less than or equal to the specified maximum.";
+    }
+    @Override
     protected boolean isOK(boolean inclusive, int comparisonResult) {
         return inclusive ? comparisonResult <= 0 : comparisonResult < 0;
     }

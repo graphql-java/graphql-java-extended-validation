@@ -1,6 +1,7 @@
 package graphql.validation.rules;
 
 import graphql.GraphQLError;
+import graphql.PublicApi;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLFieldDefinition;
@@ -13,6 +14,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * ValidationRules is a holder of {@link graphql.validation.rules.ValidationRule}s against a specific
+ * type, field and argument aka {@link graphql.validation.rules.ArgumentCoordinates}
+ */
+@PublicApi
 public class ValidationRules {
 
     private final Map<ArgumentCoordinates, List<ValidationRule>> rulesMap;

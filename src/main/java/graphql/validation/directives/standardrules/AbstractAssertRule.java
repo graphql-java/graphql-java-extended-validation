@@ -4,11 +4,16 @@ import graphql.GraphQLError;
 import graphql.Scalars;
 import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLInputType;
+import graphql.schema.GraphQLScalarType;
 import graphql.validation.directives.AbstractDirectiveValidationRule;
 import graphql.validation.rules.ValidationRuleEnvironment;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static graphql.Scalars.GraphQLBoolean;
 
 abstract class AbstractAssertRule extends AbstractDirectiveValidationRule {
 
@@ -20,10 +25,14 @@ abstract class AbstractAssertRule extends AbstractDirectiveValidationRule {
     @Override
     public boolean appliesToType(GraphQLInputType inputType) {
         return isOneOfTheseTypes(inputType,
-                Scalars.GraphQLBoolean
+                GraphQLBoolean
         );
     }
 
+    @Override
+    public List<String> getApplicableTypeNames() {
+        return Stream.of(GraphQLBoolean).map(GraphQLScalarType::getName).collect(Collectors.toList());
+    }
 
     @Override
     public List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment) {

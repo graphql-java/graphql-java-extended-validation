@@ -14,6 +14,11 @@ public class AssertTrueRule extends AbstractAssertRule {
     }
 
     @Override
+    public String getDescription() {
+        return "The boolean value must be true.";
+    }
+
+    @Override
     protected boolean isOK(boolean isTrue) {
         return isTrue;
     }

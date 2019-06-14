@@ -1,5 +1,6 @@
 package graphql.validation.rules;
 
+import graphql.PublicApi;
 import graphql.execution.ExecutionPath;
 import graphql.language.SourceLocation;
 import graphql.schema.DataFetchingEnvironment;
@@ -15,6 +16,7 @@ import java.util.function.Consumer;
 
 import static graphql.Assert.assertNotNull;
 
+@PublicApi
 public class ValidationRuleEnvironment {
 
     private final GraphQLFieldsContainer fieldsContainer;

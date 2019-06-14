@@ -1,5 +1,6 @@
 package graphql.validation.rules;
 
+import graphql.PublicApi;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLFieldsContainer;
@@ -7,6 +8,7 @@ import graphql.schema.GraphQLFieldsContainer;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+@PublicApi
 public class ArgumentCoordinates {
 
     private final String containerType;

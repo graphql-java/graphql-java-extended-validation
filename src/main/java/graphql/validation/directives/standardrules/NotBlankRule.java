@@ -4,11 +4,15 @@ import graphql.GraphQLError;
 import graphql.Scalars;
 import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLInputType;
+import graphql.schema.GraphQLScalarType;
 import graphql.validation.directives.AbstractDirectiveValidationRule;
 import graphql.validation.rules.ValidationRuleEnvironment;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 public class NotBlankRule extends AbstractDirectiveValidationRule {
 
@@ -25,8 +29,20 @@ public class NotBlankRule extends AbstractDirectiveValidationRule {
     }
 
     @Override
+    public String getDescription() {
+        return "The String must contain at least one non-whitespace character, according to Java's Character.isWhitespace().";
+    }
+
+    @Override
     public boolean appliesToType(GraphQLInputType inputType) {
         return isOneOfTheseTypes(inputType, Scalars.GraphQLString);
+    }
+
+    @Override
+    public List<String> getApplicableTypeNames() {
+        return Stream.of(Scalars.GraphQLString)
+                .map(GraphQLScalarType::getName)
+                .collect(toList());
     }
 
 
