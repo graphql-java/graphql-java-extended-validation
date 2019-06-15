@@ -36,18 +36,18 @@ abstract class AbstractAssertRule extends AbstractDirectiveValidationRule {
 
     @Override
     public List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment) {
-        Object argumentValue = ruleEnvironment.getFieldOrArgumentValue();
+        Object validatedValue = ruleEnvironment.getValidatedValue();
         //null values are valid
-        if (argumentValue == null) {
+        if (validatedValue == null) {
             return Collections.emptyList();
         }
 
         GraphQLDirective directive = ruleEnvironment.getContextObject(GraphQLDirective.class);
 
-        boolean isTrue = asBoolean(argumentValue);
+        boolean isTrue = asBoolean(validatedValue);
         if (!isOK(isTrue)) {
             return mkError(ruleEnvironment, directive, mkMessageParams(
-                    "fieldOrArgumentValue", argumentValue));
+                    "validatedValue", validatedValue));
 
         }
         return Collections.emptyList();

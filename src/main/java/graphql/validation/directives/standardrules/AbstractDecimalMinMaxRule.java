@@ -50,9 +50,9 @@ abstract class AbstractDecimalMinMaxRule extends AbstractDirectiveValidationRule
 
     @Override
     public List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment) {
-        Object argumentValue = ruleEnvironment.getFieldOrArgumentValue();
+        Object validatedValue = ruleEnvironment.getValidatedValue();
         //null values are valid
-        if (argumentValue == null) {
+        if (validatedValue == null) {
             return Collections.emptyList();
         }
 
@@ -63,7 +63,7 @@ abstract class AbstractDecimalMinMaxRule extends AbstractDirectiveValidationRule
         boolean isOK;
         try {
             BigDecimal directiveBD = new BigDecimal(value);
-            BigDecimal argBD = asBigDecimal(argumentValue);
+            BigDecimal argBD = asBigDecimal(validatedValue);
             int comparisonResult = argBD.compareTo(directiveBD);
             isOK = isOK(inclusive, comparisonResult);
 
@@ -73,9 +73,9 @@ abstract class AbstractDecimalMinMaxRule extends AbstractDirectiveValidationRule
 
         if (!isOK) {
             return mkError(ruleEnvironment, directive, mkMessageParams(
-                    "value", argumentValue,
+                    "value", validatedValue,
                     "inclusive", inclusive,
-                    "fieldOrArgumentValue", argumentValue));
+                    "validatedValue", validatedValue));
 
         }
         return Collections.emptyList();

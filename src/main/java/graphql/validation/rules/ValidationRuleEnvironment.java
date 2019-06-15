@@ -23,7 +23,7 @@ public class ValidationRuleEnvironment {
     private final GraphQLFieldDefinition fieldDefinition;
     private final GraphQLArgument argument;
     private final GraphQLInputType fieldOrArgumentType;
-    private final Object fieldOrArgumentValue;
+    private final Object validatedValue;
     private final ExecutionPath fieldOrArgumentPath;
     private final ExecutionPath executionPath;
     private final SourceLocation location;
@@ -37,7 +37,7 @@ public class ValidationRuleEnvironment {
         this.fieldDefinition = builder.fieldDefinition;
         this.executionPath = builder.executionPath;
         this.location = builder.location;
-        this.fieldOrArgumentValue = builder.fieldOrArgumentValue;
+        this.validatedValue = builder.validatedValue;
         this.fieldOrArgumentPath = builder.fieldOrArgumentPath;
         this.fieldOrArgumentType = builder.fieldOrArgumentType;
         this.contextMap = builder.contextMap;
@@ -80,8 +80,8 @@ public class ValidationRuleEnvironment {
         return fieldOrArgumentType;
     }
 
-    public Object getFieldOrArgumentValue() {
-        return fieldOrArgumentValue;
+    public Object getValidatedValue() {
+        return validatedValue;
     }
 
     public MessageInterpolator getInterpolator() {
@@ -100,7 +100,7 @@ public class ValidationRuleEnvironment {
         private GraphQLFieldDefinition fieldDefinition;
         private GraphQLArgument argument;
         private GraphQLInputType fieldOrArgumentType;
-        private Object fieldOrArgumentValue;
+        private Object validatedValue;
         private ExecutionPath executionPath;
         private ExecutionPath fieldOrArgumentPath = ExecutionPath.rootPath();
         private SourceLocation location;
@@ -112,7 +112,7 @@ public class ValidationRuleEnvironment {
             this.fieldsContainer = ruleEnvironment.fieldsContainer;
             this.fieldDefinition = ruleEnvironment.fieldDefinition;
             this.argument = ruleEnvironment.argument;
-            this.fieldOrArgumentValue = ruleEnvironment.fieldOrArgumentValue;
+            this.validatedValue = ruleEnvironment.validatedValue;
             this.fieldOrArgumentType = ruleEnvironment.fieldOrArgumentType;
             this.executionPath = ruleEnvironment.executionPath;
             this.fieldOrArgumentPath = ruleEnvironment.fieldOrArgumentPath;
@@ -166,8 +166,8 @@ public class ValidationRuleEnvironment {
             return this;
         }
 
-        public Builder fieldOrArgumentValue(Object fieldOrArgumentValue) {
-            this.fieldOrArgumentValue = fieldOrArgumentValue;
+        public Builder validatedValue(Object validatedValue) {
+            this.validatedValue = validatedValue;
             return this;
         }
 

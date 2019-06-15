@@ -21,7 +21,7 @@ class BaseDirectiveRuleTest extends Specification {
             def s = messageTemplate.replace("graphql.validation.", "").replace(".message", "")
             s += ";"
             s += "path=" + ruleEnvironment.getFieldOrArgumentPath().toString() + ";"
-            s += "val:" + messageParams.getOrDefault("fieldOrArgumentValue", "") + ";"
+            s += "val:" + messageParams.getOrDefault("validatedValue", "") + ";"
             return GraphqlErrorBuilder.newError().message(s).build()
         }
     }
@@ -51,7 +51,7 @@ class BaseDirectiveRuleTest extends Specification {
 
         def ruleEnvironment = ValidationRuleEnvironment.newValidationRuleEnvironment()
                 .argument(argUnderTest)
-                .fieldOrArgumentValue(argValue)
+                .validatedValue(argValue)
                 .fieldOrArgumentType(argUnderTest.getType())
                 .fieldDefinition(fieldDefinition)
                 .fieldsContainer(fieldsContainer)

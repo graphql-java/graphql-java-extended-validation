@@ -48,13 +48,13 @@ public class NotBlankRule extends AbstractDirectiveValidationRule {
 
     @Override
     public List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment) {
-        Object argumentValue = ruleEnvironment.getFieldOrArgumentValue();
+        Object validatedValue = ruleEnvironment.getValidatedValue();
 
         GraphQLDirective directive = ruleEnvironment.getContextObject(GraphQLDirective.class);
 
-        if (argumentValue == null || isBlank(argumentValue)) {
+        if (validatedValue == null || isBlank(validatedValue)) {
             return mkError(ruleEnvironment, directive, mkMessageParams(
-                    "fieldOrArgumentValue", argumentValue));
+                    "validatedValue", validatedValue));
 
         }
         return Collections.emptyList();

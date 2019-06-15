@@ -43,30 +43,30 @@ public class SizeRule extends AbstractDirectiveValidationRule {
 
     @Override
     public List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment) {
+        Object validatedValue = ruleEnvironment.getValidatedValue();
         GraphQLInputType argType = ruleEnvironment.getFieldOrArgumentType();
-        Object argumentValue = ruleEnvironment.getFieldOrArgumentValue();
 
         GraphQLDirective directive = ruleEnvironment.getContextObject(GraphQLDirective.class);
         int min = getIntArg(directive, "min");
         int max = getIntArg(directive, "max");
 
 
-        int size = getStringOrObjectOrMapLength(argType, argumentValue);
+        int size = getStringOrObjectOrMapLength(argType, validatedValue);
 
         if (size < min) {
-            return mkError(ruleEnvironment, directive, mkParams(argumentValue, min, max, size));
+            return mkError(ruleEnvironment, directive, mkParams(validatedValue, min, max, size));
         }
         if (size > max) {
-            return mkError(ruleEnvironment, directive, mkParams(argumentValue, min, max, size));
+            return mkError(ruleEnvironment, directive, mkParams(validatedValue, min, max, size));
         }
         return Collections.emptyList();
     }
 
-    private Map<String, Object> mkParams(Object argumentValue, int min, int max, int size) {
+    private Map<String, Object> mkParams(Object validatedValue, int min, int max, int size) {
         return mkMessageParams(
                 "min", min,
                 "max", max,
                 "size", size,
-                "fieldOrArgumentValue", argumentValue);
+                "validatedValue", validatedValue);
     }
 }

@@ -42,16 +42,16 @@ public class NotEmptyRule extends AbstractDirectiveValidationRule {
 
     @Override
     public List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment) {
-        Object argumentValue = ruleEnvironment.getFieldOrArgumentValue();
+        Object validatedValue = ruleEnvironment.getValidatedValue();
         GraphQLInputType argumentType = ruleEnvironment.getFieldOrArgumentType();
 
         GraphQLDirective directive = ruleEnvironment.getContextObject(GraphQLDirective.class);
-        int size = getStringOrObjectOrMapLength(argumentType, argumentValue);
+        int size = getStringOrObjectOrMapLength(argumentType, validatedValue);
 
         if (size <= 0) {
             return mkError(ruleEnvironment, directive, mkMessageParams(
                     "size", size,
-                    "fieldOrArgumentValue", argumentValue));
+                    "validatedValue", validatedValue));
         }
         return Collections.emptyList();
     }

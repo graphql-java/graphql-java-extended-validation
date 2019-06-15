@@ -29,6 +29,7 @@ import graphql.validation.directives.standardrules.NotEmptyRule;
 import graphql.validation.directives.standardrules.PatternRule;
 import graphql.validation.directives.standardrules.PositiveOrZeroRule;
 import graphql.validation.directives.standardrules.PositiveRule;
+import graphql.validation.directives.standardrules.RangeRule;
 import graphql.validation.directives.standardrules.SizeRule;
 import graphql.validation.rules.ValidationRule;
 import graphql.validation.rules.ValidationRuleEnvironment;
@@ -63,6 +64,7 @@ public class DirectiveValidationRules implements ValidationRule {
             new PatternRule(),
             new PositiveOrZeroRule(),
             new PositiveRule(),
+            new RangeRule(),
             new SizeRule()
     );
 
@@ -114,7 +116,7 @@ public class DirectiveValidationRules implements ValidationRule {
     public List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment) {
 
         GraphQLArgument argument = ruleEnvironment.getArgument();
-        Object argumentValue = ruleEnvironment.getFieldOrArgumentValue();
+        Object validatedValue = ruleEnvironment.getValidatedValue();
         List<GraphQLDirective> directives = argument.getDirectives();
         if (directives.isEmpty()) {
             return Collections.emptyList();
@@ -127,11 +129,11 @@ public class DirectiveValidationRules implements ValidationRule {
         GraphQLInputType inputType = Util.unwrapNonNull(ruleEnvironment.getFieldOrArgumentType());
         ruleEnvironment = ruleEnvironment.transform(b -> b.fieldOrArgumentType(inputType));
 
-        return runValidationImpl(ruleEnvironment, inputType, argumentValue, directives);
+        return runValidationImpl(ruleEnvironment, inputType, validatedValue, directives);
     }
 
     @SuppressWarnings("unchecked")
-    private List<GraphQLError> runValidationImpl(ValidationRuleEnvironment ruleEnvironment, GraphQLInputType inputType, Object argumentValue, List<GraphQLDirective> directives) {
+    private List<GraphQLError> runValidationImpl(ValidationRuleEnvironment ruleEnvironment, GraphQLInputType inputType, Object validatedValue, List<GraphQLDirective> directives) {
         List<GraphQLError> errors = new ArrayList<>();
         for (GraphQLDirective directive : directives) {
             DirectiveValidationRule validationRule = directiveRules.get(directive.getName());
@@ -150,21 +152,21 @@ public class DirectiveValidationRules implements ValidationRule {
             errors.addAll(ruleErrors);
         }
 
-        if (argumentValue == null) {
+        if (validatedValue == null) {
             return errors;
         }
 
         inputType = (GraphQLInputType) GraphQLTypeUtil.unwrapNonNull(inputType);
 
         if (GraphQLTypeUtil.isList(inputType)) {
-            List<Object> values = new ArrayList<>(FpKit.toCollection(argumentValue));
+            List<Object> values = new ArrayList<>(FpKit.toCollection(validatedValue));
             List<GraphQLError> ruleErrors = walkListArg(ruleEnvironment, (GraphQLList) inputType, values);
             errors.addAll(ruleErrors);
         }
 
         if (inputType instanceof GraphQLInputObjectType) {
-            if (argumentValue instanceof Map) {
-                Map<String, Object> objectValue = (Map<String, Object>) argumentValue;
+            if (validatedValue instanceof Map) {
+                Map<String, Object> objectValue = (Map<String, Object>) validatedValue;
                 List<GraphQLError> ruleErrors = walkObjectArg(ruleEnvironment, (GraphQLInputObjectType) inputType, objectValue);
                 errors.addAll(ruleErrors);
             } else {
@@ -181,8 +183,8 @@ public class DirectiveValidationRules implements ValidationRule {
 
             GraphQLInputType fieldType = inputField.getType();
             List<GraphQLDirective> directives = inputField.getDirectives();
-            Object argumentValue = objectMap.getOrDefault(inputField.getName(), inputField.getDefaultValue());
-            if (argumentValue == null) {
+            Object validatedValue = objectMap.getOrDefault(inputField.getName(), inputField.getDefaultValue());
+            if (validatedValue == null) {
                 continue;
             }
 
@@ -190,11 +192,11 @@ public class DirectiveValidationRules implements ValidationRule {
 
             ValidationRuleEnvironment newRuleEnvironment = ruleEnvironment.transform(builder -> builder
                     .fieldOrArgumentPath(fieldOrArgPath)
-                    .fieldOrArgumentValue(argumentValue)
+                    .validatedValue(validatedValue)
                     .fieldOrArgumentType(fieldType)
             );
 
-            List<GraphQLError> ruleErrors = runValidationImpl(newRuleEnvironment, fieldType, argumentValue, directives);
+            List<GraphQLError> ruleErrors = runValidationImpl(newRuleEnvironment, fieldType, validatedValue, directives);
             errors.addAll(ruleErrors);
         }
         return errors;
@@ -217,7 +219,7 @@ public class DirectiveValidationRules implements ValidationRule {
 
             ValidationRuleEnvironment newRuleEnvironment = ruleEnvironment.transform(builder -> builder
                     .fieldOrArgumentPath(fieldOrArgPath)
-                    .fieldOrArgumentValue(value)
+                    .validatedValue(value)
                     .fieldOrArgumentType(listItemType)
             );
 

@@ -48,11 +48,11 @@ public class PatternRule extends AbstractDirectiveValidationRule {
 
     @Override
     public List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment) {
-        Object argumentValue = ruleEnvironment.getFieldOrArgumentValue();
-        if (argumentValue == null) {
+        Object validatedValue = ruleEnvironment.getValidatedValue();
+        if (validatedValue == null) {
             return emptyList();
         }
-        String strValue = String.valueOf(argumentValue);
+        String strValue = String.valueOf(validatedValue);
 
         GraphQLDirective directive = ruleEnvironment.getContextObject(GraphQLDirective.class);
 
@@ -63,7 +63,7 @@ public class PatternRule extends AbstractDirectiveValidationRule {
         if (!matcher.matches()) {
             return mkError(ruleEnvironment, directive, mkMessageParams(
                     "regexp", patternArg,
-                    "fieldOrArgumentValue", argumentValue));
+                    "validatedValue", validatedValue));
         }
         return emptyList();
     }

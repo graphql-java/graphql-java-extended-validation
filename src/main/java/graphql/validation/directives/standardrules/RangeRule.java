@@ -13,25 +13,27 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static graphql.Scalars.GraphQLString;
 import static java.util.stream.Collectors.toList;
 
-public class DigitsRule extends AbstractDirectiveValidationRule {
+public class RangeRule extends AbstractDirectiveValidationRule {
 
-    public DigitsRule() {
-        super("Digits");
+    public RangeRule() {
+        super("Range");
     }
+
 
     @Override
     public String getDirectiveDeclarationSDL() {
-        return String.format("directive @Digits(integer : Int!, fraction : Int!, message : String = \"%s\") " +
+        return String.format("directive @Range(min : Int = 0, max : Int = %d, message : String = \"%s\") " +
                         "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
-                "graphql.validation.Digits.message");
+                Integer.MAX_VALUE, "graphql.validation.Range.message");
     }
 
     @Override
     public boolean appliesToType(GraphQLInputType inputType) {
         return isOneOfTheseTypes(inputType,
-                Scalars.GraphQLString,
+                GraphQLString,
                 Scalars.GraphQLByte,
                 Scalars.GraphQLShort,
                 Scalars.GraphQLInt,
@@ -44,7 +46,7 @@ public class DigitsRule extends AbstractDirectiveValidationRule {
 
     @Override
     public List<String> getApplicableTypeNames() {
-        return Stream.of(Scalars.GraphQLString,
+        return Stream.of(GraphQLString,
                 Scalars.GraphQLByte,
                 Scalars.GraphQLShort,
                 Scalars.GraphQLInt,
@@ -58,41 +60,48 @@ public class DigitsRule extends AbstractDirectiveValidationRule {
 
     @Override
     public String getDescription() {
-        return "The element must be a number inside the specified `integer` and `fraction` range.";
+        return "The element range must be between the specified `min` and `max` boundaries (inclusive).  It " +
+                "accepts numbers and strings that represent numerical values.";
     }
 
     @Override
     public List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment) {
+
         Object validatedValue = ruleEnvironment.getValidatedValue();
+        //null values are valid
         if (validatedValue == null) {
             return Collections.emptyList();
         }
 
         GraphQLDirective directive = ruleEnvironment.getContextObject(GraphQLDirective.class);
-        int maxIntegerLength = getIntArg(directive, "integer");
-        int maxFractionLength = getIntArg(directive, "fraction");
+        BigDecimal min = asBigDecimal(getIntArg(directive, "min"));
+        BigDecimal max = asBigDecimal(getIntArg(directive, "max"));
 
-        boolean isOk;
+        boolean isOK;
         try {
-            BigDecimal bigNum = asBigDecimal(validatedValue);
-            isOk = isOk(bigNum, maxIntegerLength, maxFractionLength);
-        } catch (NumberFormatException e) {
-            isOk = false;
+            BigDecimal argBD = asBigDecimal(validatedValue);
+            isOK = isOK(argBD, min, max);
+        } catch (NumberFormatException nfe) {
+            isOK = false;
         }
 
-        if (!isOk) {
+        if (!isOK) {
             return mkError(ruleEnvironment, directive, mkMessageParams(
-                    "integer", maxIntegerLength,
-                    "fraction", maxFractionLength,
+                    "min", min,
+                    "max", max,
                     "validatedValue", validatedValue));
+
         }
         return Collections.emptyList();
     }
 
-    private boolean isOk(BigDecimal bigNum, int maxIntegerLength, int maxFractionLength) {
-        int integerPartLength = bigNum.precision() - bigNum.scale();
-        int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
-
-        return maxIntegerLength >= integerPartLength && maxFractionLength >= fractionPartLength;
+    private boolean isOK(BigDecimal argBD, BigDecimal min, BigDecimal max) {
+        if (argBD.compareTo(max) > 0) {
+            return false;
+        }
+        if (argBD.compareTo(min) < 0) {
+            return false;
+        }
+        return true;
     }
 }

@@ -50,9 +50,9 @@ abstract class AbstractPositiveNegativeRule extends AbstractDirectiveValidationR
 
     @Override
     public List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment) {
-        Object argumentValue = ruleEnvironment.getFieldOrArgumentValue();
+        Object validatedValue = ruleEnvironment.getValidatedValue();
         //null values are valid
-        if (argumentValue == null) {
+        if (validatedValue == null) {
             return Collections.emptyList();
         }
 
@@ -60,7 +60,7 @@ abstract class AbstractPositiveNegativeRule extends AbstractDirectiveValidationR
 
         boolean isOK;
         try {
-            BigDecimal bigDecimal = asBigDecimal(argumentValue);
+            BigDecimal bigDecimal = asBigDecimal(validatedValue);
             isOK = isOK(bigDecimal);
         } catch (NumberFormatException nfe) {
             isOK = false;
@@ -68,7 +68,7 @@ abstract class AbstractPositiveNegativeRule extends AbstractDirectiveValidationR
 
         if (!isOK) {
             return mkError(ruleEnvironment, directive, mkMessageParams(
-                    "fieldOrArgumentValue", argumentValue));
+                    "validatedValue", validatedValue));
 
         }
         return Collections.emptyList();
