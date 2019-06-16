@@ -12,11 +12,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
  * ValidationRules is a holder of {@link graphql.validation.rules.ValidationRule}s against a specific
- * type, field nad possible argument aka {@link ValidationCoordinates}
+ * type, field and possible argument via {@link ValidationCoordinates}
  */
 @PublicApi
 public class ValidationRules {
@@ -35,7 +36,7 @@ public class ValidationRules {
         return rulesMap.isEmpty();
     }
 
-    public List<GraphQLError> runValidationRules(DataFetchingEnvironment env, MessageInterpolator interpolator) {
+    public List<GraphQLError> runValidationRules(DataFetchingEnvironment env, MessageInterpolator interpolator, Locale locale) {
 
         List<GraphQLError> errors = new ArrayList<>();
 
@@ -53,11 +54,12 @@ public class ValidationRules {
 
             Object argValue = env.getArgument(fieldArg.getName());
 
-            ValidationRuleEnvironment ruleEnvironment = ValidationRuleEnvironment.newValidationRuleEnvironment()
+            ValidationEnvironment ruleEnvironment = ValidationEnvironment.newValidationEnvironment()
                     .dataFetchingEnvironment(env)
                     .argument(fieldArg)
                     .validatedValue(argValue)
                     .messageInterpolator(interpolator)
+                    .locale(locale)
                     .build();
 
             for (ValidationRule rule : rules) {
@@ -71,7 +73,7 @@ public class ValidationRules {
 
         List<ValidationRule> rules = rulesMap.getOrDefault(fieldCoords, Collections.emptyList());
         if (!rules.isEmpty()) {
-            ValidationRuleEnvironment ruleEnvironment = ValidationRuleEnvironment.newValidationRuleEnvironment()
+            ValidationEnvironment ruleEnvironment = ValidationEnvironment.newValidationEnvironment()
                     .dataFetchingEnvironment(env)
                     .messageInterpolator(interpolator)
                     .build();

@@ -21,47 +21,6 @@ public class ValidationCoordinates {
         this.argName = argName;
     }
 
-    public String getContainerType() {
-        return containerType;
-    }
-
-    public String getFieldName() {
-        return fieldName;
-    }
-
-    public String getArgName() {
-        return argName;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        ValidationCoordinates that = (ValidationCoordinates) o;
-
-        return Objects.equals(this.getContainerType(), that.getContainerType()) && Objects.equals(this.getFieldName(), that.getFieldName()) && Objects.equals(this.getArgName(), that.getArgName());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getContainerType(), getFieldName(), getArgName());
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", this.getClass().getSimpleName() + "[", "]")
-                .add("containerType=" + getContainerType())
-                .add("fieldName=" + getFieldName())
-                .add("argName=" + getArgName())
-                .toString();
-    }
-
-
     public static ValidationCoordinates newCoordinates(GraphQLFieldsContainer fieldsContainer, GraphQLFieldDefinition fieldDefinition, GraphQLArgument fieldArg) {
         return new ValidationCoordinates(
                 fieldsContainer.getName(),
@@ -92,5 +51,41 @@ public class ValidationCoordinates {
                 fieldDefinition,
                 null
         );
+    }
+
+    public String getContainerType() {
+        return containerType;
+    }
+
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    public String getArgName() {
+        return argName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ValidationCoordinates that = (ValidationCoordinates) o;
+        return Objects.equals(containerType, that.containerType) &&
+                Objects.equals(fieldName, that.fieldName) &&
+                Objects.equals(argName, that.argName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(containerType, fieldName, argName);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", this.getClass().getSimpleName() + "[", "]")
+                .add("containerType=" + getContainerType())
+                .add("fieldName=" + getFieldName())
+                .add("argName=" + getArgName())
+                .toString();
     }
 }

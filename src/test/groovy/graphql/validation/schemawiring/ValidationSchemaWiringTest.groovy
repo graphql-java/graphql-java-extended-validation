@@ -4,7 +4,7 @@ package graphql.validation.schemawiring
 import graphql.GraphQL
 import graphql.schema.idl.RuntimeWiring
 import graphql.validation.TestUtil
-import graphql.validation.directives.DirectiveValidationRules
+import graphql.validation.constraints.DirectiveConstraints
 import graphql.validation.rules.PossibleValidationRules
 import spock.lang.Specification
 
@@ -13,7 +13,11 @@ class ValidationSchemaWiringTest extends Specification {
 
     def "integration test"() {
 
-        def sdl = '''
+        def directiveRules = DirectiveConstraints.newDirectiveConstraints().build()
+
+        def sdl = """
+
+            ${directiveRules.directivesDeclarationSDL}
 
             type Car {
                 model : String
@@ -28,12 +32,12 @@ class ValidationSchemaWiringTest extends Specification {
 
 
             type Query {
-                cars(filter : CarFilter) : [Cars]
+                cars(filter : CarFilter) : [Car]
             }
             
-        '''
+        """
 
-        def directiveRules = DirectiveValidationRules.newDirectiveValidationRules().build()
+
         PossibleValidationRules possibleRules = PossibleValidationRules.newPossibleRules()
                 .addRule(directiveRules)
                 .build()
@@ -51,9 +55,12 @@ class ValidationSchemaWiringTest extends Specification {
                     model
                     make
                 }
+            }
         ''')
 
         then:
         !er.errors.isEmpty()
+        println er.errors
+        println er.errors[0].message
     }
 }

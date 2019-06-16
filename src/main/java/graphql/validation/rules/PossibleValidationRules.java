@@ -5,11 +5,15 @@ import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLFieldsContainer;
 import graphql.validation.interpolation.MessageInterpolator;
+import graphql.validation.interpolation.ResourceBundleMessageInterpolator;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
+
+import static graphql.Assert.assertNotNull;
 
 /**
  * {@link PossibleValidationRules} is a simple holder of possible rules
@@ -22,11 +26,13 @@ public class PossibleValidationRules {
     private final OnValidationErrorStrategy onValidationErrorStrategy;
     private final List<ValidationRule> rules;
     private final MessageInterpolator messageInterpolator;
+    private final Locale locale;
 
     private PossibleValidationRules(Builder builder) {
         this.rules = Collections.unmodifiableList(builder.rules);
         this.messageInterpolator = builder.messageInterpolator;
         this.onValidationErrorStrategy = builder.onValidationErrorStrategy;
+        this.locale = builder.locale;
     }
 
     public static Builder newPossibleRules() {
@@ -35,6 +41,10 @@ public class PossibleValidationRules {
 
     public MessageInterpolator getMessageInterpolator() {
         return messageInterpolator;
+    }
+
+    public Locale getLocale() {
+        return locale;
     }
 
     public List<ValidationRule> getRules() {
@@ -75,22 +85,28 @@ public class PossibleValidationRules {
     }
 
     public static class Builder {
+        private Locale locale;
         private OnValidationErrorStrategy onValidationErrorStrategy = OnValidationErrorStrategy.RETURN_NULL;
-        private MessageInterpolator messageInterpolator;
+        private MessageInterpolator messageInterpolator = new ResourceBundleMessageInterpolator();
         private List<ValidationRule> rules = new ArrayList<>();
 
         public Builder addRule(ValidationRule rule) {
-            rules.add(rule);
+            rules.add(assertNotNull(rule));
             return this;
         }
 
         public Builder messageInterpolator(MessageInterpolator messageInterpolator) {
-            this.messageInterpolator = messageInterpolator;
+            this.messageInterpolator = assertNotNull(messageInterpolator);
+            return this;
+        }
+
+        public Builder messageInterpolator(Locale locale) {
+            this.locale = locale;
             return this;
         }
 
         public Builder onValidationErrorStrategy(OnValidationErrorStrategy onValidationErrorStrategy) {
-            this.onValidationErrorStrategy = onValidationErrorStrategy;
+            this.onValidationErrorStrategy = assertNotNull(onValidationErrorStrategy);
             return this;
         }
 

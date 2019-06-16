@@ -3,7 +3,6 @@ import org.hibernate.validator.internal.engine.MessageInterpolatorContext;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
-import org.hibernate.validator.internal.metadata.location.ConstraintLocation;
 import org.hibernate.validator.internal.util.annotation.ConstraintAnnotationDescriptor;
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 
@@ -15,6 +14,7 @@ import javax.el.ValueExpression;
 import javax.validation.MessageInterpolator;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.lang.annotation.ElementType;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -79,20 +79,23 @@ public class ELDiscover {
         ConstraintAnnotationDescriptor.Builder<NotNull> constraintBuilder
                 = new ConstraintAnnotationDescriptor.Builder<>(NotNull.class, attributes);
 
-//        ConstraintDescriptorImpl<NotNull> constraintDescriptor = new ConstraintDescriptorImpl<>(
-//                new ConstraintHelper(),
-//                null,
-//                constraintBuilder.build(),
-//                ElementType.FIELD
-//        );
-
         ConstraintDescriptorImpl<NotNull> constraintDescriptor = new ConstraintDescriptorImpl<>(
                 new ConstraintHelper(),
                 null,
                 constraintBuilder.build(),
-                ConstraintLocation.ConstraintLocationKind.FIELD,
-                ConstraintDescriptorImpl.ConstraintType.GENERIC
+                ElementType.FIELD
         );
+
+//
+// THIS IS THE ALPHA CODE API
+//
+//        ConstraintDescriptorImpl<NotNull> constraintDescriptor = new ConstraintDescriptorImpl<>(
+//                new ConstraintHelper(),
+//                null,
+//                constraintBuilder.build(),
+//                ConstraintLocation.ConstraintLocationKind.FIELD,
+//                ConstraintDescriptorImpl.ConstraintType.GENERIC
+//        );
 
         //        ConstraintDescriptorImpl<NotNull> constraintDescriptor = new ConstraintDescriptorImpl<>(
 //                new ConstraintHelper(),
@@ -109,13 +112,16 @@ public class ELDiscover {
         PathImpl rootPath = PathImpl.createRootPath();
 
         MessageInterpolator.Context context = new MessageInterpolatorContext(
-                constraintDescriptor,
-                user,
-                null,
-                rootPath,
-                Collections.<String, Object>emptyMap(),
-                Collections.<String, Object>emptyMap()
-        );
+                constraintDescriptor,user,null,Collections.emptyMap(),Collections.emptyMap());
+
+//        MessageInterpolator.Context context = new MessageInterpolatorContext(
+//                constraintDescriptor,
+//                user,
+//                null,
+//                rootPath,
+//                Collections.<String, Object>emptyMap(),
+//                Collections.<String, Object>emptyMap()
+//        );
 
 
         print("${validatedValue.age}", messageInterpolator, context);

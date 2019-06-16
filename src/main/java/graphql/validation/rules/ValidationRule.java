@@ -9,7 +9,7 @@ import graphql.schema.GraphQLFieldsContainer;
 import java.util.List;
 
 /**
- * A validation rule is code that can be applied inside a {@link graphql.validation.rules.ValidationRuleEnvironment} and produce
+ * A validation rule is code that can be applied inside a {@link ValidationEnvironment} and produce
  * a list of zero or more {@link graphql.GraphQLError}s as validation.
  */
 @PublicSpi
@@ -39,9 +39,9 @@ public interface ValidationRule {
     /**
      * This is called to runs the rule
      *
-     * @param ruleEnvironment the rule environment
+     * @param validationEnvironment the validation environment
      *
      * @return a non null list of errors where emptyList() means its valid
      */
-    List<GraphQLError> runValidation(ValidationRuleEnvironment ruleEnvironment);
+    List<GraphQLError> runValidation(ValidationEnvironment validationEnvironment);
 }

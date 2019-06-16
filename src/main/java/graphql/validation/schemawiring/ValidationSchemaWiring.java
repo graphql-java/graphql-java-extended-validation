@@ -14,6 +14,7 @@ import graphql.validation.rules.ValidationRules;
 import graphql.validation.util.Util;
 
 import java.util.List;
+import java.util.Locale;
 
 @PublicApi
 public class ValidationSchemaWiring implements SchemaDirectiveWiring {
@@ -36,19 +37,22 @@ public class ValidationSchemaWiring implements SchemaDirectiveWiring {
 
         OnValidationErrorStrategy errorStrategy = ruleCandidates.getOnValidationErrorStrategy();
         MessageInterpolator messageInterpolator = ruleCandidates.getMessageInterpolator();
+        Locale locale = ruleCandidates.getLocale();
 
         final DataFetcher currentDF = env.getCodeRegistry().getDataFetcher(fieldsContainer, fieldDefinition);
-        final DataFetcher newDF = buildValidatingDataFetcher(rules, errorStrategy, messageInterpolator, currentDF);
+        final DataFetcher newDF = buildValidatingDataFetcher(rules, errorStrategy, messageInterpolator, currentDF, locale);
 
         env.getCodeRegistry().dataFetcher(fieldsContainer, fieldDefinition, newDF);
 
         return fieldDefinition;
     }
 
-    private DataFetcher buildValidatingDataFetcher(ValidationRules rules, OnValidationErrorStrategy errorStrategy, MessageInterpolator messageInterpolator, DataFetcher currentDF) {
+    private DataFetcher buildValidatingDataFetcher(ValidationRules rules, OnValidationErrorStrategy errorStrategy, MessageInterpolator messageInterpolator, DataFetcher currentDF, Locale locale) {
         // ok we have some rules that need to be applied to this field and its arguments
         return environment -> {
-            List<GraphQLError> errors = rules.runValidationRules(environment, messageInterpolator);
+            // TODO - get the Local from the DFE instead of statically - this needs to go into graphql-java however
+
+            List<GraphQLError> errors = rules.runValidationRules(environment, messageInterpolator, locale);
             if (!errors.isEmpty()) {
                 // should we continue?
                 if (!errorStrategy.shouldContinue(errors, environment)) {
