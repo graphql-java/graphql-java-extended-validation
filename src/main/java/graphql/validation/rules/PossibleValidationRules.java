@@ -11,8 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static graphql.validation.rules.ArgumentCoordinates.newArgumentCoordinates;
-
 /**
  * {@link PossibleValidationRules} is a simple holder of possible rules
  * and you can then pass it field and arguments and narrow down the list of actual rules
@@ -31,7 +29,7 @@ public class PossibleValidationRules {
         this.onValidationErrorStrategy = builder.onValidationErrorStrategy;
     }
 
-    public static Builder newValidationRuleCandidates() {
+    public static Builder newPossibleRules() {
         return new Builder();
     }
 
@@ -47,13 +45,18 @@ public class PossibleValidationRules {
         return onValidationErrorStrategy;
     }
 
-    public ValidationRules getRulesFor(GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
+    public ValidationRules buildRulesFor(GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
         ValidationRules.Builder rulesBuilder = ValidationRules.newValidationRules();
+
+        ValidationCoordinates fieldCoordinates = ValidationCoordinates.newCoordinates(fieldsContainer, fieldDefinition);
+        List<ValidationRule> fieldRules = getRulesFor(fieldDefinition, fieldsContainer);
+        rulesBuilder.addRules(fieldCoordinates, fieldRules);
+
         for (GraphQLArgument fieldArg : fieldDefinition.getArguments()) {
-            ArgumentCoordinates argumentCoordinates = newArgumentCoordinates(fieldsContainer, fieldDefinition, fieldArg);
+            ValidationCoordinates validationCoordinates = ValidationCoordinates.newCoordinates(fieldsContainer, fieldDefinition, fieldArg);
 
             List<ValidationRule> rules = getRulesFor(fieldArg, fieldDefinition, fieldsContainer);
-            rulesBuilder.addRules(argumentCoordinates, rules);
+            rulesBuilder.addRules(validationCoordinates, rules);
         }
 
         return rulesBuilder.build();
@@ -61,7 +64,13 @@ public class PossibleValidationRules {
 
     public List<ValidationRule> getRulesFor(GraphQLArgument fieldArg, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
         return rules.stream()
-                .filter(rule -> rule.appliesToType(fieldArg, fieldDefinition, fieldsContainer))
+                .filter(rule -> rule.appliesTo(fieldArg, fieldDefinition, fieldsContainer))
+                .collect(Collectors.toList());
+    }
+
+    public List<ValidationRule> getRulesFor(GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
+        return rules.stream()
+                .filter(rule -> rule.appliesTo(fieldDefinition, fieldsContainer))
                 .collect(Collectors.toList());
     }
 

@@ -9,16 +9,16 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 @PublicApi
-public class ArgumentCoordinates {
+public class ValidationCoordinates {
 
     private final String containerType;
     private final String fieldName;
     private final String argName;
 
-    public ArgumentCoordinates(String containerType, String fieldName, String argName) {
+    public ValidationCoordinates(String containerType, String fieldName, String argName) {
         this.containerType = Objects.requireNonNull(containerType);
         this.fieldName = Objects.requireNonNull(fieldName);
-        this.argName = Objects.requireNonNull(argName);
+        this.argName = argName;
     }
 
     public String getContainerType() {
@@ -42,7 +42,7 @@ public class ArgumentCoordinates {
             return false;
         }
 
-        ArgumentCoordinates that = (ArgumentCoordinates) o;
+        ValidationCoordinates that = (ValidationCoordinates) o;
 
         return Objects.equals(this.getContainerType(), that.getContainerType()) && Objects.equals(this.getFieldName(), that.getFieldName()) && Objects.equals(this.getArgName(), that.getArgName());
     }
@@ -62,19 +62,35 @@ public class ArgumentCoordinates {
     }
 
 
-    public static ArgumentCoordinates newArgumentCoordinates(GraphQLFieldsContainer fieldsContainer, GraphQLFieldDefinition fieldDefinition, GraphQLArgument fieldArg) {
-        return new ArgumentCoordinates(
+    public static ValidationCoordinates newCoordinates(GraphQLFieldsContainer fieldsContainer, GraphQLFieldDefinition fieldDefinition, GraphQLArgument fieldArg) {
+        return new ValidationCoordinates(
                 fieldsContainer.getName(),
                 fieldDefinition.getName(),
                 fieldArg.getName()
         );
     }
 
-    public static ArgumentCoordinates newArgumentCoordinates(String fieldsContainer, String fieldDefinition, String fieldArg) {
-        return new ArgumentCoordinates(
+    public static ValidationCoordinates newCoordinates(GraphQLFieldsContainer fieldsContainer, GraphQLFieldDefinition fieldDefinition) {
+        return new ValidationCoordinates(
+                fieldsContainer.getName(),
+                fieldDefinition.getName(),
+                null
+        );
+    }
+
+    public static ValidationCoordinates newCoordinates(String fieldsContainer, String fieldDefinition, String fieldArg) {
+        return new ValidationCoordinates(
                 fieldsContainer,
                 fieldDefinition,
                 fieldArg
+        );
+    }
+
+    public static ValidationCoordinates newCoordinates(String fieldsContainer, String fieldDefinition) {
+        return new ValidationCoordinates(
+                fieldsContainer,
+                fieldDefinition,
+                null
         );
     }
 }

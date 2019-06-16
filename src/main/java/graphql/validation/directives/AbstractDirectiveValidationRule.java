@@ -11,6 +11,7 @@ import graphql.schema.GraphQLFieldsContainer;
 import graphql.schema.GraphQLInputObjectType;
 import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLScalarType;
+import graphql.schema.GraphQLTypeUtil;
 import graphql.validation.rules.ValidationRuleEnvironment;
 import graphql.validation.util.Util;
 
@@ -39,9 +40,31 @@ public abstract class AbstractDirectiveValidationRule implements DirectiveValida
     }
 
     @Override
-    public boolean appliesToType(GraphQLArgument argument, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
-        return appliesToType(Util.unwrapNonNull(argument.getType()));
+    public boolean appliesTo(GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
+        return false;
     }
+
+    @Override
+    public boolean appliesTo(GraphQLArgument argument, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
+
+        return DirectivesAndTypeWalker.isSuitable(argument, (inputType, directive) -> {
+            boolean hasNamedDirective = directive.getName().equals(this.getName());
+            if (hasNamedDirective) {
+                inputType = Util.unwrapNonNull(inputType);
+                boolean appliesToType = appliesToType(inputType);
+                if (appliesToType) {
+                    return true;
+                }
+                // if they have a @Directive on there BUT it cant handle that type
+                // then is a really bad situation
+                String argType = GraphQLTypeUtil.simplePrint(inputType);
+                Assert.assertShouldNeverHappen("The directive rule '%s' cannot be placed on elements of type '%s'", this.getName(), argType);
+            }
+            return false;
+        });
+    }
+
+    abstract protected boolean appliesToType(GraphQLInputType inputType);
 
     /**
      * Returns true of the input type is one of the specified scalar types, regardless of non null ness

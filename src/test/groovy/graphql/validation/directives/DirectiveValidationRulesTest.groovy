@@ -1,7 +1,7 @@
 package graphql.validation.directives
 
-
 import graphql.AssertException
+import graphql.validation.directives.standardrules.SizeRule
 import graphql.validation.rules.ValidationRuleEnvironment
 import spock.lang.Unroll
 
@@ -12,7 +12,7 @@ class DirectiveValidationRulesTest extends BaseDirectiveRuleTest {
         def rules = DirectiveValidationRules.newDirectiveValidationRules().build()
 
         then:
-        rules.getDirectiveRules().size() == 15
+        rules.getDirectiveRules().size() == 16
 
         when:
         rules = DirectiveValidationRules.newDirectiveValidationRules().clearRules().build()
@@ -67,20 +67,79 @@ class DirectiveValidationRulesTest extends BaseDirectiveRuleTest {
     }
 
     @Unroll
+    def "can check that it applies to arg types"() {
+
+        def extraSDL = '''
+            input ProductItem {
+                code : String @Size(max : 5)
+                price : String @Size(max : 3)
+            }
+
+            input Product {
+                name : String @Size(max : 7)
+                items : [ProductItem!]! # crazy nulls
+                crazyItems : [[[ProductItem!]!]] # nuts but can we handle it
+            }
+
+            input NoSizeDirectives {
+                age : String @Range(max : 7)
+            }
+
+        '''
+
+        def directiveValidationRules = DirectiveValidationRules.newDirectiveValidationRules()
+                .clearRules()
+                .addRule(new SizeRule()) // only size in effect - not Range
+                .build()
+
+        expect:
+
+        def schema = buildSchema(directiveValidationRules.getDirectivesDeclarationSDL(), fieldDeclaration, extraSDL)
+
+        ValidationRuleEnvironment ruleEnvironment = buildEnv("Size", schema, "testArg", null)
+
+        def argument = ruleEnvironment.getArgument()
+        def fieldDefinition = ruleEnvironment.getFieldDefinition()
+        def container = ruleEnvironment.getFieldsContainer()
+        def appliesTo = directiveValidationRules.appliesTo(argument, fieldDefinition, container)
+
+        assert expected == appliesTo, "expected " + expected + " for " + fieldDeclaration
+
+        where:
+
+        fieldDeclaration                                    | expected
+        "field( testArg : NoSizeDirectives ) : ID"          | false
+        "field( testArg : String ) : ID"                    | false
+
+        "field( testArg : [Product!] @Size(max : 2) ) : ID" | true
+        "field( testArg : Product! @Size(max : 2) ) : ID"   | true
+        "field( testArg : [Product!] ) : ID"                | true
+        "field( testArg : String @Size(max : 2) ) : ID"     | true
+    }
+
+
+    @Unroll
     def "exception if constraint on the wrong type"() {
 
 
-        def directiveValidationRules = DirectiveValidationRules.newDirectiveValidationRules().build()
+        def directiveValidationRules = DirectiveValidationRules.newDirectiveValidationRules()
+                .clearRules()
+                .addRule(new SizeRule())
+                .build()
 
         expect:
 
         def schema = buildSchema(directiveValidationRules.getDirectivesDeclarationSDL(), fieldDeclaration, "")
 
-        ValidationRuleEnvironment ruleEnvironment = buildEnv("Size", schema, "testArg", "x")
+        ValidationRuleEnvironment ruleEnvironment = buildEnv("Size", schema, "testArg", null)
+
+        def argument = ruleEnvironment.getArgument()
+        def fieldDefinition = ruleEnvironment.getFieldDefinition()
+        def container = ruleEnvironment.getFieldsContainer()
 
         try {
-            directiveValidationRules.runValidation(ruleEnvironment)
-            assert false, "Expected assertion to be thrown"
+            directiveValidationRules.appliesTo(argument, fieldDefinition, container)
+            assert false, "This should assert"
         } catch (AssertException ignored) {
         }
 

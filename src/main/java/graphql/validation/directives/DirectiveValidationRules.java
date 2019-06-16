@@ -91,24 +91,25 @@ public class DirectiveValidationRules implements ValidationRule {
     }
 
     @Override
-    public boolean appliesToType(GraphQLArgument argument, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
-        return argument.getDirectives().stream().anyMatch(d -> oneOfOurs(d, argument));
-    }
-
-    private boolean oneOfOurs(GraphQLDirective directive, GraphQLArgument argument) {
-        DirectiveValidationRule rule = directiveRules.get(directive.getName());
-        if (rule != null) {
-            return rule.appliesToType(argument.getType());
+    public boolean appliesTo(GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
+        for (DirectiveValidationRule directiveRule : directiveRules.values()) {
+            boolean applies = directiveRule.appliesTo(fieldDefinition, fieldsContainer);
+            if (applies) {
+                return true;
+            }
         }
         return false;
     }
 
-    private void assertDirectiveOnTheRightType(DirectiveValidationRule directiveRule, GraphQLInputType inputType) {
-        boolean applicable = directiveRule.appliesToType(inputType);
-        if (!applicable) {
-            String argType = GraphQLTypeUtil.simplePrint(inputType);
-            Assert.assertShouldNeverHappen("The directive %s cannot be placed on arguments of type %s", directiveRule.getName(), argType);
+    @Override
+    public boolean appliesTo(GraphQLArgument argument, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
+        for (DirectiveValidationRule directiveRule : directiveRules.values()) {
+            boolean applies = directiveRule.appliesTo(argument, fieldDefinition, fieldsContainer);
+            if (applies) {
+                return true;
+            }
         }
+        return false;
     }
 
     @SuppressWarnings("unchecked")
@@ -118,9 +119,6 @@ public class DirectiveValidationRules implements ValidationRule {
         GraphQLArgument argument = ruleEnvironment.getArgument();
         Object validatedValue = ruleEnvironment.getValidatedValue();
         List<GraphQLDirective> directives = argument.getDirectives();
-        if (directives.isEmpty()) {
-            return Collections.emptyList();
-        }
 
         //
         // all the directives validation code does NOT care for NULL ness since the graphql engine covers that.
@@ -140,10 +138,6 @@ public class DirectiveValidationRules implements ValidationRule {
             if (validationRule == null) {
                 continue;
             }
-            //
-            // double check that directive is in fact on an element it can handle
-            //
-            assertDirectiveOnTheRightType(validationRule, inputType);
 
             ruleEnvironment = ruleEnvironment.transform(b -> b.context(GraphQLDirective.class, directive));
             //

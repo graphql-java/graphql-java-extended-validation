@@ -29,7 +29,7 @@ public class ValidationSchemaWiring implements SchemaDirectiveWiring {
         GraphQLFieldsContainer fieldsContainer = env.getFieldsContainer();
         GraphQLFieldDefinition fieldDefinition = env.getFieldDefinition();
 
-        ValidationRules rules = ruleCandidates.getRulesFor(fieldDefinition, fieldsContainer);
+        ValidationRules rules = ruleCandidates.buildRulesFor(fieldDefinition, fieldsContainer);
         if (rules.isEmpty()) {
             return fieldDefinition; // no rules - no validation needed
         }

@@ -16,12 +16,12 @@ import java.util.Map;
 
 /**
  * ValidationRules is a holder of {@link graphql.validation.rules.ValidationRule}s against a specific
- * type, field and argument aka {@link graphql.validation.rules.ArgumentCoordinates}
+ * type, field nad possible argument aka {@link ValidationCoordinates}
  */
 @PublicApi
 public class ValidationRules {
 
-    private final Map<ArgumentCoordinates, List<ValidationRule>> rulesMap;
+    private final Map<ValidationCoordinates, List<ValidationRule>> rulesMap;
 
     public ValidationRules(Builder builder) {
         this.rulesMap = new HashMap<>(builder.rulesMap);
@@ -44,7 +44,7 @@ public class ValidationRules {
 
         for (GraphQLArgument fieldArg : fieldDefinition.getArguments()) {
 
-            ArgumentCoordinates argCoords = ArgumentCoordinates.newArgumentCoordinates(fieldContainer, fieldDefinition, fieldArg);
+            ValidationCoordinates argCoords = ValidationCoordinates.newCoordinates(fieldContainer, fieldDefinition, fieldArg);
 
             List<ValidationRule> rules = rulesMap.getOrDefault(argCoords, Collections.emptyList());
             if (rules.isEmpty()) {
@@ -65,14 +65,30 @@ public class ValidationRules {
                 errors.addAll(ruleErrors);
             }
         }
+
+        ValidationCoordinates fieldCoords = ValidationCoordinates.newCoordinates(fieldContainer, fieldDefinition);
+
+
+        List<ValidationRule> rules = rulesMap.getOrDefault(fieldCoords, Collections.emptyList());
+        if (!rules.isEmpty()) {
+            ValidationRuleEnvironment ruleEnvironment = ValidationRuleEnvironment.newValidationRuleEnvironment()
+                    .dataFetchingEnvironment(env)
+                    .messageInterpolator(interpolator)
+                    .build();
+
+            for (ValidationRule rule : rules) {
+                List<GraphQLError> ruleErrors = rule.runValidation(ruleEnvironment);
+                errors.addAll(ruleErrors);
+            }
+        }
         return errors;
     }
 
     public static class Builder {
-        Map<ArgumentCoordinates, List<ValidationRule>> rulesMap = new HashMap<>();
+        Map<ValidationCoordinates, List<ValidationRule>> rulesMap = new HashMap<>();
 
-        public Builder addRule(ArgumentCoordinates argCoords, ValidationRule rule) {
-            rulesMap.compute(argCoords, (key, listOfRules) -> {
+        public Builder addRule(ValidationCoordinates coordinates, ValidationRule rule) {
+            rulesMap.compute(coordinates, (key, listOfRules) -> {
                 if (listOfRules == null) {
                     listOfRules = new ArrayList<>();
                 }
@@ -82,7 +98,7 @@ public class ValidationRules {
             return this;
         }
 
-        public Builder addRules(ArgumentCoordinates argCoords, List<ValidationRule> rules) {
+        public Builder addRules(ValidationCoordinates argCoords, List<ValidationRule> rules) {
             for (ValidationRule rule : rules) {
                 addRule(argCoords, rule);
             }

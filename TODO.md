@@ -38,3 +38,24 @@ the name Constraint especially for the @directives rules
  
  Hibernate Validator uses a form of this to do message interpolation
  
+ Could this be the inter argument validation
+ 
+ ```graphql
+    field( first : Int, after : ID, last : Int, before : ID) : ObjType
+        @Expression( expr="""
+            ${ (! empty first && empty last) || (!empty last && empty first) }
+        """)
+```
+ 
+ is this powerful or not?
+ 
+ # Allow scripting
+ 
+ The Hibernate project allows scripting
+ 
+ ```graphql
+    @Script(lang : "javascript", script : "_this.startDate.before(_this.endDate)")
+
+```
+
+Could we do something similar
