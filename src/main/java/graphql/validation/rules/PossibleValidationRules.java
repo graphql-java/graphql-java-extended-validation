@@ -4,6 +4,7 @@ import graphql.PublicApi;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLFieldsContainer;
+import graphql.validation.constraints.DirectiveConstraints;
 import graphql.validation.interpolation.MessageInterpolator;
 import graphql.validation.interpolation.ResourceBundleMessageInterpolator;
 
@@ -90,8 +91,19 @@ public class PossibleValidationRules {
         private MessageInterpolator messageInterpolator = new ResourceBundleMessageInterpolator();
         private List<ValidationRule> rules = new ArrayList<>();
 
+
+        public Builder() {
+            // we start with the standard directive constraints to make us easier to use
+            addRule(DirectiveConstraints.newDirectiveConstraints().build());
+        }
+
         public Builder addRule(ValidationRule rule) {
             rules.add(assertNotNull(rule));
+            return this;
+        }
+
+        public Builder clearRules() {
+            rules.clear();
             return this;
         }
 

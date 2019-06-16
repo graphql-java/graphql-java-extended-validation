@@ -1,5 +1,9 @@
 package graphql.validation.constraints.standard;
 
+import graphql.validation.constraints.Documentation;
+
+import static graphql.Scalars.GraphQLBoolean;
+
 public class AssertTrueConstraint extends AbstractAssertConstraint {
 
     public AssertTrueConstraint() {
@@ -7,20 +11,20 @@ public class AssertTrueConstraint extends AbstractAssertConstraint {
     }
 
     @Override
-    public String getDirectiveDeclarationSDL() {
-        return String.format("directive @AssertTrue(message : String = \"%s\") " +
-                        "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
-                getMessageTemplate());
-    }
+    public Documentation getDocumentation() {
+        return Documentation.newDocumentation()
+                .messageTemplate(getMessageTemplate())
 
-    @Override
-    public String getExample() {
-        return "driver( hasLicence : Boolean @AssertTrue) : DriverDetails";
-    }
+                .description("The boolean value must be true.")
 
-    @Override
-    public String getDescription() {
-        return "The boolean value must be true.";
+                .example("driveCar( hasLicence : Boolean @AssertTrue) : DriverDetails")
+
+                .applicableTypeNames(GraphQLBoolean.getName())
+
+                .directiveSDL("directive @AssertTrue(message : String = \"%s\") " +
+                                "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
+                        getMessageTemplate())
+                .build();
     }
 
     @Override

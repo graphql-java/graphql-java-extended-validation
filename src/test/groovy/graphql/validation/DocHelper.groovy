@@ -24,21 +24,21 @@ class DocHelper {
     }
 
     private static void printConstraint(DirectiveConstraint r) {
-        def appliesTo = r.getApplicableTypeNames().collect({ s -> "`" + s + "`" }).join(", ")
+        def appliesTo = r.getDocumentation().getApplicableTypeNames().collect({ s -> "`" + s + "`" }).join(", ")
 
         PrintStream out = System.out
         out.printf("""
 ### @${r.getName()}
 
-${r.getDescription()}
+${r.getDocumentation().getDescription()}
 
-- Example : `${r.getExample()}`
+- Example : `${r.getDocumentation().getExample()}`
 
 - Applies to : ${appliesTo}
 
-- SDL : ${r.getDirectiveDeclarationSDL()}
+- SDL : ${r.getDocumentation().getDirectiveSDL()}
 
-- Message : `${r.getMessageTemplate()}`
+- Message : `${r.getDocumentation().getMessageTemplate()}`
 
 """
         )
@@ -48,7 +48,7 @@ ${r.getDescription()}
     private static void printMessage(DirectiveConstraint r) {
         PrintStream out = System.out
         out.printf("""
-        ${r.getMessageTemplate()} = 
+        ${r.getDocumentation().getMessageTemplate()} = 
         """)
     }
 

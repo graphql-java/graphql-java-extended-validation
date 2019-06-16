@@ -34,7 +34,6 @@ abstract class AbstractPositiveNegativeConstraint extends AbstractDirectiveConst
         );
     }
 
-    @Override
     public List<String> getApplicableTypeNames() {
         return Stream.of(Scalars.GraphQLByte,
                 Scalars.GraphQLShort,

@@ -1,5 +1,7 @@
 package graphql.validation.constraints.standard;
 
+import graphql.validation.constraints.Documentation;
+
 public class MaxConstraint extends AbstractMinMaxConstraint {
 
     public MaxConstraint() {
@@ -7,22 +9,21 @@ public class MaxConstraint extends AbstractMinMaxConstraint {
     }
 
     @Override
-    public String getDirectiveDeclarationSDL() {
-        return String.format("directive @Max(value : Int! = %d, message : String = \"%s\") " +
-                        "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
-                Integer.MAX_VALUE, getMessageTemplate());
-    }
+    public Documentation getDocumentation() {
+        return Documentation.newDocumentation()
+                .messageTemplate(getMessageTemplate())
 
-    @Override
-    public String getDescription() {
-        return "The element must be a number whose value must be less than or equal to the specified maximum.";
-    }
+                .description("The element must be a number whose value must be less than or equal to the specified maximum.")
 
-    @Override
-    public String getExample() {
-        return "driver( horsePower : Float @Max(value : 1000) : DriverDetails";
-    }
+                .example("driveCar( horsePower : Float @Max(value : 1000) : DriverDetails")
 
+                .applicableTypeNames(getApplicableTypeNames())
+
+                .directiveSDL("directive @Max(value : Int! = %d, message : String = \"%s\") " +
+                                "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
+                        Integer.MAX_VALUE, getMessageTemplate())
+                .build();
+    }
 
     @Override
     protected boolean isOK(int comparisonResult) {

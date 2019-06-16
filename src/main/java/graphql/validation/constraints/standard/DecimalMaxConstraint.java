@@ -1,5 +1,7 @@
 package graphql.validation.constraints.standard;
 
+import graphql.validation.constraints.Documentation;
+
 public class DecimalMaxConstraint extends AbstractDecimalMinMaxConstraint {
 
     public DecimalMaxConstraint() {
@@ -7,20 +9,20 @@ public class DecimalMaxConstraint extends AbstractDecimalMinMaxConstraint {
     }
 
     @Override
-    public String getDirectiveDeclarationSDL() {
-        return String.format("directive @DecimalMax(value : String!, inclusive : Boolean! = true, message : String = \"%s\") " +
-                        "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
-                getMessageTemplate());
-    }
+    public Documentation getDocumentation() {
+        return Documentation.newDocumentation()
+                .messageTemplate(getMessageTemplate())
 
-    @Override
-    public String getDescription() {
-        return "The element must be a number whose value must be less than or equal to the specified maximum.";
-    }
+                .description("The element must be a number whose value must be less than or equal to the specified maximum.")
 
-    @Override
-    public String getExample() {
-        return "driver( bloodAlcoholLevel : Float @DecimalMax(value : \"0.05\") : DriverDetails";
+                .example("driveCar( bloodAlcoholLevel : Float @DecimalMax(value : \"0.05\") : DriverDetails")
+
+                .applicableTypeNames(getApplicableTypeNames())
+
+                .directiveSDL("directive @DecimalMax(value : String!, inclusive : Boolean! = true, message : String = \"%s\") " +
+                                "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
+                        getMessageTemplate())
+                .build();
     }
 
     @Override

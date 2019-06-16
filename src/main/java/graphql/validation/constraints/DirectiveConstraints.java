@@ -31,8 +31,8 @@ import graphql.validation.constraints.standard.PositiveConstraint;
 import graphql.validation.constraints.standard.PositiveOrZeroConstraint;
 import graphql.validation.constraints.standard.RangeConstraint;
 import graphql.validation.constraints.standard.SizeConstraint;
-import graphql.validation.rules.ValidationRule;
 import graphql.validation.rules.ValidationEnvironment;
+import graphql.validation.rules.ValidationRule;
 import graphql.validation.util.Util;
 
 import java.util.ArrayList;
@@ -42,9 +42,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This contains a liszt of {@link graphql.validation.constraints.DirectiveConstraint}s and
+ * runs them as a group on a field and its argument values.
+ * <p>
+ * This ships with a set of standard constraints via {@link #STANDARD_CONSTRAINTS} but you can
+ * add your own implementations if you wish
+ */
 @PublicApi
 public class DirectiveConstraints implements ValidationRule {
-
 
     /**
      * These are the standard directive rules that come with the system
@@ -82,10 +88,10 @@ public class DirectiveConstraints implements ValidationRule {
         return constraints;
     }
 
-    public String getDirectivesDeclarationSDL() {
+    public String getDirectivesSDL() {
         StringBuilder sb = new StringBuilder();
-        for (DirectiveConstraint value : constraints.values()) {
-            sb.append("\n   ").append(value.getDirectiveDeclarationSDL()).append("\n");
+        for (DirectiveConstraint directiveConstraint : constraints.values()) {
+            sb.append("\n   ").append(directiveConstraint.getDocumentation().getDirectiveSDL()).append("\n");
         }
         return sb.toString();
     }

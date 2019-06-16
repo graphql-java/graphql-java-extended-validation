@@ -43,7 +43,7 @@ class DirectiveConstraintsTest extends BaseConstraintTest {
 
         expect:
 
-        def schema = buildSchema(directiveValidationRules.getDirectivesDeclarationSDL(), fieldDeclaration, extraSDL)
+        def schema = buildSchema(directiveValidationRules.getDirectivesSDL(), fieldDeclaration, extraSDL)
 
         ValidationEnvironment validationEnvironment = buildEnv("Size", schema, "testArg", argVal)
 
@@ -94,7 +94,7 @@ class DirectiveConstraintsTest extends BaseConstraintTest {
 
         expect:
 
-        def schema = buildSchema(directiveValidationRules.getDirectivesDeclarationSDL(), fieldDeclaration, extraSDL)
+        def schema = buildSchema(directiveValidationRules.getDirectivesSDL(), fieldDeclaration, extraSDL)
 
         ValidationEnvironment validationEnvironment = buildEnv("Size", schema, "testArg", null)
 
@@ -129,7 +129,7 @@ class DirectiveConstraintsTest extends BaseConstraintTest {
 
         expect:
 
-        def schema = buildSchema(directiveValidationRules.getDirectivesDeclarationSDL(), fieldDeclaration, "")
+        def schema = buildSchema(directiveValidationRules.getDirectivesSDL(), fieldDeclaration, "")
 
         ValidationEnvironment validationEnvironment = buildEnv("Size", schema, "testArg", null)
 

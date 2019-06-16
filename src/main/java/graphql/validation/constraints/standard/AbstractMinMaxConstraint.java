@@ -34,7 +34,6 @@ abstract class AbstractMinMaxConstraint extends AbstractDirectiveConstraint {
         );
     }
 
-    @Override
     public List<String> getApplicableTypeNames() {
         return Stream.of(Scalars.GraphQLByte,
                 Scalars.GraphQLShort,

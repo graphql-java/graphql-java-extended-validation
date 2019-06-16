@@ -6,6 +6,7 @@ import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLScalarType;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
+import graphql.validation.constraints.Documentation;
 import graphql.validation.rules.ValidationEnvironment;
 
 import java.math.BigDecimal;
@@ -24,10 +25,30 @@ public class RangeConstraint extends AbstractDirectiveConstraint {
 
 
     @Override
-    public String getDirectiveDeclarationSDL() {
-        return String.format("directive @Range(min : Int = 0, max : Int = %d, message : String = \"%s\") " +
-                        "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
-                Integer.MAX_VALUE, getMessageTemplate());
+    public Documentation getDocumentation() {
+        return Documentation.newDocumentation()
+                .messageTemplate(getMessageTemplate())
+
+                .description("The element range must be between the specified `min` and `max` boundaries (inclusive).  It " +
+                        "accepts numbers and strings that represent numerical values.")
+
+                .example("driver( milesTravelled : Int @Range( min : 1000, max : 100000)) : DriverDetails")
+
+                .applicableTypeNames(Stream.of(GraphQLString,
+                        Scalars.GraphQLByte,
+                        Scalars.GraphQLShort,
+                        Scalars.GraphQLInt,
+                        Scalars.GraphQLLong,
+                        Scalars.GraphQLBigDecimal,
+                        Scalars.GraphQLBigInteger,
+                        Scalars.GraphQLFloat)
+                        .map(GraphQLScalarType::getName)
+                        .collect(toList()))
+
+                .directiveSDL("directive @Range(min : Int = 0, max : Int = %d, message : String = \"%s\") " +
+                                "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
+                        Integer.MAX_VALUE, getMessageTemplate())
+                .build();
     }
 
     @Override
@@ -44,30 +65,6 @@ public class RangeConstraint extends AbstractDirectiveConstraint {
         );
     }
 
-    @Override
-    public List<String> getApplicableTypeNames() {
-        return Stream.of(GraphQLString,
-                Scalars.GraphQLByte,
-                Scalars.GraphQLShort,
-                Scalars.GraphQLInt,
-                Scalars.GraphQLLong,
-                Scalars.GraphQLBigDecimal,
-                Scalars.GraphQLBigInteger,
-                Scalars.GraphQLFloat)
-                .map(GraphQLScalarType::getName)
-                .collect(toList());
-    }
-
-    @Override
-    public String getDescription() {
-        return "The element range must be between the specified `min` and `max` boundaries (inclusive).  It " +
-                "accepts numbers and strings that represent numerical values.";
-    }
-
-    @Override
-    public String getExample() {
-        return "driver( milesTravelled : Int @Range( min : 1000, max : 100000)) : DriverDetails";
-    }
 
     @Override
     public List<GraphQLError> runValidation(ValidationEnvironment validationEnvironment) {

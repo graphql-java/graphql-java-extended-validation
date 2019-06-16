@@ -5,9 +5,9 @@ import graphql.Scalars;
 import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLInputType;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
+import graphql.validation.constraints.Documentation;
 import graphql.validation.rules.ValidationEnvironment;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,20 +25,20 @@ public class PatternConstraint extends AbstractDirectiveConstraint {
     }
 
     @Override
-    public String getDirectiveDeclarationSDL() {
-        return String.format("directive @Pattern(regexp : String! =\".*\", message : String = \"%s\") " +
-                        "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
-                getMessageTemplate());
-    }
+    public Documentation getDocumentation() {
+        return Documentation.newDocumentation()
+                .messageTemplate(getMessageTemplate())
 
-    @Override
-    public String getDescription() {
-        return "The String must match the specified regular expression, which follows the Java regular expression conventions.";
-    }
+                .description("The String must match the specified regular expression, which follows the Java regular expression conventions.")
 
-    @Override
-    public String getExample() {
-        return "updateDriver( licencePlate : String @Patttern(regex : \"[A-Z][A-Z][A-Z]-[0-9][0-9][0-9]\") : DriverDetails";
+                .example("updateDriver( licencePlate : String @Patttern(regex : \"[A-Z][A-Z][A-Z]-[0-9][0-9][0-9]\") : DriverDetails")
+
+                .applicableTypeNames(Scalars.GraphQLString.getName())
+
+                .directiveSDL("directive @Pattern(regexp : String! =\".*\", message : String = \"%s\") " +
+                                "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
+                        getMessageTemplate())
+                .build();
     }
 
     @Override
@@ -46,11 +46,6 @@ public class PatternConstraint extends AbstractDirectiveConstraint {
         return isOneOfTheseTypes(inputType,
                 Scalars.GraphQLString
         );
-    }
-
-    @Override
-    public List<String> getApplicableTypeNames() {
-        return Collections.singletonList(Scalars.GraphQLString.getName());
     }
 
     @Override

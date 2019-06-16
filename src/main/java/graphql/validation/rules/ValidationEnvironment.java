@@ -10,6 +10,7 @@ import graphql.schema.GraphQLFieldsContainer;
 import graphql.schema.GraphQLInputType;
 import graphql.validation.interpolation.MessageInterpolator;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -31,19 +32,21 @@ public class ValidationEnvironment {
     private final MessageInterpolator interpolator;
     private final Map<Class, Object> contextMap;
     private final Locale locale;
+    private final Map<String, Object> argumentValues;
 
     private ValidationEnvironment(Builder builder) {
         this.argument = builder.argument;
-        this.interpolator = builder.interpolator;
-        this.fieldsContainer = builder.fieldsContainer;
-        this.fieldDefinition = builder.fieldDefinition;
+        this.argumentValues = Collections.unmodifiableMap(builder.argumentValues);
+        this.contextMap = Collections.unmodifiableMap(builder.contextMap);
         this.executionPath = builder.executionPath;
-        this.location = builder.location;
-        this.validatedValue = builder.validatedValue;
+        this.fieldDefinition = builder.fieldDefinition;
         this.fieldOrArgumentPath = builder.fieldOrArgumentPath;
         this.fieldOrArgumentType = builder.fieldOrArgumentType;
-        this.contextMap = builder.contextMap;
+        this.fieldsContainer = builder.fieldsContainer;
+        this.interpolator = builder.interpolator;
         this.locale = builder.locale;
+        this.location = builder.location;
+        this.validatedValue = builder.validatedValue;
     }
 
     public static Builder newValidationEnvironment() {
@@ -87,6 +90,10 @@ public class ValidationEnvironment {
         return validatedValue;
     }
 
+    public Map<String, Object> getArgumentValues() {
+        return argumentValues;
+    }
+
     public MessageInterpolator getInterpolator() {
         return interpolator;
     }
@@ -102,29 +109,32 @@ public class ValidationEnvironment {
     }
 
     public static class Builder {
-        private GraphQLFieldsContainer fieldsContainer;
-        private GraphQLFieldDefinition fieldDefinition;
+        private final Map<Class, Object> contextMap = new HashMap<>();
         private GraphQLArgument argument;
-        private GraphQLInputType fieldOrArgumentType;
-        private Object validatedValue;
+        private Map<String, Object> argumentValues;
         private ExecutionPath executionPath;
+        private GraphQLFieldDefinition fieldDefinition;
         private ExecutionPath fieldOrArgumentPath = ExecutionPath.rootPath();
-        private SourceLocation location;
+        private GraphQLInputType fieldOrArgumentType;
+        private GraphQLFieldsContainer fieldsContainer;
         private MessageInterpolator interpolator;
         private Locale locale;
-        private final Map<Class, Object> contextMap = new HashMap<>();
-
+        private SourceLocation location;
+        private Object validatedValue;
 
         public Builder validationEnvironment(ValidationEnvironment validationEnvironment) {
-            this.fieldsContainer = validationEnvironment.fieldsContainer;
-            this.fieldDefinition = validationEnvironment.fieldDefinition;
             this.argument = validationEnvironment.argument;
-            this.validatedValue = validationEnvironment.validatedValue;
-            this.fieldOrArgumentType = validationEnvironment.fieldOrArgumentType;
+            this.argumentValues = validationEnvironment.argumentValues;
+            this.contextMap.putAll(validationEnvironment.contextMap);
             this.executionPath = validationEnvironment.executionPath;
+            this.fieldDefinition = validationEnvironment.fieldDefinition;
             this.fieldOrArgumentPath = validationEnvironment.fieldOrArgumentPath;
-            this.location = validationEnvironment.location;
+            this.fieldOrArgumentType = validationEnvironment.fieldOrArgumentType;
+            this.fieldsContainer = validationEnvironment.fieldsContainer;
             this.interpolator = validationEnvironment.interpolator;
+            this.locale = validationEnvironment.locale;
+            this.location = validationEnvironment.location;
+            this.validatedValue = validationEnvironment.validatedValue;
             return this;
         }
 
@@ -133,6 +143,7 @@ public class ValidationEnvironment {
             fieldDefinition(dataFetchingEnvironment.getFieldDefinition());
             executionPath(dataFetchingEnvironment.getExecutionStepInfo().getPath());
             location(dataFetchingEnvironment.getField().getSourceLocation());
+            argumentValues(dataFetchingEnvironment.getArguments());
             return this;
         }
 
@@ -175,6 +186,11 @@ public class ValidationEnvironment {
 
         public Builder validatedValue(Object validatedValue) {
             this.validatedValue = validatedValue;
+            return this;
+        }
+
+        public Builder argumentValues(Map<String, Object> argumentValues) {
+            this.argumentValues = argumentValues;
             return this;
         }
 

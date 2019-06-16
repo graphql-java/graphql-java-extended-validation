@@ -4,6 +4,7 @@ import graphql.Assert;
 import graphql.GraphQLError;
 import graphql.PublicSpi;
 import graphql.Scalars;
+import graphql.execution.ExecutionPath;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLFieldDefinition;
@@ -13,6 +14,7 @@ import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLScalarType;
 import graphql.schema.GraphQLTypeUtil;
 import graphql.validation.rules.ValidationEnvironment;
+import graphql.validation.util.DirectivesAndTypeWalker;
 import graphql.validation.util.Util;
 
 import java.lang.reflect.Array;
@@ -46,8 +48,7 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
     }
 
 
-    @Override
-    public String getMessageTemplate() {
+    protected String getMessageTemplate() {
         return "graphql.validation." + getName() + ".message";
     }
 
@@ -191,16 +192,17 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
     /**
      * Creates a map of named parameters for message interpolation
      *
-     * @param validatedValue the value being validated
-     * @param ruleEnvironment  the rule environment
-     * @param args must be even with a String as even params and values as odd params
+     * @param validatedValue        the value being validated
+     * @param validationEnvironment the validation environment
+     * @param args                  must be an key / value array with String keys as the even params and values as then odd params
      *
      * @return a map of message parameters
      */
-    protected Map<String, Object> mkMessageParams(Object validatedValue, ValidationEnvironment ruleEnvironment, Object... args) {
+    protected Map<String, Object> mkMessageParams(Object validatedValue, ValidationEnvironment validationEnvironment, Object... args) {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("validatedValue", validatedValue);
         params.put("constraint", getName());
+        params.put("path", mkFieldOrArgPath(validationEnvironment));
 
         Assert.assertTrue(args.length % 2 == 0, "You MUST pass in an even number of arguments");
         for (int ix = 0; ix < args.length; ix = ix + 2) {
@@ -212,12 +214,20 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
         return params;
     }
 
+    private Object mkFieldOrArgPath(ValidationEnvironment validationEnvironment) {
+        ExecutionPath executionPath = validationEnvironment.getExecutionPath();
+        ExecutionPath fieldOrArgumentPath = validationEnvironment.getFieldOrArgumentPath();
+
+        executionPath = Util.concatPaths(executionPath, fieldOrArgumentPath);
+        return executionPath == null ? "/" : executionPath.toString();
+    }
+
     /**
      * Creates  a new {@link graphql.GraphQLError}
      *
      * @param validationEnvironment the current validation environment
-     * @param directive       the directive being run
-     * @param msgParams       the map of parameters
+     * @param directive             the directive being run
+     * @param msgParams             the map of parameters
      *
      * @return a list of a single error
      */

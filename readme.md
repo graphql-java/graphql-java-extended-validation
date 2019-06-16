@@ -52,7 +52,7 @@ the `name` field must be at least 3 characters long and no more than 100 charact
 
 The boolean value must be false.
 
-- Example : `driver( isDrunk : Boolean @AssertFalse) : DriverDetails`
+- Example : `updateDriver( isDrunk : Boolean @AssertFalse) : DriverDetails`
 
 - Applies to : `Boolean`
 
@@ -65,7 +65,7 @@ The boolean value must be false.
 
 The boolean value must be true.
 
-- Example : `driver( hasLicence : Boolean @AssertTrue) : DriverDetails`
+- Example : `driveCar( hasLicence : Boolean @AssertTrue) : DriverDetails`
 
 - Applies to : `Boolean`
 
@@ -78,7 +78,7 @@ The boolean value must be true.
 
 The element must be a number whose value must be less than or equal to the specified maximum.
 
-- Example : `driver( bloodAlcoholLevel : Float @DecimalMax(value : "0.05") : DriverDetails`
+- Example : `driveCar( bloodAlcoholLevel : Float @DecimalMax(value : "0.05") : DriverDetails`
 
 - Applies to : `String`, `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
 
@@ -91,7 +91,7 @@ The element must be a number whose value must be less than or equal to the speci
 
 The element must be a number whose value must be greater than or equal to the specified minimum.
 
-- Example : `driver( carHorsePower : Float @DecimalMin(value : "300.50") : DriverDetails`
+- Example : `driveCar( carHorsePower : Float @DecimalMin(value : "300.50") : DriverDetails`
 
 - Applies to : `String`, `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
 
@@ -104,7 +104,7 @@ The element must be a number whose value must be greater than or equal to the sp
 
 The element must be a number inside the specified `integer` and `fraction` range.
 
-- Example : `driver( carCost : Float @Digits(integer : 5, fraction : 2) : DriverDetails`
+- Example : `buyCar( carCost : Float @Digits(integer : 5, fraction : 2) : DriverDetails`
 
 - Applies to : `String`, `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
 
@@ -117,7 +117,7 @@ The element must be a number inside the specified `integer` and `fraction` range
 
 The element must be a number whose value must be less than or equal to the specified maximum.
 
-- Example : `driver( horsePower : Float @Max(value : 1000) : DriverDetails`
+- Example : `driveCar( horsePower : Float @Max(value : 1000) : DriverDetails`
 
 - Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
 
@@ -130,7 +130,7 @@ The element must be a number whose value must be less than or equal to the speci
 
 The element must be a number whose value must be greater than or equal to the specified minimum.
 
-- Example : `driver( age : Int @Min(value : 18) : DriverDetails`
+- Example : `driveCar( age : Int @Min(value : 18) : DriverDetails`
 
 - Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
 
@@ -143,7 +143,7 @@ The element must be a number whose value must be greater than or equal to the sp
 
 The element must be a negative number.
 
-- Example : `driver( licencePoints : Int @Negative) : DriverDetails`
+- Example : `driveCar( lostLicencePoints : Int @Negative) : DriverDetails`
 
 - Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
 
@@ -156,7 +156,7 @@ The element must be a negative number.
 
 The element must be a negative number or zero.
 
-- Example : `driver( licencePoints : Int @NegativeOrZero) : DriverDetails`
+- Example : `driveCar( lostLicencePoints : Int @NegativeOrZero) : DriverDetails`
 
 - Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
 
@@ -247,7 +247,7 @@ The element range must be between the specified `min` and `max` boundaries (incl
 
 The element size must be between the specified `min` and `max` boundaries (inclusive).
 
-- Example : `updateDriver( drivingNote : String @Size( min : 1000, max : 100000)) : DriverDetails`
+- Example : `updateDrivingNotes( drivingNote : String @Size( min : 1000, max : 100000)) : DriverDetails`
 
 - Applies to : `String`, `Lists`, `Input Objects`
 

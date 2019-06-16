@@ -17,7 +17,7 @@ class ValidationSchemaWiringTest extends Specification {
 
         def sdl = """
 
-            ${directiveRules.directivesDeclarationSDL}
+            ${directiveRules.directivesSDL}
 
             type Car {
                 model : String
@@ -59,8 +59,7 @@ class ValidationSchemaWiringTest extends Specification {
         ''')
 
         then:
-        !er.errors.isEmpty()
-        println er.errors
-        println er.errors[0].message
+        er.errors.size() == 1
+        er.errors[0].message == "size must be between 0 and 10"
     }
 }

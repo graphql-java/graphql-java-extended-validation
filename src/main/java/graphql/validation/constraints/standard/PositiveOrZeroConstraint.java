@@ -1,5 +1,7 @@
 package graphql.validation.constraints.standard;
 
+import graphql.validation.constraints.Documentation;
+
 import java.math.BigDecimal;
 
 public class PositiveOrZeroConstraint extends AbstractPositiveNegativeConstraint {
@@ -9,20 +11,20 @@ public class PositiveOrZeroConstraint extends AbstractPositiveNegativeConstraint
     }
 
     @Override
-    public String getDirectiveDeclarationSDL() {
-        return String.format("directive @PositiveOrZero(message : String = \"%s\") " +
-                        "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
-                getMessageTemplate());
-    }
+    public Documentation getDocumentation() {
+        return Documentation.newDocumentation()
+                .messageTemplate(getMessageTemplate())
 
-    @Override
-    public String getDescription() {
-        return "The element must be a positive number or zero.";
-    }
+                .description("The element must be a positive number or zero.")
 
-    @Override
-    public String getExample() {
-        return "driver( licencePoints : Int @PositiveOrZero) : DriverDetails";
+                .example("driver( licencePoints : Int @PositiveOrZero) : DriverDetails")
+
+                .applicableTypeNames(getApplicableTypeNames())
+
+                .directiveSDL("directive @PositiveOrZero(message : String = \"%s\") " +
+                                "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
+                        getMessageTemplate())
+                .build();
     }
 
     @Override

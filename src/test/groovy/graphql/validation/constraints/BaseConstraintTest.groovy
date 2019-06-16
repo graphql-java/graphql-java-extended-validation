@@ -28,7 +28,7 @@ class BaseConstraintTest extends Specification {
     }
 
     List<GraphQLError> runValidation(DirectiveConstraint ruleUnderTest, String fieldDeclaration, String argName, Object argValue) {
-        def schema = buildSchema(ruleUnderTest.getDirectiveDeclarationSDL(), fieldDeclaration, "")
+        def schema = buildSchema(ruleUnderTest.getDocumentation().getDirectiveSDL(), fieldDeclaration, "")
 
         ValidationEnvironment validationEnvironment = buildEnv(ruleUnderTest.name, schema, argName, argValue)
 

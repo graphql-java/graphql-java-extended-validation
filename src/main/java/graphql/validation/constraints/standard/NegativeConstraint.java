@@ -1,5 +1,7 @@
 package graphql.validation.constraints.standard;
 
+import graphql.validation.constraints.Documentation;
+
 import java.math.BigDecimal;
 
 public class NegativeConstraint extends AbstractPositiveNegativeConstraint {
@@ -9,20 +11,20 @@ public class NegativeConstraint extends AbstractPositiveNegativeConstraint {
     }
 
     @Override
-    public String getDirectiveDeclarationSDL() {
-        return String.format("directive @Negative(message : String = \"%s\") " +
-                        "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
-                getMessageTemplate());
-    }
+    public Documentation getDocumentation() {
+        return Documentation.newDocumentation()
+                .messageTemplate(getMessageTemplate())
 
-    @Override
-    public String getDescription() {
-        return "The element must be a negative number.";
-    }
+                .description("The element must be a negative number.")
 
-    @Override
-    public String getExample() {
-        return "driver( licencePoints : Int @Negative) : DriverDetails";
+                .example("driveCar( lostLicencePoints : Int @Negative) : DriverDetails")
+
+                .applicableTypeNames(getApplicableTypeNames())
+
+                .directiveSDL("directive @Negative(message : String = \"%s\") " +
+                                "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
+                        getMessageTemplate())
+                .build();
     }
 
     @Override

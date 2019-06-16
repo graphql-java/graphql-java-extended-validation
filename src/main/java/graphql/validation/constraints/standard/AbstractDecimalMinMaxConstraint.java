@@ -34,7 +34,6 @@ abstract class AbstractDecimalMinMaxConstraint extends AbstractDirectiveConstrai
         );
     }
 
-    @Override
     public List<String> getApplicableTypeNames() {
         return Stream.of(Scalars.GraphQLString, // note we allow strings
                 Scalars.GraphQLByte,

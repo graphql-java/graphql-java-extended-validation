@@ -3,6 +3,7 @@ package graphql.validation.util;
 import graphql.Assert;
 import graphql.GraphQLError;
 import graphql.execution.DataFetcherResult;
+import graphql.execution.ExecutionPath;
 import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLType;
 import graphql.schema.GraphQLTypeUtil;
@@ -62,5 +63,21 @@ public class Util {
         errors.addAll(l1);
         errors.addAll(l2);
         return errors;
+    }
+
+
+    public static ExecutionPath concatPaths(ExecutionPath parent, ExecutionPath child) {
+        if (child == null) {
+            return parent;
+        }
+        List<Object> segments = child.toList();
+        for (Object segment : segments) {
+            if (segment instanceof Integer) {
+                parent = parent.segment(((Integer) segment));
+            } else {
+                parent = parent.segment((String.valueOf(segment)));
+            }
+        }
+        return parent;
     }
 }

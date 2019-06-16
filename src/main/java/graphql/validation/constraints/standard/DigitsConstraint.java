@@ -6,6 +6,7 @@ import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLScalarType;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
+import graphql.validation.constraints.Documentation;
 import graphql.validation.rules.ValidationEnvironment;
 
 import java.math.BigDecimal;
@@ -22,10 +23,29 @@ public class DigitsConstraint extends AbstractDirectiveConstraint {
     }
 
     @Override
-    public String getDirectiveDeclarationSDL() {
-        return String.format("directive @Digits(integer : Int!, fraction : Int!, message : String = \"%s\") " +
-                        "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
-                getMessageTemplate());
+    public Documentation getDocumentation() {
+        return Documentation.newDocumentation()
+                .messageTemplate(getMessageTemplate())
+
+                .description("The element must be a number inside the specified `integer` and `fraction` range.")
+
+                .example("buyCar( carCost : Float @Digits(integer : 5, fraction : 2) : DriverDetails")
+
+                .applicableTypeNames(Stream.of(Scalars.GraphQLString,
+                        Scalars.GraphQLByte,
+                        Scalars.GraphQLShort,
+                        Scalars.GraphQLInt,
+                        Scalars.GraphQLLong,
+                        Scalars.GraphQLBigDecimal,
+                        Scalars.GraphQLBigInteger,
+                        Scalars.GraphQLFloat)
+                        .map(GraphQLScalarType::getName)
+                        .collect(toList()))
+
+                .directiveSDL("directive @Digits(integer : Int!, fraction : Int!, message : String = \"%s\") " +
+                                "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
+                        getMessageTemplate())
+                .build();
     }
 
     @Override
@@ -40,30 +60,6 @@ public class DigitsConstraint extends AbstractDirectiveConstraint {
                 Scalars.GraphQLBigInteger,
                 Scalars.GraphQLFloat
         );
-    }
-
-    @Override
-    public List<String> getApplicableTypeNames() {
-        return Stream.of(Scalars.GraphQLString,
-                Scalars.GraphQLByte,
-                Scalars.GraphQLShort,
-                Scalars.GraphQLInt,
-                Scalars.GraphQLLong,
-                Scalars.GraphQLBigDecimal,
-                Scalars.GraphQLBigInteger,
-                Scalars.GraphQLFloat)
-                .map(GraphQLScalarType::getName)
-                .collect(toList());
-    }
-
-    @Override
-    public String getDescription() {
-        return "The element must be a number inside the specified `integer` and `fraction` range.";
-    }
-
-    @Override
-    public String getExample() {
-        return "driver( carCost : Float @Digits(integer : 5, fraction : 2) : DriverDetails";
     }
 
 

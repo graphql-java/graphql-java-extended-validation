@@ -18,29 +18,10 @@ public interface DirectiveConstraint extends ValidationRule {
      */
     String getName();
 
-    /**
-     * @return a description for documentation
-     */
-    String getDescription();
 
     /**
-     * @return a description for documentation
+     * @return documentation meta data about this constraint
      */
-    String getExample();
-
-    /**
-     * @return the graphql SDL directive declaration syntax
-     */
-    String getDirectiveDeclarationSDL();
-
-    /**
-     * @return the message template name
-     */
-    String getMessageTemplate();
-
-    /**
-     * @return a list of the names of applicable types
-     */
-    List<String> getApplicableTypeNames();
+    Documentation getDocumentation();
 
 }

@@ -1,4 +1,4 @@
-package graphql.validation.constraints;
+package graphql.validation.util;
 
 import graphql.Internal;
 import graphql.schema.GraphQLArgument;
@@ -8,7 +8,6 @@ import graphql.schema.GraphQLInputObjectField;
 import graphql.schema.GraphQLInputObjectType;
 import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLList;
-import graphql.validation.util.Util;
 
 import java.util.List;
 import java.util.function.BiFunction;

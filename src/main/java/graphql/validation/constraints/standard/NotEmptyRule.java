@@ -5,9 +5,9 @@ import graphql.Scalars;
 import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLInputType;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
+import graphql.validation.constraints.Documentation;
 import graphql.validation.rules.ValidationEnvironment;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,32 +17,26 @@ public class NotEmptyRule extends AbstractDirectiveConstraint {
         super("NotEmpty");
     }
 
-
     @Override
-    public String getDirectiveDeclarationSDL() {
-        return String.format("directive @NotEmpty(message : String = \"%s\") " +
-                        "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
-                getMessageTemplate());
-    }
+    public Documentation getDocumentation() {
+        return Documentation.newDocumentation()
+                .messageTemplate(getMessageTemplate())
 
-    @Override
-    public String getDescription() {
-        return "The element must have a non zero size.";
-    }
+                .description("The element must have a non zero size.")
 
-    @Override
-    public String getExample() {
-        return "updateAccident( accidentNotes : [Notes]! @NotEmpty) : DriverDetails";
+                .example("updateAccident( accidentNotes : [Notes]! @NotEmpty) : DriverDetails")
+
+                .applicableTypeNames(Scalars.GraphQLString.getName(), "Lists", "Input Objects")
+
+                .directiveSDL("directive @NotEmpty(message : String = \"%s\") " +
+                                "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
+                        getMessageTemplate())
+                .build();
     }
 
     @Override
     public boolean appliesToType(GraphQLInputType inputType) {
         return isStringOrListOrMap(inputType);
-    }
-
-    @Override
-    public List<String> getApplicableTypeNames() {
-        return Arrays.asList(Scalars.GraphQLString.getName(), "Lists", "Input Objects");
     }
 
     @Override
