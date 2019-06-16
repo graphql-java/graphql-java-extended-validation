@@ -19,6 +19,12 @@ public class DecimalMinConstraint extends AbstractDecimalMinMaxConstraint {
     }
 
     @Override
+    public String getExample() {
+        return "driver( carHorsePower : Float @DecimalMin(value : \"300.50\") : DriverDetails";
+    }
+
+
+    @Override
     protected boolean isOK(boolean inclusive, int comparisonResult) {
         return inclusive ? comparisonResult >= 0 : comparisonResult > 0;
     }

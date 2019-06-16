@@ -17,6 +17,12 @@ public class DecimalMaxConstraint extends AbstractDecimalMinMaxConstraint {
     public String getDescription() {
         return "The element must be a number whose value must be less than or equal to the specified maximum.";
     }
+
+    @Override
+    public String getExample() {
+        return "driver( bloodAlcoholLevel : Float @DecimalMax(value : \"0.05\") : DriverDetails";
+    }
+
     @Override
     protected boolean isOK(boolean inclusive, int comparisonResult) {
         return inclusive ? comparisonResult <= 0 : comparisonResult < 0;

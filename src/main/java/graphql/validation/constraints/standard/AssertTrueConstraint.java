@@ -14,6 +14,11 @@ public class AssertTrueConstraint extends AbstractAssertConstraint {
     }
 
     @Override
+    public String getExample() {
+        return "driver( hasLicence : Boolean @AssertTrue) : DriverDetails";
+    }
+
+    @Override
     public String getDescription() {
         return "The boolean value must be true.";
     }

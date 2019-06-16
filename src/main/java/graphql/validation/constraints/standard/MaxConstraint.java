@@ -18,6 +18,11 @@ public class MaxConstraint extends AbstractMinMaxConstraint {
         return "The element must be a number whose value must be less than or equal to the specified maximum.";
     }
 
+    @Override
+    public String getExample() {
+        return "driver( horsePower : Float @Max(value : 1000) : DriverDetails";
+    }
+
 
     @Override
     protected boolean isOK(int comparisonResult) {

@@ -14,6 +14,11 @@ public class AssertFalseConstraint extends AbstractAssertConstraint {
     }
 
     @Override
+    public String getExample() {
+        return "driver( isDrunk : Boolean @AssertFalse) : DriverDetails";
+    }
+
+    @Override
     public String getDescription() {
         return "The boolean value must be false.";
     }

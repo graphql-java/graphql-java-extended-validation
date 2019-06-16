@@ -42,6 +42,12 @@ public class SizeConstraint extends AbstractDirectiveConstraint {
     }
 
     @Override
+    public String getExample() {
+        return "updateDriver( drivingNote : String @Size( min : 1000, max : 100000)) : DriverDetails";
+    }
+
+
+    @Override
     public List<GraphQLError> runValidation(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
         GraphQLInputType argType = validationEnvironment.getFieldOrArgumentType();

@@ -31,6 +31,11 @@ public class NotEmptyRule extends AbstractDirectiveConstraint {
     }
 
     @Override
+    public String getExample() {
+        return "updateAccident( accidentNotes : [Notes]! @NotEmpty) : DriverDetails";
+    }
+
+    @Override
     public boolean appliesToType(GraphQLInputType inputType) {
         return isStringOrListOrMap(inputType);
     }

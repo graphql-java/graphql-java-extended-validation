@@ -34,6 +34,11 @@ public class NotBlankRule extends AbstractDirectiveConstraint {
     }
 
     @Override
+    public String getExample() {
+        return "updateAccident( accidentNotes : String @NotBlank) : DriverDetails";
+    }
+
+    @Override
     public boolean appliesToType(GraphQLInputType inputType) {
         return isOneOfTheseTypes(inputType, Scalars.GraphQLString);
     }

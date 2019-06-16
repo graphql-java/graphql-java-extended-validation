@@ -37,6 +37,11 @@ public class PatternConstraint extends AbstractDirectiveConstraint {
     }
 
     @Override
+    public String getExample() {
+        return "updateDriver( licencePlate : String @Patttern(regex : \"[A-Z][A-Z][A-Z]-[0-9][0-9][0-9]\") : DriverDetails";
+    }
+
+    @Override
     public boolean appliesToType(GraphQLInputType inputType) {
         return isOneOfTheseTypes(inputType,
                 Scalars.GraphQLString

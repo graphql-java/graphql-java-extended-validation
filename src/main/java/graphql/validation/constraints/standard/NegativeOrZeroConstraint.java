@@ -21,6 +21,11 @@ public class NegativeOrZeroConstraint extends AbstractPositiveNegativeConstraint
     }
 
     @Override
+    public String getExample() {
+        return "driver( licencePoints : Int @NegativeOrZero) : DriverDetails";
+    }
+
+    @Override
     protected boolean isOK(BigDecimal bigDecimal) {
         return bigDecimal.compareTo(BigDecimal.ZERO) <= 0;
     }

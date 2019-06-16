@@ -62,6 +62,12 @@ public class DigitsConstraint extends AbstractDirectiveConstraint {
     }
 
     @Override
+    public String getExample() {
+        return "driver( carCost : Float @Digits(integer : 5, fraction : 2) : DriverDetails";
+    }
+
+
+    @Override
     public List<GraphQLError> runValidation(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
         if (validatedValue == null) {

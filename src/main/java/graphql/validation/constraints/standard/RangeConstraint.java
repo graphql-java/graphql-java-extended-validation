@@ -65,6 +65,11 @@ public class RangeConstraint extends AbstractDirectiveConstraint {
     }
 
     @Override
+    public String getExample() {
+        return "driver( milesTravelled : Int @Range( min : 1000, max : 100000)) : DriverDetails";
+    }
+
+    @Override
     public List<GraphQLError> runValidation(ValidationEnvironment validationEnvironment) {
 
         Object validatedValue = validationEnvironment.getValidatedValue();

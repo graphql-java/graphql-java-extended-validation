@@ -19,6 +19,12 @@ public class MinConstraint extends AbstractMinMaxConstraint {
     }
 
     @Override
+    public String getExample() {
+        return "driver( age : Int @Min(value : 18) : DriverDetails";
+    }
+
+
+    @Override
     protected boolean isOK(int comparisonResult) {
         return comparisonResult >= 0;
     }

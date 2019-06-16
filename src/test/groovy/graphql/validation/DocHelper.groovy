@@ -28,17 +28,19 @@ class DocHelper {
 
         PrintStream out = System.out
         out.printf("""
-        ### ${r.getName()}
+### @${r.getName()}
 
-        ${r.getDescription()}
+${r.getDescription()}
 
-        - SDL : ${r.getDirectiveDeclarationSDL()}
+- Example : `${r.getExample()}`
 
-        - Applies to : ${appliesTo}
+- Applies to : ${appliesTo}
 
-        - Message : ${r.getMessageTemplate()}
+- SDL : ${r.getDirectiveDeclarationSDL()}
 
-        """
+- Message : `${r.getMessageTemplate()}`
+
+"""
         )
     }
 
