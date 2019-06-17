@@ -56,7 +56,7 @@ The boolean value must be false.
 
 - Applies to : `Boolean`
 
-- SDL : directive @AssertFalse(message : String = "graphql.validation.AssertFalse.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+- SDL : `directive @AssertFalse(message : String = "graphql.validation.AssertFalse.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.AssertFalse.message`
 
@@ -69,7 +69,7 @@ The boolean value must be true.
 
 - Applies to : `Boolean`
 
-- SDL : directive @AssertTrue(message : String = "graphql.validation.AssertTrue.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+- SDL : `directive @AssertTrue(message : String = "graphql.validation.AssertTrue.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.AssertTrue.message`
 
@@ -82,7 +82,7 @@ The element must be a number whose value must be less than or equal to the speci
 
 - Applies to : `String`, `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
 
-- SDL : directive @DecimalMax(value : String!, inclusive : Boolean! = true, message : String = "graphql.validation.DecimalMax.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+- SDL : `directive @DecimalMax(value : String!, inclusive : Boolean! = true, message : String = "graphql.validation.DecimalMax.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.DecimalMax.message`
 
@@ -95,7 +95,7 @@ The element must be a number whose value must be greater than or equal to the sp
 
 - Applies to : `String`, `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
 
-- SDL : directive @DecimalMin(value : String!, inclusive : Boolean! = true, message : String = "graphql.validation.DecimalMin.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+- SDL : `directive @DecimalMin(value : String!, inclusive : Boolean! = true, message : String = "graphql.validation.DecimalMin.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.DecimalMin.message`
 
@@ -108,7 +108,7 @@ The element must be a number inside the specified `integer` and `fraction` range
 
 - Applies to : `String`, `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
 
-- SDL : directive @Digits(integer : Int!, fraction : Int!, message : String = "graphql.validation.Digits.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+- SDL : `directive @Digits(integer : Int!, fraction : Int!, message : String = "graphql.validation.Digits.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.Digits.message`
 
@@ -121,7 +121,7 @@ The element must be a number whose value must be less than or equal to the speci
 
 - Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
 
-- SDL : directive @Max(value : Int! = 2147483647, message : String = "graphql.validation.Max.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+- SDL : `directive @Max(value : Int! = 2147483647, message : String = "graphql.validation.Max.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.Max.message`
 
@@ -134,7 +134,7 @@ The element must be a number whose value must be greater than or equal to the sp
 
 - Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
 
-- SDL : directive @Min(value : Int! = 0, message : String = "graphql.validation.Min.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+- SDL : `directive @Min(value : Int! = 0, message : String = "graphql.validation.Min.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.Min.message`
 
@@ -147,7 +147,7 @@ The element must be a negative number.
 
 - Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
 
-- SDL : directive @Negative(message : String = "graphql.validation.Negative.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+- SDL : `directive @Negative(message : String = "graphql.validation.Negative.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.Negative.message`
 
@@ -160,7 +160,7 @@ The element must be a negative number or zero.
 
 - Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
 
-- SDL : directive @NegativeOrZero(message : String = "graphql.validation.NegativeOrZero.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+- SDL : `directive @NegativeOrZero(message : String = "graphql.validation.NegativeOrZero.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.NegativeOrZero.message`
 
@@ -173,7 +173,7 @@ The String must contain at least one non-whitespace character, according to Java
 
 - Applies to : `String`
 
-- SDL : directive @NotBlank(message : String = "graphql.validation.NotBlank.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+- SDL : `directive @NotBlank(message : String = "graphql.validation.NotBlank.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.NotBlank.message`
 
@@ -186,7 +186,7 @@ The element must have a non zero size.
 
 - Applies to : `String`, `Lists`, `Input Objects`
 
-- SDL : directive @NotEmpty(message : String = "graphql.validation.NotEmpty.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+- SDL : `directive @NotEmpty(message : String = "graphql.validation.NotEmpty.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.NotEmpty.message`
 
@@ -199,7 +199,7 @@ The String must match the specified regular expression, which follows the Java r
 
 - Applies to : `String`
 
-- SDL : directive @Pattern(regexp : String! =".*", message : String = "graphql.validation.Pattern.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+- SDL : `directive @Pattern(regexp : String! =".*", message : String = "graphql.validation.Pattern.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.Pattern.message`
 
@@ -212,7 +212,7 @@ The element must be a positive number.
 
 - Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
 
-- SDL : directive @Positive(message : String = "graphql.validation.Positive.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+- SDL : `directive @Positive(message : String = "graphql.validation.Positive.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.Positive.message`
 
@@ -225,7 +225,7 @@ The element must be a positive number or zero.
 
 - Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
 
-- SDL : directive @PositiveOrZero(message : String = "graphql.validation.PositiveOrZero.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+- SDL : `directive @PositiveOrZero(message : String = "graphql.validation.PositiveOrZero.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.PositiveOrZero.message`
 
@@ -238,7 +238,7 @@ The element range must be between the specified `min` and `max` boundaries (incl
 
 - Applies to : `String`, `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
 
-- SDL : directive @Range(min : Int = 0, max : Int = 2147483647, message : String = "graphql.validation.Range.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+- SDL : `directive @Range(min : Int = 0, max : Int = 2147483647, message : String = "graphql.validation.Range.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.Range.message`
 
@@ -251,6 +251,6 @@ The element size must be between the specified `min` and `max` boundaries (inclu
 
 - Applies to : `String`, `Lists`, `Input Objects`
 
-- SDL : directive @Size(min : Int = 0, max : Int = 2147483647, message : String = "graphql.validation.Size.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+- SDL : `directive @Size(min : Int = 0, max : Int = 2147483647, message : String = "graphql.validation.Size.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.Size.message`

@@ -13,13 +13,12 @@ class DocHelper {
         ArrayList<DirectiveConstraint> standardRules = sorted()
         standardRules.forEach({ it -> printConstraint(it) })
 
-        //standardRules.forEach({ it -> printMessage(it) })
     }
 
 
     private static ArrayList<DirectiveConstraint> sorted() {
-        List<DirectiveConstraint> standardRules = new ArrayList<>(DirectiveConstraints.STANDARD_CONSTRAINTS);
-        standardRules.sort(Comparator.comparing({ dvr -> dvr.getName() }))
+        List<DirectiveConstraint> standardRules = new ArrayList<>(DirectiveConstraints.STANDARD_CONSTRAINTS)
+        standardRules.sort(Comparator.comparing({ dvr -> dvr.name }))
         standardRules
     }
 
@@ -36,7 +35,7 @@ ${r.getDocumentation().getDescription()}
 
 - Applies to : ${appliesTo}
 
-- SDL : ${r.getDocumentation().getDirectiveSDL()}
+- SDL : `${r.getDocumentation().getDirectiveSDL()}`
 
 - Message : `${r.getDocumentation().getMessageTemplate()}`
 
@@ -44,12 +43,5 @@ ${r.getDocumentation().getDescription()}
         )
     }
 
-
-    private static void printMessage(DirectiveConstraint r) {
-        PrintStream out = System.out
-        out.printf("""
-        ${r.getDocumentation().getMessageTemplate()} = 
-        """)
-    }
 
 }
