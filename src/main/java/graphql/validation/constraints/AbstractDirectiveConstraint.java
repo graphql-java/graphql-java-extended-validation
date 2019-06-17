@@ -204,6 +204,19 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
         params.put("constraint", getName());
         params.put("path", mkFieldOrArgPath(validationEnvironment));
 
+        params.putAll(mkMap(args));
+        return params;
+    }
+
+    /**
+     * Makes a map of the args
+     *
+     * @param args must be an key / value array with String keys as the even params and values as then odd params
+     *
+     * @return a map of the args
+     */
+    protected Map<String, Object> mkMap(Object... args) {
+        Map<String, Object> params = new LinkedHashMap<>();
         Assert.assertTrue(args.length % 2 == 0, "You MUST pass in an even number of arguments");
         for (int ix = 0; ix < args.length; ix = ix + 2) {
             Object key = args[ix];
@@ -213,6 +226,7 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
         }
         return params;
     }
+
 
     private Object mkFieldOrArgPath(ValidationEnvironment validationEnvironment) {
         ExecutionPath executionPath = validationEnvironment.getExecutionPath();

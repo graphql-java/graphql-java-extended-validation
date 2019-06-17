@@ -15,52 +15,52 @@ import javax.validation.MessageInterpolator;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.lang.annotation.ElementType;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Playing with El and Hibernate Message Interpolation
+ * Playing with ELSupport and Hibernate Message Interpolation
  */
 public class ELDiscover {
 
-    public static class User {
-        @Email
-        private String email;
-
-        @Range(min = 18, max = 21)
-        private int age;
-
-        public int getAge() {
-            return age;
+    public static boolean eitherImpl(Object x, Object y) {
+        if (x == null) {
+            return y != null;
         }
-
-        public void setAge(int age) {
-            this.age = age;
+        if (y == null) {
+            return true;
         }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
-        }
+        return false;
     }
 
-
-    private static void elDirect() {
+    private static void elDirect() throws NoSuchMethodException {
         ExpressionFactory expressionFactory = ELManager.getExpressionFactory();
-        ELContext elContext = new StandardELContext(expressionFactory);
+        StandardELContext elContext = new StandardELContext(expressionFactory);
 
-        ValueExpression valueExpression = expressionFactory.createValueExpression(
-                "TheValueValue",
-                Object.class
-        );
-        elContext.getVariableMapper().setVariable("validatedValue", valueExpression);
+        Map<String, Object> args = new LinkedHashMap<>();
+        args.put("arg1", "argVal1");
+        args.put("arg2", "argVal2");
+        bindVariable(expressionFactory, elContext, "validatedValue", "Value");
+        bindVariable(expressionFactory, elContext, "args", args);
+
+        Method method = ELDiscover.class.getMethod("eitherImpl", Object.class, Object.class);
+
+        elContext.getFunctionMapper().mapFunction("", "either", method);
+
+        runElExpression("${either(2,null)}", expressionFactory, elContext);
+        runElExpression("${either(2,3)}", expressionFactory, elContext);
+        runElExpression("${either(null,3)}", expressionFactory, elContext);
+
+
+        runElExpression("${either=((x,y)->! empty x && empty y); either(2,null)}", expressionFactory, elContext);
 
 
         runElExpression("${validatedValue}", expressionFactory, elContext);
+
+
         runElExpression("${validatedValue.length()}", expressionFactory, elContext);
         runElExpression("#{cube=(x->x*x*x);cube(2)}", expressionFactory, elContext);
         runElExpression("${cube=(x->x*x*x);cube(2)}", expressionFactory, elContext);
@@ -71,7 +71,15 @@ public class ELDiscover {
 
     }
 
-    public static void main(String[] args) {
+    private static ValueExpression bindVariable(ExpressionFactory expressionFactory, ELContext elContext, String variableName, Object variableValue) {
+        ValueExpression valueExpression = expressionFactory.createValueExpression(
+                variableValue,
+                Object.class
+        );
+        return elContext.getVariableMapper().setVariable(variableName, valueExpression);
+    }
+
+    public static void main(String[] args) throws Exception {
 
         elDirect();
 
@@ -112,7 +120,7 @@ public class ELDiscover {
         PathImpl rootPath = PathImpl.createRootPath();
 
         MessageInterpolator.Context context = new MessageInterpolatorContext(
-                constraintDescriptor,user,null,Collections.emptyMap(),Collections.emptyMap());
+                constraintDescriptor, user, null, Collections.emptyMap(), Collections.emptyMap());
 
 //        MessageInterpolator.Context context = new MessageInterpolatorContext(
 //                constraintDescriptor,
@@ -146,6 +154,39 @@ public class ELDiscover {
             System.out.printf("MsgInterpoltation -> %s : %s\n", expression, s);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static class EitherEL {
+        Object x, y;
+
+        public EitherEL() {
+        }
+
+
+    }
+
+    public static class User {
+        @Email
+        private String email;
+
+        @Range(min = 18, max = 21)
+        private int age;
+
+        public int getAge() {
+            return age;
+        }
+
+        public void setAge(int age) {
+            this.age = age;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
         }
     }
 }

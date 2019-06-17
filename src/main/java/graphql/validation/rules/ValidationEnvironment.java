@@ -16,8 +16,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static graphql.Assert.assertNotNull;
-
 @PublicApi
 public class ValidationEnvironment {
 
@@ -111,7 +109,7 @@ public class ValidationEnvironment {
     public static class Builder {
         private final Map<Class, Object> contextMap = new HashMap<>();
         private GraphQLArgument argument;
-        private Map<String, Object> argumentValues;
+        private Map<String, Object> argumentValues = new HashMap<>();
         private ExecutionPath executionPath;
         private GraphQLFieldDefinition fieldDefinition;
         private ExecutionPath fieldOrArgumentPath = ExecutionPath.rootPath();
@@ -210,9 +208,6 @@ public class ValidationEnvironment {
         }
 
         public ValidationEnvironment build() {
-            assertNotNull(argument);
-            assertNotNull(fieldOrArgumentType);
-            assertNotNull(fieldOrArgumentPath);
             return new ValidationEnvironment(this);
         }
     }

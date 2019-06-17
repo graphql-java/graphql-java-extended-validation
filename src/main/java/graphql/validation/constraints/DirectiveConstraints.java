@@ -15,6 +15,7 @@ import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLTypeUtil;
 import graphql.util.FpKit;
+import graphql.validation.constraints.standard.ArgumentsConstraint;
 import graphql.validation.constraints.standard.AssertFalseConstraint;
 import graphql.validation.constraints.standard.AssertTrueConstraint;
 import graphql.validation.constraints.standard.DecimalMaxConstraint;
@@ -56,6 +57,7 @@ public class DirectiveConstraints implements ValidationRule {
      * These are the standard directive rules that come with the system
      */
     public final static List<DirectiveConstraint> STANDARD_CONSTRAINTS = Arrays.asList(
+            new ArgumentsConstraint(),
             new AssertFalseConstraint(),
             new AssertTrueConstraint(),
             new DecimalMaxConstraint(),

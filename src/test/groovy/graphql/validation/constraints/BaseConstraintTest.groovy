@@ -64,6 +64,21 @@ class BaseConstraintTest extends Specification {
         ruleEnvironment
     }
 
+    ValidationEnvironment buildEnv(String targetDirective, GraphQLSchema schema, Map<String, Object> arguments) {
+        GraphQLFieldsContainer fieldsContainer = schema.getObjectType("Query") as GraphQLFieldsContainer
+        GraphQLFieldDefinition fieldDefinition = fieldsContainer.getFieldDefinition("field")
+
+        def ruleEnvironment = ValidationEnvironment.newValidationEnvironment()
+                .argumentValues(arguments)
+                .fieldDefinition(fieldDefinition)
+                .fieldsContainer(fieldsContainer)
+                .executionPath(ExecutionPath.rootPath().segment(fieldDefinition.getName()))
+                .context(GraphQLDirective.class, fieldDefinition.getDirective(targetDirective))
+                .messageInterpolator(interpolator)
+                .build()
+        ruleEnvironment
+    }
+
     GraphQLSchema buildSchema(String directiveDeclarationSDL, String fieldDeclaration, String extraSDL) {
         def sdl = """
 

@@ -48,6 +48,20 @@ the `name` field must be at least 3 characters long and no more than 100 charact
 
 ## The supplied constraints
 
+### @Arguments
+
+The provided expression must evaluate to true.
+
+- Example : `drivers( first : Int, after : String!, last : Int, before : String) 
+ : DriverConnection @Arguments(expression : "${args.containsOneOf('first','last') }"`
+
+- Applies to : `Output Fields`
+
+- SDL : `directive @Arguments(expression : String!, message : String = "graphql.validation.Arguments.message") on FIELD_DEFINITION`
+
+- Message : `graphql.validation.Arguments.message`
+
+
 ### @AssertFalse
 
 The boolean value must be false.
