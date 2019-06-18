@@ -50,7 +50,7 @@ public class ValidationSchemaWiring implements SchemaDirectiveWiring {
     private DataFetcher buildValidatingDataFetcher(ValidationRules rules, OnValidationErrorStrategy errorStrategy, MessageInterpolator messageInterpolator, DataFetcher currentDF, Locale locale) {
         // ok we have some rules that need to be applied to this field and its arguments
         return environment -> {
-            // TODO - get the Local from the DFE instead of statically - this needs to go into graphql-java however
+            // TODO - get the Locale from the DFE instead of statically - this needs to go into graphql-java however
 
             List<GraphQLError> errors = rules.runValidationRules(environment, messageInterpolator, locale);
             if (!errors.isEmpty()) {

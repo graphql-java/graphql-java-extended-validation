@@ -9,8 +9,11 @@ import graphql.schema.GraphQLType;
 import graphql.schema.GraphQLTypeUtil;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 
 public class Util {
 
@@ -63,6 +66,12 @@ public class Util {
         errors.addAll(l1);
         errors.addAll(l2);
         return errors;
+    }
+
+    public static <T, U extends Comparable<? super U>> List<T> sort(Collection<T> toBeSorted, Function<? super T, ? extends U> keyExtractor) {
+        ArrayList<T> l = new ArrayList<>(toBeSorted);
+        l.sort(Comparator.comparing(keyExtractor));
+        return l;
     }
 
 

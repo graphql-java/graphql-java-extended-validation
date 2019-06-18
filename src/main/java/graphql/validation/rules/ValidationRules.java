@@ -7,6 +7,7 @@ import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLObjectType;
 import graphql.validation.interpolation.MessageInterpolator;
+import graphql.validation.util.Util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,11 +44,31 @@ public class ValidationRules {
         GraphQLObjectType fieldContainer = env.getExecutionStepInfo().getFieldContainer();
         GraphQLFieldDefinition fieldDefinition = env.getFieldDefinition();
 
-        for (GraphQLArgument fieldArg : fieldDefinition.getArguments()) {
+
+        // run the field specific rules
+
+        ValidationCoordinates fieldCoords = ValidationCoordinates.newCoordinates(fieldContainer, fieldDefinition);
+
+        List<ValidationRule> rules = rulesMap.getOrDefault(fieldCoords, Collections.emptyList());
+        if (!rules.isEmpty()) {
+            ValidationEnvironment ruleEnvironment = ValidationEnvironment.newValidationEnvironment()
+                    .dataFetchingEnvironment(env)
+                    .messageInterpolator(interpolator)
+                    .build();
+
+            for (ValidationRule rule : rules) {
+                List<GraphQLError> ruleErrors = rule.runValidation(ruleEnvironment);
+                errors.addAll(ruleErrors);
+            }
+        }
+
+        // run the argument specific rules next
+        List<GraphQLArgument> sortedArgs = Util.sort(fieldDefinition.getArguments(), GraphQLArgument::getName);
+        for (GraphQLArgument fieldArg : sortedArgs) {
 
             ValidationCoordinates argCoords = ValidationCoordinates.newCoordinates(fieldContainer, fieldDefinition, fieldArg);
 
-            List<ValidationRule> rules = rulesMap.getOrDefault(argCoords, Collections.emptyList());
+            rules = rulesMap.getOrDefault(argCoords, Collections.emptyList());
             if (rules.isEmpty()) {
                 continue;
             }
@@ -68,21 +89,6 @@ public class ValidationRules {
             }
         }
 
-        ValidationCoordinates fieldCoords = ValidationCoordinates.newCoordinates(fieldContainer, fieldDefinition);
-
-
-        List<ValidationRule> rules = rulesMap.getOrDefault(fieldCoords, Collections.emptyList());
-        if (!rules.isEmpty()) {
-            ValidationEnvironment ruleEnvironment = ValidationEnvironment.newValidationEnvironment()
-                    .dataFetchingEnvironment(env)
-                    .messageInterpolator(interpolator)
-                    .build();
-
-            for (ValidationRule rule : rules) {
-                List<GraphQLError> ruleErrors = rule.runValidation(ruleEnvironment);
-                errors.addAll(ruleErrors);
-            }
-        }
         return errors;
     }
 

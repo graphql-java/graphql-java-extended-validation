@@ -50,8 +50,7 @@ public class ArgumentsConstraint extends AbstractDirectiveConstraint {
     }
 
     @Override
-    public List<GraphQLError> runValidation(ValidationEnvironment validationEnvironment) {
-
+    protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         GraphQLFieldDefinition fieldDefinition = validationEnvironment.getFieldDefinition();
         GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
         String expression = curlyBraces(getStrArg(directive, "expression"));

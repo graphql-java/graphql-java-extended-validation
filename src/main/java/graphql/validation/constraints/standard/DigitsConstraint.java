@@ -64,7 +64,7 @@ public class DigitsConstraint extends AbstractDirectiveConstraint {
 
 
     @Override
-    public List<GraphQLError> runValidation(ValidationEnvironment validationEnvironment) {
+    protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
         if (validatedValue == null) {
             return Collections.emptyList();

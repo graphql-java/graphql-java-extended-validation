@@ -16,6 +16,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * The environment in which validation runs
+ */
 @PublicApi
 public class ValidationEnvironment {
 

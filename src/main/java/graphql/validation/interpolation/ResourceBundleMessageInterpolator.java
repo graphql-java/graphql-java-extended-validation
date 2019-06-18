@@ -4,6 +4,7 @@ import graphql.ErrorClassification;
 import graphql.GraphQLError;
 import graphql.GraphqlErrorBuilder;
 import graphql.execution.ExecutionPath;
+import graphql.schema.GraphQLDirective;
 import graphql.validation.rules.ValidationEnvironment;
 import org.hibernate.validator.internal.engine.MessageInterpolatorContext;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
@@ -68,7 +69,8 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
     @SuppressWarnings("unused")
     protected ErrorClassification buildErrorClassification(String messageTemplate, Map<String, Object> messageParams, ValidationEnvironment validationEnvironment) {
         ExecutionPath fieldOrArgumentPath = validationEnvironment.getFieldOrArgumentPath();
-        return new ValidationErrorType(fieldOrArgumentPath);
+        GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
+        return new ValidationErrorType(fieldOrArgumentPath, directive);
     }
 
     /**
@@ -179,16 +181,21 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
 
     private static class ValidationErrorType implements ErrorClassification {
         private final ExecutionPath fieldOrArgumentPath;
+        private final GraphQLDirective directive;
 
-        public ValidationErrorType(ExecutionPath fieldOrArgumentPath) {
+        public ValidationErrorType(ExecutionPath fieldOrArgumentPath, GraphQLDirective directive) {
             this.fieldOrArgumentPath = fieldOrArgumentPath;
+            this.directive = directive;
         }
 
         @Override
         public Object toSpecification(GraphQLError error) {
             Map<String, Object> map = new LinkedHashMap<>();
-            map.put("type", "ValidationError");
+            map.put("type", "ExtendedValidationError");
             map.put("fieldOrArgumentPath", fieldOrArgumentPath);
+            if (directive != null) {
+                map.put("constraint", "@" + directive.getName());
+            }
             return map;
         }
     }

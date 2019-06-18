@@ -26,7 +26,7 @@ abstract class AbstractAssertConstraint extends AbstractDirectiveConstraint {
     }
 
     @Override
-    public List<GraphQLError> runValidation(ValidationEnvironment validationEnvironment) {
+    protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
         //null values are valid
         if (validatedValue == null) {

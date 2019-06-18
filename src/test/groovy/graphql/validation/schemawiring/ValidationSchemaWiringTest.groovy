@@ -39,7 +39,6 @@ class ValidationSchemaWiringTest extends Specification {
 
 
         PossibleValidationRules possibleRules = PossibleValidationRules.newPossibleRules()
-                .addRule(directiveRules)
                 .build()
 
         ValidationSchemaWiring schemaWiring = new ValidationSchemaWiring(possibleRules)
@@ -59,7 +58,11 @@ class ValidationSchemaWiringTest extends Specification {
         ''')
 
         then:
-        er.errors.size() == 1
-        er.errors[0].message == "size must be between 0 and 10"
+        def specification = er.toSpecification()
+        specification != null
+
+        er.errors.size() == 2
+        er.errors[0].message == "/cars/filter/age range must be between 0 and 5"
+        er.errors[1].message == "/cars/filter/model size must be between 0 and 10"
     }
 }

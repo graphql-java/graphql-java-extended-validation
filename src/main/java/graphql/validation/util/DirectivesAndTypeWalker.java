@@ -15,10 +15,10 @@ import java.util.function.BiFunction;
 @Internal
 public class DirectivesAndTypeWalker {
 
-    public static boolean isSuitable(GraphQLArgument argument, BiFunction<GraphQLInputType, GraphQLDirective, Boolean> isSutiable) {
+    public static boolean isSuitable(GraphQLArgument argument, BiFunction<GraphQLInputType, GraphQLDirective, Boolean> isSuitable) {
         GraphQLInputType inputType = argument.getType();
         List<GraphQLDirective> directives = argument.getDirectives();
-        return walkInputType(inputType, directives, isSutiable);
+        return walkInputType(inputType, directives, isSuitable);
     }
 
     private static boolean walkInputType(GraphQLInputType inputType, List<GraphQLDirective> directives, BiFunction<GraphQLInputType, GraphQLDirective, Boolean> isSuitable) {

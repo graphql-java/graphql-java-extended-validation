@@ -9,6 +9,8 @@ import graphql.validation.interpolation.MessageInterpolator;
 import graphql.validation.interpolation.ResourceBundleMessageInterpolator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -94,12 +96,21 @@ public class PossibleValidationRules {
 
         public Builder() {
             // we start with the standard directive constraints to make us easier to use
-            addRule(DirectiveConstraints.newDirectiveConstraints().build());
+            addRules(DirectiveConstraints.STANDARD_CONSTRAINTS);
         }
 
         public Builder addRule(ValidationRule rule) {
             rules.add(assertNotNull(rule));
             return this;
+        }
+
+        public Builder addRules(Collection<? extends ValidationRule> rules) {
+            rules.forEach(this::addRule);
+            return this;
+        }
+
+        public Builder addRules(ValidationRule... rules) {
+            return addRules(Arrays.asList(rules));
         }
 
         public Builder clearRules() {
@@ -112,7 +123,7 @@ public class PossibleValidationRules {
             return this;
         }
 
-        public Builder messageInterpolator(Locale locale) {
+        public Builder locale(Locale locale) {
             this.locale = locale;
             return this;
         }
