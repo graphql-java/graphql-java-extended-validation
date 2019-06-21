@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 
 import static graphql.schema.GraphQLTypeUtil.isList;
+import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.FIELD;
+import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.INPUT_OBJECT_FIELD;
 import static java.util.Collections.singletonList;
 
 @SuppressWarnings("UnnecessaryLocalVariable")
@@ -85,8 +87,22 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
         return suitable;
     }
 
+    /**
+     * A derived class will be called to indicate whether this input type applies to the constraint
+     *
+     * @param inputType the input type
+     *
+     * @return true if the constraint can handle that type
+     */
     abstract protected boolean appliesToType(GraphQLInputType inputType);
 
+    /**
+     * This is called to perform the constraint validation
+     *
+     * @param validationEnvironment the validation environment
+     *
+     * @return a list of errors or an empty one if there are no errors
+     */
     abstract protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment);
 
 
@@ -94,39 +110,32 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
     @Override
     public List<GraphQLError> runValidation(ValidationEnvironment validationEnvironment) {
 
+        // output fields are special
+        if (validationEnvironment.getValidatedElement() == FIELD) {
+            return runFieldValidationImpl(validationEnvironment);
+        }
+
         GraphQLArgument argument = validationEnvironment.getArgument();
         Object validatedValue = validationEnvironment.getValidatedValue();
-        List<GraphQLDirective> directives = argument.getDirectives();
+        List<GraphQLDirective> directives = argument == null ? Collections.emptyList() : argument.getDirectives();
 
         //
         // all the directives validation code does NOT care for NULL ness since the graphql engine covers that.
         // eg a @NonNull validation directive makes no sense in graphql like it might in Java
         //
-        GraphQLInputType inputType = Util.unwrapNonNull(validationEnvironment.getFieldOrArgumentType());
-        validationEnvironment = validationEnvironment.transform(b -> b.fieldOrArgumentType(inputType));
+        GraphQLInputType inputType = Util.unwrapNonNull(validationEnvironment.getValidatedType());
+        validationEnvironment = validationEnvironment.transform(b -> b.validatedType(inputType));
 
         return runValidationImpl(validationEnvironment, inputType, validatedValue, directives);
     }
 
+    private List<GraphQLError> runFieldValidationImpl(ValidationEnvironment validationEnvironment) {
+        return runConstraintOnDirectives(validationEnvironment, validationEnvironment.getFieldDefinition().getDirectives());
+    }
+
     @SuppressWarnings("unchecked")
     private List<GraphQLError> runValidationImpl(ValidationEnvironment validationEnvironment, GraphQLInputType inputType, Object validatedValue, List<GraphQLDirective> directives) {
-        List<GraphQLError> errors = new ArrayList<>();
-        // run them in a stable order
-        directives = Util.sort(directives, GraphQLDirective::getName);
-        for (GraphQLDirective directive : directives) {
-            // we get called for arguments and input field types which can have multiple directive constraints on them and hence no just for this one
-            boolean isOurDirective = directive.getName().equals(this.getName());
-            if (!isOurDirective) {
-                continue;
-            }
-
-            validationEnvironment = validationEnvironment.transform(b -> b.context(GraphQLDirective.class, directive));
-            //
-            // now run the directive rule with this directive instance
-            List<GraphQLError> ruleErrors = this.runConstraint(validationEnvironment);
-            errors.addAll(ruleErrors);
-        }
-
+        List<GraphQLError> errors = runConstraintOnDirectives(validationEnvironment, directives);
         if (validatedValue == null) {
             return errors;
         }
@@ -151,6 +160,26 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
         return errors;
     }
 
+    private List<GraphQLError> runConstraintOnDirectives(ValidationEnvironment validationEnvironment, List<GraphQLDirective> directives) {
+        List<GraphQLError> errors = new ArrayList<>();
+        directives = Util.sort(directives, GraphQLDirective::getName);
+
+        for (GraphQLDirective directive : directives) {
+            // we get called for arguments and input field and field types which can have multiple directive constraints on them and hence no just for this one
+            boolean isOurDirective = directive.getName().equals(this.getName());
+            if (!isOurDirective) {
+                continue;
+            }
+
+            validationEnvironment = validationEnvironment.transform(b -> b.context(GraphQLDirective.class, directive));
+            //
+            // now run the directive rule with this directive instance
+            List<GraphQLError> ruleErrors = this.runConstraint(validationEnvironment);
+            errors.addAll(ruleErrors);
+        }
+        return errors;
+    }
+
     private List<GraphQLError> walkObjectArg(ValidationEnvironment validationEnvironment, GraphQLInputObjectType argumentType, Map<String, Object> objectMap) {
         List<GraphQLError> errors = new ArrayList<>();
 
@@ -165,12 +194,13 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
                 continue;
             }
 
-            ExecutionPath fieldOrArgPath = validationEnvironment.getFieldOrArgumentPath().segment(inputField.getName());
+            ExecutionPath newPath = validationEnvironment.getValidatedPath().segment(inputField.getName());
 
             ValidationEnvironment newValidationEnvironment = validationEnvironment.transform(builder -> builder
-                    .fieldOrArgumentPath(fieldOrArgPath)
+                    .validatedPath(newPath)
                     .validatedValue(validatedValue)
-                    .fieldOrArgumentType(fieldType)
+                    .validatedType(fieldType)
+                    .validatedElement(INPUT_OBJECT_FIELD)
             );
 
             List<GraphQLError> ruleErrors = runValidationImpl(newValidationEnvironment, fieldType, validatedValue, directives);
@@ -192,12 +222,12 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
         int ix = 0;
         for (Object value : objectList) {
 
-            ExecutionPath fieldOrArgPath = validationEnvironment.getFieldOrArgumentPath().segment(ix);
+            ExecutionPath newPath = validationEnvironment.getValidatedPath().segment(ix);
 
             ValidationEnvironment newValidationEnvironment = validationEnvironment.transform(builder -> builder
-                    .fieldOrArgumentPath(fieldOrArgPath)
+                    .validatedPath(newPath)
                     .validatedValue(value)
-                    .fieldOrArgumentType(listItemType)
+                    .validatedType(listItemType)
             );
 
             List<GraphQLError> ruleErrors = runValidationImpl(newValidationEnvironment, listItemType, value, directives);
@@ -331,7 +361,7 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("validatedValue", validatedValue);
         params.put("constraint", getName());
-        params.put("path", mkFieldOrArgPath(validationEnvironment));
+        params.put("path", validationEnvironment.getValidatedPath());
 
         params.putAll(mkMap(args));
         return params;
@@ -355,15 +385,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
             params.put(String.valueOf(key), val);
         }
         return params;
-    }
-
-
-    private Object mkFieldOrArgPath(ValidationEnvironment validationEnvironment) {
-        ExecutionPath executionPath = validationEnvironment.getExecutionPath();
-        ExecutionPath fieldOrArgumentPath = validationEnvironment.getFieldOrArgumentPath();
-
-        executionPath = Util.concatPaths(executionPath, fieldOrArgumentPath);
-        return executionPath == null ? "/" : executionPath.toString();
     }
 
     /**
