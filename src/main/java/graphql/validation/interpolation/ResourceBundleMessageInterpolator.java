@@ -68,7 +68,7 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
      */
     @SuppressWarnings("unused")
     protected ErrorClassification buildErrorClassification(String messageTemplate, Map<String, Object> messageParams, ValidationEnvironment validationEnvironment) {
-        ExecutionPath fieldOrArgumentPath = validationEnvironment.getFieldOrArgumentPath();
+        ExecutionPath fieldOrArgumentPath = validationEnvironment.getValidatedPath();
         GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
         return new ValidationErrorType(fieldOrArgumentPath, directive);
     }
@@ -192,7 +192,7 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
         public Object toSpecification(GraphQLError error) {
             Map<String, Object> map = new LinkedHashMap<>();
             map.put("type", "ExtendedValidationError");
-            map.put("fieldOrArgumentPath", fieldOrArgumentPath);
+            map.put("validatedPath", fieldOrArgumentPath);
             if (directive != null) {
                 map.put("constraint", "@" + directive.getName());
             }

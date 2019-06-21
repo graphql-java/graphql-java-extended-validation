@@ -13,11 +13,12 @@ import graphql.validation.rules.ValidationEnvironment;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
-public class ArgumentsConstraint extends AbstractDirectiveConstraint {
+public class ExpressionConstraint extends AbstractDirectiveConstraint {
 
-    public ArgumentsConstraint() {
-        super("Arguments");
+    public ExpressionConstraint() {
+        super("Expression");
     }
 
 
@@ -29,19 +30,19 @@ public class ArgumentsConstraint extends AbstractDirectiveConstraint {
                 .description("The provided expression must evaluate to true.")
 
                 .example("drivers( first : Int, after : String!, last : Int, before : String) \n" +
-                        " : DriverConnection @Arguments(expression : \"${args.containsOneOf('first','last') }\"")
+                        " : DriverConnection @Expression(value : \"${args.containsOneOf('first','last') }\"")
 
-                .applicableTypeNames("Output Fields")
+                .applicableTypeNames("All Types and Scalars")
 
-                .directiveSDL("directive @Arguments(expression : String!, message : String = \"%s\") " +
-                                "on FIELD_DEFINITION",
+                .directiveSDL("directive @Expression(value : String!, message : String = \"%s\") " +
+                                "on FIELD_DEFINITION | ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
                         getMessageTemplate())
                 .build();
     }
 
     @Override
     public boolean appliesToType(GraphQLInputType inputType) {
-        return false;
+        return true;
     }
 
     @Override
@@ -53,29 +54,38 @@ public class ArgumentsConstraint extends AbstractDirectiveConstraint {
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         GraphQLFieldDefinition fieldDefinition = validationEnvironment.getFieldDefinition();
         GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
-        String expression = curlyBraces(getStrArg(directive, "expression"));
+        String expression = helpWithCurlyBraces(getStrArg(directive, "value"));
+
+        Object argument = validationEnvironment.getArgument();
+        Object validatedValue = validationEnvironment.getValidatedValue();
+        Map<String, Object> argumentValues = validationEnvironment.getArgumentValues();
 
         Map<String, Object> variables = mkMap(
-                "fieldDefinition", fieldDefinition,
-                "args", validationEnvironment.getArgumentValues()
+                "validatedValue", validatedValue,
+
+                "gqlField", fieldDefinition,
+                "gqlArgument", argument,
+
+                "args", argumentValues, // short hand
+                "arguments", argumentValues
         );
         ELSupport elSupport = new ELSupport(validationEnvironment.getLocale());
         boolean isOK = elSupport.evaluateBoolean(expression, variables);
 
         if (!isOK) {
-            return mkError(validationEnvironment, directive, mkMessageParams(null, validationEnvironment,
-                    "expression", expression));
+            return mkError(validationEnvironment, directive, mkMessageParams(validatedValue, validationEnvironment,
+                    "value", expression));
 
         }
         return Collections.emptyList();
     }
 
-    private String curlyBraces(String expression) {
+    private String helpWithCurlyBraces(String expression) {
         expression = expression.trim();
         if (!expression.startsWith("${") && !expression.startsWith("#{")) {
             expression = "${" + expression;
         }
-        if (!expression.startsWith("}")) {
+        if (!expression.endsWith("}")) {
             expression = expression + "}";
         }
         return expression;

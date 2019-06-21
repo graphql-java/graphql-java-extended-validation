@@ -37,16 +37,17 @@ public class BetterMapELResolver extends MapELResolver {
         }
 
         if (base instanceof Map) {
-            context.setPropertyResolved(true);
             Map map = (Map) base;
             if ("containsOneOf" .equals(method)) {
+                context.setPropertyResolved(true);
                 return containsOneOf(map, Arrays.asList(params));
             }
             if ("containsAllOf" .equals(method)) {
+                context.setPropertyResolved(true);
                 return containsAllOf(map, Arrays.asList(params));
             }
         }
-        return null;
+        // delegate back to underlying Map resolver
+        return super.invoke(context, base, method, paramTypes, params);
     }
-
 }

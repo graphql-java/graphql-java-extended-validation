@@ -73,7 +73,8 @@ public class ELSupport {
             bindVariable(context, entry.getKey(), entry.getValue());
         }
         ValueExpression result = expressionFactory.createValueExpression(context, expression, expectedResultClass);
-        return (T) result.getValue(context);
+        Object value = result.getValue(context);
+        return (T) value;
     }
 
 

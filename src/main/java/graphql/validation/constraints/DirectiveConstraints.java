@@ -4,7 +4,7 @@ import graphql.PublicApi;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLFieldsContainer;
-import graphql.validation.constraints.standard.ArgumentsConstraint;
+import graphql.validation.constraints.standard.ExpressionConstraint;
 import graphql.validation.constraints.standard.AssertFalseConstraint;
 import graphql.validation.constraints.standard.AssertTrueConstraint;
 import graphql.validation.constraints.standard.DecimalMaxConstraint;
@@ -44,7 +44,7 @@ public class DirectiveConstraints {
      * These are the standard directive rules that come with the system
      */
     public final static List<DirectiveConstraint> STANDARD_CONSTRAINTS = Arrays.asList(
-            new ArgumentsConstraint(),
+            new ExpressionConstraint(),
             new AssertFalseConstraint(),
             new AssertTrueConstraint(),
             new DecimalMaxConstraint(),

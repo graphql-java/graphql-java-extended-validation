@@ -47,4 +47,16 @@ class ELSupportTest extends Specification {
 
     }
 
+    def "basic expression support"() {
+        def el = new ELSupport(Locale.getDefault())
+
+        expect:
+        expected == el.evaluateBoolean(expression, values)
+
+        where:
+
+        expression         | expected | values
+        '''${value==20}''' | true     | [value: 20]
+        '''${value!=20}''' | false    | [value: 20]
+    }
 }

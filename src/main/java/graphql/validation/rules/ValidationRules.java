@@ -2,6 +2,7 @@ package graphql.validation.rules;
 
 import graphql.GraphQLError;
 import graphql.PublicApi;
+import graphql.execution.ExecutionPath;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLFieldDefinition;
@@ -15,6 +16,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.ARGUMENT;
+import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.FIELD;
 
 /**
  * ValidationRules is a holder of {@link graphql.validation.rules.ValidationRule}s against a specific
@@ -43,17 +47,17 @@ public class ValidationRules {
 
         GraphQLObjectType fieldContainer = env.getExecutionStepInfo().getFieldContainer();
         GraphQLFieldDefinition fieldDefinition = env.getFieldDefinition();
-
-
+        ExecutionPath fieldPath = env.getExecutionStepInfo().getPath();
+        //
         // run the field specific rules
-
         ValidationCoordinates fieldCoords = ValidationCoordinates.newCoordinates(fieldContainer, fieldDefinition);
-
         List<ValidationRule> rules = rulesMap.getOrDefault(fieldCoords, Collections.emptyList());
         if (!rules.isEmpty()) {
             ValidationEnvironment ruleEnvironment = ValidationEnvironment.newValidationEnvironment()
                     .dataFetchingEnvironment(env)
                     .messageInterpolator(interpolator)
+                    .validatedElement(FIELD)
+                    .validatedPath(fieldPath)
                     .build();
 
             for (ValidationRule rule : rules) {
@@ -61,7 +65,7 @@ public class ValidationRules {
                 errors.addAll(ruleErrors);
             }
         }
-
+        //
         // run the argument specific rules next
         List<GraphQLArgument> sortedArgs = Util.sort(fieldDefinition.getArguments(), GraphQLArgument::getName);
         for (GraphQLArgument fieldArg : sortedArgs) {
@@ -78,7 +82,10 @@ public class ValidationRules {
             ValidationEnvironment ruleEnvironment = ValidationEnvironment.newValidationEnvironment()
                     .dataFetchingEnvironment(env)
                     .argument(fieldArg)
+                    .validatedElement(ARGUMENT)
+                    .validatedType(fieldArg.getType())
                     .validatedValue(argValue)
+                    .validatedPath(fieldPath.segment(fieldArg.getName()))
                     .messageInterpolator(interpolator)
                     .locale(locale)
                     .build();

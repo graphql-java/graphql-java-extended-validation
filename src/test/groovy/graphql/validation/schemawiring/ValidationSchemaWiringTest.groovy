@@ -11,13 +11,13 @@ import spock.lang.Specification
 class ValidationSchemaWiringTest extends Specification {
 
 
-    def "integration test"() {
+    def "integration test of multiple rules being applied"() {
 
         def directiveRules = DirectiveConstraints.newDirectiveConstraints().build()
 
-        def sdl = """
+        def sdl = '''
 
-            ${directiveRules.directivesSDL}
+            ''' + directiveRules.directivesSDL + '''
 
             type Car {
                 model : String
@@ -27,16 +27,14 @@ class ValidationSchemaWiringTest extends Specification {
             input CarFilter {
                 model : String @Size(max : 10)
                 make : String
-                age : Int @Range(max : 5)
+                age : Int @Range(max : 5) @Expression(value : "${validatedValue==20}")
             }
 
 
             type Query {
-                cars(filter : CarFilter) : [Car]
+                cars(filter : CarFilter) : [Car] @Expression(value : "${false}")
             }
-            
-        """
-
+        '''
 
         PossibleValidationRules possibleRules = PossibleValidationRules.newPossibleRules()
                 .build()
@@ -61,8 +59,12 @@ class ValidationSchemaWiringTest extends Specification {
         def specification = er.toSpecification()
         specification != null
 
-        er.errors.size() == 2
-        er.errors[0].message == "/cars/filter/age range must be between 0 and 5"
-        er.errors[1].message == "/cars/filter/model size must be between 0 and 10"
+        er.errors.size() == 3
+        er.errors[0].message == "/cars expression must evaluate to true"
+        er.errors[0].path == ["cars"]
+        er.errors[1].message == "/cars/filter/age range must be between 0 and 5"
+        er.errors[1].path == ["cars"]
+        er.errors[2].message == "/cars/filter/model size must be between 0 and 10"
+        er.errors[2].path == ["cars"]
     }
 }

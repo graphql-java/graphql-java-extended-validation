@@ -21,7 +21,7 @@ class BaseConstraintTest extends Specification {
         GraphQLError interpolate(String messageTemplate, Map<String, Object> messageParams, ValidationEnvironment validationEnvironment) {
             def s = messageTemplate.replace("graphql.validation.", "").replace(".message", "")
             s += ";"
-            s += "path=" + validationEnvironment.getFieldOrArgumentPath().toString() + ";"
+            s += "path=" + validationEnvironment.getValidatedPath().toString() + ";"
             s += "val:" + messageParams.getOrDefault("validatedValue", "") + ";"
             return GraphqlErrorBuilder.newError().message(s).build()
         }
@@ -53,26 +53,29 @@ class BaseConstraintTest extends Specification {
         def ruleEnvironment = ValidationEnvironment.newValidationEnvironment()
                 .argument(argUnderTest)
                 .validatedValue(argValue)
-                .fieldOrArgumentType(argUnderTest.getType())
+                .validatedType(argUnderTest.getType())
                 .fieldDefinition(fieldDefinition)
                 .fieldsContainer(fieldsContainer)
                 .executionPath(ExecutionPath.rootPath().segment(fieldDefinition.getName()))
-                .fieldOrArgumentPath(ExecutionPath.rootPath().segment(argName))
+                .validatedPath(ExecutionPath.rootPath().segment(argName))
                 .context(GraphQLDirective.class, argUnderTest.getDirective(targetDirective))
                 .messageInterpolator(interpolator)
                 .build()
         ruleEnvironment
     }
 
-    ValidationEnvironment buildEnv(String targetDirective, GraphQLSchema schema, Map<String, Object> arguments) {
+    ValidationEnvironment buildEnvForField(String targetDirective, GraphQLSchema schema, Map<String, Object> arguments) {
         GraphQLFieldsContainer fieldsContainer = schema.getObjectType("Query") as GraphQLFieldsContainer
         GraphQLFieldDefinition fieldDefinition = fieldsContainer.getFieldDefinition("field")
 
+        def path = ExecutionPath.rootPath().segment(fieldDefinition.getName())
         def ruleEnvironment = ValidationEnvironment.newValidationEnvironment()
                 .argumentValues(arguments)
-                .fieldDefinition(fieldDefinition)
                 .fieldsContainer(fieldsContainer)
-                .executionPath(ExecutionPath.rootPath().segment(fieldDefinition.getName()))
+                .fieldDefinition(fieldDefinition)
+                .executionPath(path)
+                .validatedElement(ValidationEnvironment.ValidatedElement.FIELD)
+                .validatedPath(path)
                 .context(GraphQLDirective.class, fieldDefinition.getDirective(targetDirective))
                 .messageInterpolator(interpolator)
                 .build()

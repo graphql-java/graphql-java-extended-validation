@@ -42,7 +42,7 @@ public class NotEmptyRule extends AbstractDirectiveConstraint {
     @Override
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
-        GraphQLInputType argumentType = validationEnvironment.getFieldOrArgumentType();
+        GraphQLInputType argumentType = validationEnvironment.getValidatedType();
 
         GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
         int size = getStringOrObjectOrMapLength(argumentType, validatedValue);

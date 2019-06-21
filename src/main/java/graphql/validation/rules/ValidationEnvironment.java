@@ -22,32 +22,52 @@ import java.util.function.Consumer;
 @PublicApi
 public class ValidationEnvironment {
 
+    /**
+     * The type of element being validated
+     */
+    public enum ValidatedElement {
+        /**
+         * A output field is being validated
+         */
+        FIELD,
+        /**
+         * An argument on a graphql output field is being validated
+         */
+        ARGUMENT,
+        /**
+         * A input type field is being validated
+         */
+        INPUT_OBJECT_FIELD
+    }
+
     private final GraphQLFieldsContainer fieldsContainer;
     private final GraphQLFieldDefinition fieldDefinition;
     private final GraphQLArgument argument;
-    private final GraphQLInputType fieldOrArgumentType;
-    private final Object validatedValue;
-    private final ExecutionPath fieldOrArgumentPath;
     private final ExecutionPath executionPath;
+    private final ExecutionPath validatedPath;
     private final SourceLocation location;
     private final MessageInterpolator interpolator;
     private final Map<Class, Object> contextMap;
     private final Locale locale;
     private final Map<String, Object> argumentValues;
+    private final Object validatedValue;
+    private final GraphQLInputType validatedType;
+    private final ValidatedElement validatedElement;
 
     private ValidationEnvironment(Builder builder) {
         this.argument = builder.argument;
         this.argumentValues = Collections.unmodifiableMap(builder.argumentValues);
         this.contextMap = Collections.unmodifiableMap(builder.contextMap);
-        this.executionPath = builder.executionPath;
         this.fieldDefinition = builder.fieldDefinition;
-        this.fieldOrArgumentPath = builder.fieldOrArgumentPath;
-        this.fieldOrArgumentType = builder.fieldOrArgumentType;
+        this.executionPath = builder.executionPath;
+        this.validatedPath = builder.validatedPath;
+        this.validatedType = builder.validatedType;
         this.fieldsContainer = builder.fieldsContainer;
         this.interpolator = builder.interpolator;
         this.locale = builder.locale;
         this.location = builder.location;
         this.validatedValue = builder.validatedValue;
+        this.validatedElement = builder.validatedElement;
     }
 
     public static Builder newValidationEnvironment() {
@@ -71,20 +91,20 @@ public class ValidationEnvironment {
         return argument;
     }
 
-    public ExecutionPath getExecutionPath() {
-        return executionPath;
-    }
-
     public SourceLocation getLocation() {
         return location;
     }
 
-    public ExecutionPath getFieldOrArgumentPath() {
-        return fieldOrArgumentPath;
+    public ExecutionPath getValidatedPath() {
+        return validatedPath;
     }
 
-    public GraphQLInputType getFieldOrArgumentType() {
-        return fieldOrArgumentType;
+    public ExecutionPath getExecutionPath() {
+        return executionPath;
+    }
+
+    public GraphQLInputType getValidatedType() {
+        return validatedType;
     }
 
     public Object getValidatedValue() {
@@ -103,6 +123,10 @@ public class ValidationEnvironment {
         return locale;
     }
 
+    public ValidatedElement getValidatedElement() {
+        return validatedElement;
+    }
+
     public ValidationEnvironment transform(Consumer<Builder> builderConsumer) {
         Builder builder = newValidationEnvironment().validationEnvironment(this);
         builderConsumer.accept(builder);
@@ -113,29 +137,31 @@ public class ValidationEnvironment {
         private final Map<Class, Object> contextMap = new HashMap<>();
         private GraphQLArgument argument;
         private Map<String, Object> argumentValues = new HashMap<>();
-        private ExecutionPath executionPath;
         private GraphQLFieldDefinition fieldDefinition;
-        private ExecutionPath fieldOrArgumentPath = ExecutionPath.rootPath();
-        private GraphQLInputType fieldOrArgumentType;
+        private ExecutionPath validatedPath = ExecutionPath.rootPath();
+        private ExecutionPath executionPath;
         private GraphQLFieldsContainer fieldsContainer;
         private MessageInterpolator interpolator;
         private Locale locale;
         private SourceLocation location;
         private Object validatedValue;
+        private GraphQLInputType validatedType;
+        private ValidatedElement validatedElement;
 
         public Builder validationEnvironment(ValidationEnvironment validationEnvironment) {
             this.argument = validationEnvironment.argument;
             this.argumentValues = validationEnvironment.argumentValues;
             this.contextMap.putAll(validationEnvironment.contextMap);
-            this.executionPath = validationEnvironment.executionPath;
             this.fieldDefinition = validationEnvironment.fieldDefinition;
-            this.fieldOrArgumentPath = validationEnvironment.fieldOrArgumentPath;
-            this.fieldOrArgumentType = validationEnvironment.fieldOrArgumentType;
+            this.executionPath = validationEnvironment.executionPath;
+            this.validatedPath = validationEnvironment.validatedPath;
+            this.validatedType = validationEnvironment.validatedType;
             this.fieldsContainer = validationEnvironment.fieldsContainer;
             this.interpolator = validationEnvironment.interpolator;
             this.locale = validationEnvironment.locale;
             this.location = validationEnvironment.location;
             this.validatedValue = validationEnvironment.validatedValue;
+            this.validatedElement = validationEnvironment.validatedElement;
             return this;
         }
 
@@ -143,8 +169,15 @@ public class ValidationEnvironment {
             fieldsContainer(dataFetchingEnvironment.getExecutionStepInfo().getFieldContainer());
             fieldDefinition(dataFetchingEnvironment.getFieldDefinition());
             executionPath(dataFetchingEnvironment.getExecutionStepInfo().getPath());
+            validatedPath(dataFetchingEnvironment.getExecutionStepInfo().getPath());
             location(dataFetchingEnvironment.getField().getSourceLocation());
             argumentValues(dataFetchingEnvironment.getArguments());
+            validatedElement(ValidatedElement.FIELD);
+            return this;
+        }
+
+        public Builder argument(GraphQLArgument argument) {
+            this.argument = argument;
             return this;
         }
 
@@ -158,35 +191,33 @@ public class ValidationEnvironment {
             return this;
         }
 
-        public Builder fieldDefinition(GraphQLFieldDefinition fieldDefinition) {
-            this.fieldDefinition = fieldDefinition;
-            return this;
-        }
-
         public Builder executionPath(ExecutionPath executionPath) {
             this.executionPath = executionPath;
             return this;
         }
 
-        public Builder argument(GraphQLArgument argument) {
-            this.argument = argument;
-            fieldOrArgumentType(argument.getType());
-            fieldOrArgumentPath(ExecutionPath.rootPath().segment(argument.getName()));
+        public Builder fieldDefinition(GraphQLFieldDefinition fieldDefinition) {
+            this.fieldDefinition = fieldDefinition;
             return this;
         }
 
-        public Builder fieldOrArgumentPath(ExecutionPath fieldOrArgumentPath) {
-            this.fieldOrArgumentPath = fieldOrArgumentPath;
+        public Builder validatedElement(ValidatedElement validatedElement) {
+            this.validatedElement = validatedElement;
             return this;
         }
 
-        public Builder fieldOrArgumentType(GraphQLInputType fieldOrArgumentType) {
-            this.fieldOrArgumentType = fieldOrArgumentType;
+        public Builder validatedType(GraphQLInputType validatedType) {
+            this.validatedType = validatedType;
             return this;
         }
 
         public Builder validatedValue(Object validatedValue) {
             this.validatedValue = validatedValue;
+            return this;
+        }
+
+        public Builder validatedPath(ExecutionPath validatedPath) {
+            this.validatedPath = validatedPath;
             return this;
         }
 

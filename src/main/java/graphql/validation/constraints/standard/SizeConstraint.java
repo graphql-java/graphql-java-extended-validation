@@ -45,7 +45,7 @@ public class SizeConstraint extends AbstractDirectiveConstraint {
     @Override
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
-        GraphQLInputType argType = validationEnvironment.getFieldOrArgumentType();
+        GraphQLInputType argType = validationEnvironment.getValidatedType();
 
         GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
         int min = getIntArg(directive, "min");
