@@ -1,10 +1,9 @@
 package graphql.validation.constraints
 
 import graphql.validation.constraints.standard.SizeConstraint
-import graphql.validation.rules.ValidationEnvironment
 import spock.lang.Unroll
 
-class AbstractDirectiveConstraintTest extends BaseConstraintTest {
+class AbstractDirectiveConstraintTest extends BaseConstraintTestSupport {
 
     @Unroll
     def "complex object argument constraints"() {
@@ -29,11 +28,7 @@ class AbstractDirectiveConstraintTest extends BaseConstraintTest {
 
         expect:
 
-        def schema = buildSchema(constraintUnderTest.getDocumentation().getDirectiveSDL(), fieldDeclaration, extraSDL)
-
-        ValidationEnvironment validationEnvironment = buildEnv("Size", schema, "testArg", argVal)
-
-        def errors = constraintUnderTest.runValidation(validationEnvironment)
+        def errors = runValidation(constraintUnderTest, fieldDeclaration, extraSDL, "testArg", argVal)
         errors.size() == eSize
 
         where:

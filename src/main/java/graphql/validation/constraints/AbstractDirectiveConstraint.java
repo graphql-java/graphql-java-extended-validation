@@ -4,19 +4,14 @@ import graphql.Assert;
 import graphql.GraphQLError;
 import graphql.PublicSpi;
 import graphql.Scalars;
-import graphql.execution.ExecutionPath;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLDirective;
-import graphql.schema.GraphQLDirectiveContainer;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLFieldsContainer;
-import graphql.schema.GraphQLInputObjectField;
 import graphql.schema.GraphQLInputObjectType;
 import graphql.schema.GraphQLInputType;
-import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLScalarType;
 import graphql.schema.GraphQLTypeUtil;
-import graphql.util.FpKit;
 import graphql.validation.rules.ValidationEnvironment;
 import graphql.validation.util.DirectivesAndTypeWalker;
 import graphql.validation.util.Util;
@@ -25,14 +20,12 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import static graphql.schema.GraphQLTypeUtil.isList;
 import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.FIELD;
-import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.INPUT_OBJECT_FIELD;
 import static java.util.Collections.singletonList;
 
 @SuppressWarnings("UnnecessaryLocalVariable")
@@ -115,9 +108,7 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
             return runFieldValidationImpl(validationEnvironment);
         }
 
-        GraphQLArgument argument = validationEnvironment.getArgument();
         Object validatedValue = validationEnvironment.getValidatedValue();
-        List<GraphQLDirective> directives = argument == null ? Collections.emptyList() : argument.getDirectives();
 
         //
         // all the directives validation code does NOT care for NULL ness since the graphql engine covers that.
@@ -126,42 +117,22 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
         GraphQLInputType inputType = Util.unwrapNonNull(validationEnvironment.getValidatedType());
         validationEnvironment = validationEnvironment.transform(b -> b.validatedType(inputType));
 
-        return runValidationImpl(validationEnvironment, inputType, validatedValue, directives);
+        return runValidationImpl(validationEnvironment, inputType, validatedValue);
     }
 
     private List<GraphQLError> runFieldValidationImpl(ValidationEnvironment validationEnvironment) {
-        return runConstraintOnDirectives(validationEnvironment, validationEnvironment.getFieldDefinition().getDirectives());
+        return runConstraintOnDirectives(validationEnvironment);
     }
 
     @SuppressWarnings("unchecked")
-    private List<GraphQLError> runValidationImpl(ValidationEnvironment validationEnvironment, GraphQLInputType inputType, Object validatedValue, List<GraphQLDirective> directives) {
-        List<GraphQLError> errors = runConstraintOnDirectives(validationEnvironment, directives);
-        if (validatedValue == null) {
-            return errors;
-        }
-
-        inputType = (GraphQLInputType) GraphQLTypeUtil.unwrapNonNull(inputType);
-
-        if (GraphQLTypeUtil.isList(inputType)) {
-            List<Object> values = new ArrayList<>(FpKit.toCollection(validatedValue));
-            List<GraphQLError> ruleErrors = walkListArg(validationEnvironment, (GraphQLList) inputType, values);
-            errors.addAll(ruleErrors);
-        }
-
-        if (inputType instanceof GraphQLInputObjectType) {
-            if (validatedValue instanceof Map) {
-                Map<String, Object> objectValue = (Map<String, Object>) validatedValue;
-                List<GraphQLError> ruleErrors = walkObjectArg(validationEnvironment, (GraphQLInputObjectType) inputType, objectValue);
-                errors.addAll(ruleErrors);
-            } else {
-                Assert.assertShouldNeverHappen("How can there be a `input` object type '%s' that does not have a matching Map java value", GraphQLTypeUtil.simplePrint(inputType));
-            }
-        }
-        return errors;
+    private List<GraphQLError> runValidationImpl(ValidationEnvironment validationEnvironment, GraphQLInputType inputType, Object validatedValue) {
+        return runConstraintOnDirectives(validationEnvironment);
     }
 
-    private List<GraphQLError> runConstraintOnDirectives(ValidationEnvironment validationEnvironment, List<GraphQLDirective> directives) {
+    private List<GraphQLError> runConstraintOnDirectives(ValidationEnvironment validationEnvironment) {
+
         List<GraphQLError> errors = new ArrayList<>();
+        List<GraphQLDirective> directives = validationEnvironment.getDirectives();
         directives = Util.sort(directives, GraphQLDirective::getName);
 
         for (GraphQLDirective directive : directives) {
@@ -176,63 +147,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
             // now run the directive rule with this directive instance
             List<GraphQLError> ruleErrors = this.runConstraint(validationEnvironment);
             errors.addAll(ruleErrors);
-        }
-        return errors;
-    }
-
-    private List<GraphQLError> walkObjectArg(ValidationEnvironment validationEnvironment, GraphQLInputObjectType argumentType, Map<String, Object> objectMap) {
-        List<GraphQLError> errors = new ArrayList<>();
-
-        // run them in a stable order
-        List<GraphQLInputObjectField> fieldDefinitions = Util.sort(argumentType.getFieldDefinitions(), GraphQLInputObjectField::getName);
-        for (GraphQLInputObjectField inputField : fieldDefinitions) {
-
-            GraphQLInputType fieldType = inputField.getType();
-            List<GraphQLDirective> directives = inputField.getDirectives();
-            Object validatedValue = objectMap.getOrDefault(inputField.getName(), inputField.getDefaultValue());
-            if (validatedValue == null) {
-                continue;
-            }
-
-            ExecutionPath newPath = validationEnvironment.getValidatedPath().segment(inputField.getName());
-
-            ValidationEnvironment newValidationEnvironment = validationEnvironment.transform(builder -> builder
-                    .validatedPath(newPath)
-                    .validatedValue(validatedValue)
-                    .validatedType(fieldType)
-                    .validatedElement(INPUT_OBJECT_FIELD)
-            );
-
-            List<GraphQLError> ruleErrors = runValidationImpl(newValidationEnvironment, fieldType, validatedValue, directives);
-            errors.addAll(ruleErrors);
-        }
-        return errors;
-    }
-
-    private List<GraphQLError> walkListArg(ValidationEnvironment validationEnvironment, GraphQLList argumentType, List<Object> objectList) {
-        List<GraphQLError> errors = new ArrayList<>();
-
-        GraphQLInputType listItemType = Util.unwrapOneAndAllNonNull(argumentType);
-        List<GraphQLDirective> directives;
-        if (!(listItemType instanceof GraphQLDirectiveContainer)) {
-            directives = Collections.emptyList();
-        } else {
-            directives = ((GraphQLDirectiveContainer) listItemType).getDirectives();
-        }
-        int ix = 0;
-        for (Object value : objectList) {
-
-            ExecutionPath newPath = validationEnvironment.getValidatedPath().segment(ix);
-
-            ValidationEnvironment newValidationEnvironment = validationEnvironment.transform(builder -> builder
-                    .validatedPath(newPath)
-                    .validatedValue(value)
-                    .validatedType(listItemType)
-            );
-
-            List<GraphQLError> ruleErrors = runValidationImpl(newValidationEnvironment, listItemType, value, directives);
-            errors.addAll(ruleErrors);
-            ix++;
         }
         return errors;
     }

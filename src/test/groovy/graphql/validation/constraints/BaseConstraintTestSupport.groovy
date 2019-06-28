@@ -3,17 +3,25 @@ package graphql.validation.constraints
 import graphql.GraphQLError
 import graphql.GraphqlErrorBuilder
 import graphql.execution.ExecutionPath
+import graphql.execution.ExecutionStepInfo
+import graphql.execution.MergedField
+import graphql.language.Field
+import graphql.language.SourceLocation
+import graphql.schema.DataFetchingEnvironmentImpl
 import graphql.schema.GraphQLArgument
 import graphql.schema.GraphQLDirective
 import graphql.schema.GraphQLFieldDefinition
 import graphql.schema.GraphQLFieldsContainer
+import graphql.schema.GraphQLObjectType
 import graphql.schema.GraphQLSchema
 import graphql.validation.TestUtil
 import graphql.validation.interpolation.MessageInterpolator
+import graphql.validation.rules.ValidationCoordinates
 import graphql.validation.rules.ValidationEnvironment
+import graphql.validation.rules.ValidationRules
 import spock.lang.Specification
 
-class BaseConstraintTest extends Specification {
+class BaseConstraintTestSupport extends Specification {
 
     MessageInterpolator interpolator = new MessageInterpolator() {
 
@@ -28,12 +36,48 @@ class BaseConstraintTest extends Specification {
     }
 
     List<GraphQLError> runValidation(DirectiveConstraint ruleUnderTest, String fieldDeclaration, String argName, Object argValue) {
-        def schema = buildSchema(ruleUnderTest.getDocumentation().getDirectiveSDL(), fieldDeclaration, "")
-
-        ValidationEnvironment validationEnvironment = buildEnv(ruleUnderTest.name, schema, argName, argValue)
-
-        return ruleUnderTest.runValidation(validationEnvironment)
+        runValidation(ruleUnderTest, fieldDeclaration, "", argName, argValue)
     }
+
+    List<GraphQLError> runValidation(DirectiveConstraint ruleUnderTest, String fieldDeclaration, String extraSDL, String argName, Object argValue) {
+        def schema = buildSchema(ruleUnderTest.getDocumentation().getDirectiveSDL(), fieldDeclaration, extraSDL)
+
+        GraphQLFieldsContainer fieldsContainer = schema.getObjectType("Query") as GraphQLFieldsContainer
+        GraphQLFieldDefinition fieldDefinition = fieldsContainer.getFieldDefinition("field")
+        GraphQLArgument argUnderTest = fieldDefinition.getArgument(argName)
+
+        ValidationCoordinates coordinates = ValidationCoordinates.newCoordinates(fieldsContainer, fieldDefinition, argUnderTest)
+
+        def validationRules = ValidationRules.newValidationRules().addRule(coordinates, ruleUnderTest).build()
+
+        def path = ExecutionPath.rootPath()
+
+        def astField = Field.newField()
+                .name(fieldDefinition.name)
+                .sourceLocation(new SourceLocation(6, 9))
+                .build()
+        def astMergedField = MergedField.newMergedField().addField(astField).build()
+
+        def stepInfo = ExecutionStepInfo.newExecutionStepInfo()
+                .fieldDefinition(fieldDefinition)
+                .fieldContainer(fieldsContainer as GraphQLObjectType)
+                .type(fieldDefinition.getType())
+                .path(path).build()
+
+        def argsMap = [:]
+        argsMap[argName] = argValue
+
+        def dfe = DataFetchingEnvironmentImpl.newDataFetchingEnvironment()
+                .fieldDefinition(fieldDefinition)
+                .executionStepInfo(stepInfo)
+                .fieldType(fieldDefinition.getType())
+                .mergedField(astMergedField)
+                .arguments(argsMap)
+                .build()
+
+        return validationRules.runValidationRules(dfe, interpolator, Locale.getDefault())
+    }
+
 
     void assertErrors(List<GraphQLError> errors, String expectedMessage) {
         def message = ""
@@ -100,5 +144,6 @@ class BaseConstraintTest extends Specification {
         """
         TestUtil.schema(sdl)
     }
+
 
 }

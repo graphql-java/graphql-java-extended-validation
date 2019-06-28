@@ -1,10 +1,10 @@
 package graphql.validation.constraints.standard
 
-import graphql.validation.constraints.BaseConstraintTest
+import graphql.validation.constraints.BaseConstraintTestSupport
     import graphql.validation.constraints.DirectiveConstraint
 import spock.lang.Unroll
 
-class SizeConstraintTest extends BaseConstraintTest {
+class SizeConstraintTest extends BaseConstraintTestSupport {
 
 
     @Unroll

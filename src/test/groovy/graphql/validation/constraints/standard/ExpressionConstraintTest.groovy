@@ -1,11 +1,11 @@
 package graphql.validation.constraints.standard
 
-import graphql.validation.constraints.BaseConstraintTest
+import graphql.validation.constraints.BaseConstraintTestSupport
 import graphql.validation.constraints.DirectiveConstraint
 import graphql.validation.rules.ValidationEnvironment
 import spock.lang.Unroll
 
-class ExpressionConstraintTest extends BaseConstraintTest {
+class ExpressionConstraintTest extends BaseConstraintTestSupport {
 
     static relayCheck = '''@Expression(value : "${ args.containsOneOf('first','last') }")'''
 

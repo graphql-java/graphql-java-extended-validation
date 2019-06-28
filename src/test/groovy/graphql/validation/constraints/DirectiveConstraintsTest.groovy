@@ -5,7 +5,7 @@ import graphql.validation.constraints.standard.SizeConstraint
 import graphql.validation.rules.ValidationEnvironment
 import spock.lang.Unroll
 
-class DirectiveConstraintsTest extends BaseConstraintTest {
+class DirectiveConstraintsTest extends BaseConstraintTestSupport {
 
     def "basic building"() {
         when:

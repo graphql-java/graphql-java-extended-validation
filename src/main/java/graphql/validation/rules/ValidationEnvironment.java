@@ -5,6 +5,7 @@ import graphql.execution.ExecutionPath;
 import graphql.language.SourceLocation;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.GraphQLArgument;
+import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLFieldsContainer;
 import graphql.schema.GraphQLInputType;
@@ -12,6 +13,7 @@ import graphql.validation.interpolation.MessageInterpolator;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -53,6 +55,7 @@ public class ValidationEnvironment {
     private final Object validatedValue;
     private final GraphQLInputType validatedType;
     private final ValidatedElement validatedElement;
+    private final List<GraphQLDirective> directives;
 
     private ValidationEnvironment(Builder builder) {
         this.argument = builder.argument;
@@ -68,6 +71,7 @@ public class ValidationEnvironment {
         this.location = builder.location;
         this.validatedValue = builder.validatedValue;
         this.validatedElement = builder.validatedElement;
+        this.directives = builder.directives;
     }
 
     public static Builder newValidationEnvironment() {
@@ -127,6 +131,10 @@ public class ValidationEnvironment {
         return validatedElement;
     }
 
+    public List<GraphQLDirective> getDirectives() {
+        return directives;
+    }
+
     public ValidationEnvironment transform(Consumer<Builder> builderConsumer) {
         Builder builder = newValidationEnvironment().validationEnvironment(this);
         builderConsumer.accept(builder);
@@ -147,6 +155,7 @@ public class ValidationEnvironment {
         private Object validatedValue;
         private GraphQLInputType validatedType;
         private ValidatedElement validatedElement;
+        private List<GraphQLDirective> directives = Collections.emptyList();
 
         public Builder validationEnvironment(ValidationEnvironment validationEnvironment) {
             this.argument = validationEnvironment.argument;
@@ -162,12 +171,14 @@ public class ValidationEnvironment {
             this.location = validationEnvironment.location;
             this.validatedValue = validationEnvironment.validatedValue;
             this.validatedElement = validationEnvironment.validatedElement;
+            this.directives = validationEnvironment.directives;
             return this;
         }
 
         public Builder dataFetchingEnvironment(DataFetchingEnvironment dataFetchingEnvironment) {
             fieldsContainer(dataFetchingEnvironment.getExecutionStepInfo().getFieldContainer());
             fieldDefinition(dataFetchingEnvironment.getFieldDefinition());
+            directives(dataFetchingEnvironment.getFieldDefinition().getDirectives());
             executionPath(dataFetchingEnvironment.getExecutionStepInfo().getPath());
             validatedPath(dataFetchingEnvironment.getExecutionStepInfo().getPath());
             location(dataFetchingEnvironment.getField().getSourceLocation());
@@ -238,6 +249,11 @@ public class ValidationEnvironment {
 
         public Builder locale(Locale locale) {
             this.locale = locale;
+            return this;
+        }
+
+        public Builder directives(List<GraphQLDirective> directives) {
+            this.directives = directives;
             return this;
         }
 

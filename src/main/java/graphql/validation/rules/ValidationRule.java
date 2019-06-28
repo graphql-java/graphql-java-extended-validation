@@ -37,7 +37,14 @@ public interface ValidationRule {
     boolean appliesTo(GraphQLArgument argument, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer);
 
     /**
-     * This is called to runs the rule
+     * This is called to runs the rule.  A rule maybe invoked MULTIPLE times per field.  It will be invoked
+     * once for the original field, then invoked for each of the arguments on a field and then if the input types are complex ones
+     * such as {@link graphql.schema.GraphQLInputObjectType} then it will be invoked for each attribute of that
+     * type.
+     * <p>
+     * A rule should consult {@link ValidationEnvironment#getValidatedElement()} to check
+     * what element is being validated.  If the rule does not handle that type of element,
+     * simply return an empty list of errors.
      *
      * @param validationEnvironment the validation environment
      *
