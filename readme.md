@@ -5,9 +5,13 @@ This library provides extended validation of fields and field arguments for [gra
 
 # Status
 
-This code is current under construction.  There is no release and not all parts of it are ready.
+This code is currently under construction.  There is no release artifact and not all parts of it are ready.
 
-But the project welcomes all feedback and input on code design and validation requirements. 
+But the project welcomes all feedback and input on code design and validation requirements.
+
+It currently passes MOST of its tests - but not all.  This is a matter of attention and time.
+
+It has NOT yet been consumed by a production like project and hence its API usefulness has not been tested 
 
 # Using the code
 
