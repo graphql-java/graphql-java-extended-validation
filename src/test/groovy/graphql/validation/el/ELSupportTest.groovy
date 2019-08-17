@@ -1,5 +1,6 @@
 package graphql.validation.el
 
+
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -47,6 +48,7 @@ class ELSupportTest extends Specification {
 
     }
 
+    @Unroll
     def "basic expression support"() {
         def el = new ELSupport(Locale.getDefault())
 
