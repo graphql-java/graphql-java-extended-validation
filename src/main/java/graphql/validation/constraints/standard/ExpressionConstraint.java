@@ -57,6 +57,7 @@ public class ExpressionConstraint extends AbstractDirectiveConstraint {
         String expression = helpWithCurlyBraces(getStrArg(directive, "value"));
 
         Object argument = validationEnvironment.getArgument();
+        GraphQLFieldsContainer fieldsContainer = validationEnvironment.getFieldsContainer();
         Object validatedValue = validationEnvironment.getValidatedValue();
         Map<String, Object> argumentValues = validationEnvironment.getArgumentValues();
 
@@ -64,6 +65,7 @@ public class ExpressionConstraint extends AbstractDirectiveConstraint {
                 "validatedValue", validatedValue,
 
                 "gqlField", fieldDefinition,
+                "gqlFieldContainer", fieldsContainer,
                 "gqlArgument", argument,
 
                 "args", argumentValues, // short hand
