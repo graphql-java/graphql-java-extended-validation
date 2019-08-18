@@ -106,23 +106,43 @@ will use that as a resource bundle lookup key.  This too is inspired by the java
 
 Like javax.validation, this library ships with some default error message templates but you can override them. 
 
+# Schema Directive Wiring
 
-# Complex input types
+If you are using graphql SDL to build your graphql schema then you can use a `ValidationSchemaWiring` class to automatically
+change your field data fetchers so that validation rules are called before the field data is fetched.
 
-You can put @Directive constraints on complex input types as well as simple field arguments
+This allows you to automatically enhance your schema with validation by directives alone.
 
-```graphql
-    input ProductItem {
-        code : String @Size(max : 5)
-        price : String @Size(max : 3)
-    }
+The following shows how to setup the SDL generation so that the build schema will have validation in place.
 
-    type Mutation {
-            updateProduct( product : ID,  items : [ProductItem]) : Product
-    }   
+
+```java
+        //
+        // This contains by default the standard library provided @Directive constraints
+        //
+        PossibleValidationRules possibleRules = PossibleValidationRules.newPossibleRules()
+                .onValidationErrorStrategy(OnValidationErrorStrategy.RETURN_NULL)
+                .build();
+        //
+        // This will rewrite your data fetchers when rules apply to them so that validation
+        ValidationSchemaWiring schemaWiring = new ValidationSchemaWiring(possibleRules);
+        //
+        // we add this schema wiring to the graphql runtime
+        RuntimeWiring runtimeWiring = RuntimeWiring.newRuntimeWiring().directiveWiring(schemaWiring).build();
+        //
+        // then pretty much standard graphql-java code to build a graphql schema
+        Reader sdl = buildSDL();
+        TypeDefinitionRegistry typeDefinitionRegistry = new SchemaParser().parse(sdl);
+        GraphQLSchema graphQLSchema = new SchemaGenerator().makeExecutableSchema(typeDefinitionRegistry, runtimeWiring);
 ```
 
-In the example above each `ProductItem` in the list of items is examined for valid values
+Under the covers `ValidationSchemaWiring` asks each possible rule if it applies to a field as they are encountered (at schema build time).
+
+If they do apply then it rewrites the DataFetcher so that it first calls the validation code and produces errors if the field input is not 
+considered valid.
+
+The default strategy `OnValidationErrorStrategy.RETURN_NULL` will return null for the field input if it is not considered valid.  You can 
+write your own strategy if you want.
 
 ## The supplied @Directive constraints
 
