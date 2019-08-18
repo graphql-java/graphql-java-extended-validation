@@ -14,12 +14,11 @@ class ExpressionConstraintTest extends BaseConstraintTestSupport {
 
         DirectiveConstraint ruleUnderTest = new ExpressionConstraint()
 
-
         expect:
 
         def schema = buildSchema(ruleUnderTest.getDocumentation().getDirectiveSDL(), fieldDeclaration, "")
 
-        ValidationEnvironment validationEnvironment = buildEnvForField(ruleUnderTest.name, schema, args)
+        ValidationEnvironment validationEnvironment = buildEnvForField(ruleUnderTest, schema, args)
 
         def errors = ruleUnderTest.runValidation(validationEnvironment)
 
@@ -42,19 +41,14 @@ class ExpressionConstraintTest extends BaseConstraintTestSupport {
 
         expect:
 
-        def fieldDeclaration = "field( arg : String $expression ) : ID"
-        def schema = buildSchema(ruleUnderTest.getDocumentation().getDirectiveSDL(), fieldDeclaration, "")
-
-        ValidationEnvironment validationEnvironment = buildEnv(ruleUnderTest.name, schema, "arg", argVal)
-
-        def errors = ruleUnderTest.runValidation(validationEnvironment)
-
+        def fieldDeclaration = "field( arg : String $expressionDirective ) : ID"
+        def errors = runValidation(ruleUnderTest, fieldDeclaration, "arg", argVal)
         assertErrors(errors, expectedMessage)
 
         where:
 
 
-        expression                                                    | argVal | expectedMessage
+        expressionDirective                                           | argVal | expectedMessage
         '''@Expression(value : "${validatedValue.length() > 10}" )''' | "ABC"  | "Expression;path=/arg;val:ABC;\t"
         '''@Expression(value : "${validatedValue.length() > 3}" )'''  | "ABC"  | "Expression;path=/arg;val:ABC;\t"
         '''@Expression(value : "${validatedValue.length() > 2}" )'''  | "ABC"  | ""
