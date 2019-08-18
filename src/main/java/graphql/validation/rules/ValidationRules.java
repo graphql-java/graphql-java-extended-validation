@@ -32,7 +32,9 @@ import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.IN
 
 /**
  * ValidationRules is a holder of {@link graphql.validation.rules.ValidationRule}s against a specific
- * type, field and possible argument via {@link ValidationCoordinates}
+ * type, field and possible argument via {@link ValidationCoordinates}.  It then allows those rules
+ * to be run against the specific fields based on runtime execution during {@link graphql.schema.DataFetcher}
+ * invocations.
  */
 @PublicApi
 public class ValidationRules {
@@ -51,6 +53,14 @@ public class ValidationRules {
         return rulesMap.isEmpty();
     }
 
+    /**
+     * Runs the contained rules that match the currently executing field named by the {@link graphql.schema.DataFetchingEnvironment}
+     *
+     * @param env          the field being executed
+     * @param interpolator the message interpolator to use
+     * @param locale       the locale in play
+     * @return a list of zero or more data validation errors
+     */
     public List<GraphQLError> runValidationRules(DataFetchingEnvironment env, MessageInterpolator interpolator, Locale locale) {
 
         List<GraphQLError> errors = new ArrayList<>();

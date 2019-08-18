@@ -8,12 +8,12 @@ import graphql.schema.GraphQLInputType;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
 import graphql.validation.constraints.Documentation;
 import graphql.validation.el.ELSupport;
+import graphql.validation.el.StandardELVariables;
 import graphql.validation.rules.ValidationEnvironment;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public class ExpressionConstraint extends AbstractDirectiveConstraint {
 
@@ -54,25 +54,13 @@ public class ExpressionConstraint extends AbstractDirectiveConstraint {
 
     @Override
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
-        GraphQLFieldDefinition fieldDefinition = validationEnvironment.getFieldDefinition();
         GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
         String expression = helpWithCurlyBraces(getStrArg(directive, "value"));
 
-        Object argument = validationEnvironment.getArgument();
-        GraphQLFieldsContainer fieldsContainer = validationEnvironment.getFieldsContainer();
         Object validatedValue = validationEnvironment.getValidatedValue();
-        Map<String, Object> argumentValues = validationEnvironment.getArgumentValues();
 
-        Map<String, Object> variables = mkMap(
-                "validatedValue", validatedValue,
+        Map<String, Object> variables = StandardELVariables.standardELVars(validationEnvironment);
 
-                "gqlField", fieldDefinition,
-                "gqlFieldContainer", fieldsContainer,
-                "gqlArgument", argument,
-
-                "args", argumentValues, // short hand
-                "arguments", argumentValues
-        );
         ELSupport elSupport = new ELSupport(validationEnvironment.getLocale());
         boolean isOK = elSupport.evaluateBoolean(expression, variables);
 

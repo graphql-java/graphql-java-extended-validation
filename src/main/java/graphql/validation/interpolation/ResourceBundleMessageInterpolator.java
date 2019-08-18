@@ -5,6 +5,7 @@ import graphql.GraphQLError;
 import graphql.GraphqlErrorBuilder;
 import graphql.execution.ExecutionPath;
 import graphql.schema.GraphQLDirective;
+import graphql.validation.el.StandardELVariables;
 import graphql.validation.rules.ValidationEnvironment;
 import org.hibernate.validator.internal.engine.MessageInterpolatorContext;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
@@ -152,8 +153,7 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
                 annotationDescriptor, ElementType.FIELD
         );
 
-        // TODO - we should we put in here extra??
-        Map<String, Object> expressionVariables = Collections.emptyMap();
+        Map<String, Object> expressionVariables = StandardELVariables.standardELVars(validationEnvironment);
 
         Class<?> rootBeanType = null;
         return new MessageInterpolatorContext(

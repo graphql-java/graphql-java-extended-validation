@@ -2,6 +2,7 @@ package graphql.validation.util;
 
 import graphql.Assert;
 import graphql.GraphQLError;
+import graphql.Internal;
 import graphql.execution.DataFetcherResult;
 import graphql.execution.ExecutionPath;
 import graphql.schema.GraphQLInputType;
@@ -11,10 +12,13 @@ import graphql.schema.GraphQLTypeUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
+@Internal
 public class Util {
 
     /**
@@ -89,4 +93,25 @@ public class Util {
         }
         return parent;
     }
+
+
+    /**
+     * Makes a map of the args
+     *
+     * @param args must be an key / value array with String keys as the even params and values as then odd params
+     *
+     * @return a map of the args
+     */
+    public static Map<String, Object> mkMap(Object... args) {
+        Map<String, Object> params = new LinkedHashMap<>();
+        Assert.assertTrue(args.length % 2 == 0, "You MUST pass in an even number of arguments");
+        for (int ix = 0; ix < args.length; ix = ix + 2) {
+            Object key = args[ix];
+            Assert.assertTrue(key instanceof String, "You MUST pass in a message param string key");
+            Object val = args[ix + 1];
+            params.put(String.valueOf(key), val);
+        }
+        return params;
+    }
+
 }

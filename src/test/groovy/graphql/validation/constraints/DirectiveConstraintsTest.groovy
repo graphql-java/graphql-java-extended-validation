@@ -98,6 +98,7 @@ class DirectiveConstraintsTest extends BaseConstraintTestSupport {
             directiveValidationRules.whichApplyTo(argument, fieldDefinition, container)
             assert false, "This should assert"
         } catch (AssertException ignored) {
+            println ignored.message
         }
 
         where:

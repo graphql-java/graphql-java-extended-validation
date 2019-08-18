@@ -26,6 +26,7 @@ import java.util.Map;
 
 import static graphql.schema.GraphQLTypeUtil.isList;
 import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.FIELD;
+import static graphql.validation.util.Util.mkMap;
 import static java.util.Collections.singletonList;
 
 @SuppressWarnings("UnnecessaryLocalVariable")
@@ -73,7 +74,7 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
                 // if they have a @Directive on there BUT it cant handle that type
                 // then is a really bad situation
                 String argType = GraphQLTypeUtil.simplePrint(inputType);
-                Assert.assertShouldNeverHappen("The directive rule '%s' cannot be placed on elements of type '%s'", this.getName(), argType);
+                Assert.assertTrue(false, "The directive rule '%s' cannot be placed on elements of type '%s'", "@" + this.getName(), argType);
             }
             return false;
         });
@@ -282,24 +283,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
     }
 
 
-    /**
-     * Makes a map of the args
-     *
-     * @param args must be an key / value array with String keys as the even params and values as then odd params
-     *
-     * @return a map of the args
-     */
-    protected Map<String, Object> mkMap(Object... args) {
-        Map<String, Object> params = new LinkedHashMap<>();
-        Assert.assertTrue(args.length % 2 == 0, "You MUST pass in an even number of arguments");
-        for (int ix = 0; ix < args.length; ix = ix + 2) {
-            Object key = args[ix];
-            Assert.assertTrue(key instanceof String, "You MUST pass in a message param string key");
-            Object val = args[ix + 1];
-            params.put(String.valueOf(key), val);
-        }
-        return params;
-    }
 
     /**
      * Creates  a new {@link graphql.GraphQLError}

@@ -16,6 +16,14 @@ import graphql.validation.util.Util;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * A {@link graphql.schema.idl.SchemaDirectiveWiring} that can be used to inject validation rules into the data fetchers
+ * when the graphql schema is being built.  It will use the possible rules and ask each one of they apply to the field and or its
+ * arguments.
+ * <p>
+ * If there are rules that apply then it will it will change the {@link graphql.schema.DataFetcher} of that field so that rules get run
+ * BEFORE the original field fetch is
+ */
 @PublicApi
 public class ValidationSchemaWiring implements SchemaDirectiveWiring {
 

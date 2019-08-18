@@ -8,6 +8,9 @@ import graphql.schema.GraphQLFieldsContainer;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+/**
+ * Validation rules can be co-ordinated on a field (within a fields container) or an argument on a field (within a fields container)
+ */
 @PublicApi
 public class ValidationCoordinates {
 

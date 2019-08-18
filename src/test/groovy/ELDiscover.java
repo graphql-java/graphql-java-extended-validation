@@ -94,23 +94,6 @@ public class ELDiscover {
                 ElementType.FIELD
         );
 
-//
-// THIS IS THE ALPHA CODE API
-//
-//        ConstraintDescriptorImpl<NotNull> constraintDescriptor = new ConstraintDescriptorImpl<>(
-//                new ConstraintHelper(),
-//                null,
-//                constraintBuilder.build(),
-//                ConstraintLocation.ConstraintLocationKind.FIELD,
-//                ConstraintDescriptorImpl.ConstraintType.GENERIC
-//        );
-
-        //        ConstraintDescriptorImpl<NotNull> constraintDescriptor = new ConstraintDescriptorImpl<>(
-//                new ConstraintHelper(),
-//                null,
-//                constraintBuilder.build(),
-//                ElementType.FIELD
-//        );
 
         User user = new User();
         user.setAge(18);
@@ -121,16 +104,6 @@ public class ELDiscover {
 
         MessageInterpolator.Context context = new MessageInterpolatorContext(
                 constraintDescriptor, user, null, Collections.emptyMap(), Collections.emptyMap());
-
-//        MessageInterpolator.Context context = new MessageInterpolatorContext(
-//                constraintDescriptor,
-//                user,
-//                null,
-//                rootPath,
-//                Collections.<String, Object>emptyMap(),
-//                Collections.<String, Object>emptyMap()
-//        );
-
 
         print("${validatedValue.age}", messageInterpolator, context);
         print("${validatedValue}", messageInterpolator, context);

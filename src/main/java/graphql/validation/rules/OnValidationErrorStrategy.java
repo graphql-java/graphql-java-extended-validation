@@ -8,8 +8,10 @@ import graphql.schema.DataFetchingEnvironment;
 import java.util.List;
 
 /**
- * A callback that indicates whether to continue after errors and if not what value should be
- * returned.
+ * A callback that indicates whether to continue the data fetching after validation errors are detected  and what value should be
+ * returned if it decides to not continue.
+ * <p>
+ * {@link #RETURN_NULL} is a common strategy to use, that is return null as the value for an invalid field
  */
 @PublicSpi
 public interface OnValidationErrorStrategy {
@@ -35,7 +37,6 @@ public interface OnValidationErrorStrategy {
      *
      * @param errors      the list errors
      * @param environment the environment in play
-     *
      * @return true if the current data fetch should continue
      */
     boolean shouldContinue(List<GraphQLError> errors, DataFetchingEnvironment environment);
@@ -45,7 +46,6 @@ public interface OnValidationErrorStrategy {
      *
      * @param errors      the list errors
      * @param environment the environment in play
-     *
      * @return an object (a sensible value would be null)
      */
     Object onErrorValue(List<GraphQLError> errors, DataFetchingEnvironment environment);

@@ -123,6 +123,14 @@ public class PossibleValidationRules {
             return this;
         }
 
+        /**
+         * This sets the locale of the possible rules.  This is only needed while graphql-java does not allow you to get the
+         * locale from the {@link graphql.ExecutionInput}.  A PR for this is in the works.  Once that is available, then this method
+         * will not be as useful.
+         *
+         * @param locale the locale to use for message interpolation
+         * @return this builder
+         */
         public Builder locale(Locale locale) {
             this.locale = locale;
             return this;
