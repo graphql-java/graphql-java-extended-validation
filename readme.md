@@ -1,5 +1,11 @@
 # Extended Validation for graphql-java
 
+[![Build Status](https://travis-ci.com/bbakerman/graphql-java-extended-validation.svg?branch=master)](https://travis-ci.com/bbakerman/graphql-java-extended-validation.svg?branch=master)&nbsp;&nbsp;
+[![MIT licensed](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000)](https://github.com/graphql-java/graphql-java-extended-validation/blob/master/LICENSE)&nbsp;&nbsp;
+
+
+
+
 This library provides extended validation of fields and field arguments for [graphql-java](https://github.com/graphql-java/graphql-java)
 
 
