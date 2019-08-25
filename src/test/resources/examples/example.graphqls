@@ -1,6 +1,11 @@
 
+directive @Size(min : Int = 0, max : Int = 2147483647, message : String = "graphql.validation.Size.message")
+   on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
 
+input Application {
+    name : String @Size(min : 3, max : 100)
+}
 
 type Query {
-    field : String
+    hired (applications : [Application!] @Size(max : 3 )) : [Boolean]
 }
