@@ -9,6 +9,7 @@ import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLDirectiveContainer;
 import graphql.schema.GraphQLFieldDefinition;
+import graphql.schema.GraphQLFieldsContainer;
 import graphql.schema.GraphQLInputObjectField;
 import graphql.schema.GraphQLInputObjectType;
 import graphql.schema.GraphQLInputType;
@@ -59,7 +60,7 @@ public class ValidationRules {
      * @param env          the field being executed
      * @param interpolator the message interpolator to use
      * @param locale       the locale in play
-     * @return a list of zero or more data validation errors
+     * @return a list of zero or more input data validation errors
      */
     public List<GraphQLError> runValidationRules(DataFetchingEnvironment env, MessageInterpolator interpolator, Locale locale) {
 

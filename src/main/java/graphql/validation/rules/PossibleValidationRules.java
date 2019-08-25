@@ -1,6 +1,8 @@
 package graphql.validation.rules;
 
+import graphql.GraphQLError;
 import graphql.PublicApi;
+import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLFieldsContainer;
@@ -86,6 +88,27 @@ public class PossibleValidationRules {
                 .filter(rule -> rule.appliesTo(fieldDefinition, fieldsContainer))
                 .collect(Collectors.toList());
     }
+
+
+    /**
+     * This helper method will run the validation rules that apply to the provided {@link graphql.schema.DataFetchingEnvironment}
+     *
+     * @param env the data fetching environment
+     * @return a list of zero or more input data validation errors
+     */
+    public List<GraphQLError> runValidationRules(DataFetchingEnvironment env) {
+        GraphQLFieldsContainer fieldsContainer = env.getExecutionStepInfo().getFieldContainer();
+        GraphQLFieldDefinition fieldDefinition = env.getFieldDefinition();
+
+        //
+        // a future version of graphql-java will have the locale within the DataFetchingEnvironment
+        Locale locale = this.getLocale();
+        MessageInterpolator messageInterpolator = this.getMessageInterpolator();
+
+        ValidationRules rules = this.buildRulesFor(fieldDefinition, fieldsContainer);
+        return rules.runValidationRules(env, messageInterpolator, locale);
+    }
+
 
     public static class Builder {
         private Locale locale;

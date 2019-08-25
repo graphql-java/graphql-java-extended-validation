@@ -5,22 +5,17 @@ This library provides extended validation of fields and field arguments for [gra
 
 # Status
 
-This code is currently under construction.  There is no release artifact and not all parts of it are ready.
+This code is currently under construction.  It is fairly complete in providing powerful validation
+but as it has NOT be consumed by a production like project then its API usefulness has not been tested
+and its code has not been battle tested. 
 
 But the project welcomes all feedback and input on code design and validation requirements.
-
-It currently passes MOST of its tests - but not all.  This is a matter of attention and time.
-
-It has NOT yet been consumed by a production like project and hence its API usefulness has not been tested 
-
-# Using the code
-
-TODO
 
 
 # SDL @Directive constraints
 
-This library a series of directives that can be applied to field arguments and input type fields which will constrain their allowable values.
+This library provides a series of directives that can be applied to field arguments and input type fields which will 
+constrain their allowable values.
 
 These names and semantics are inspired from the javax.validation annotations
 
@@ -143,6 +138,68 @@ considered valid.
 
 The default strategy `OnValidationErrorStrategy.RETURN_NULL` will return null for the field input if it is not considered valid.  You can 
 write your own strategy if you want.
+
+## Using the API direct in your own data fetchers
+
+We recommend that you use the SDL schema directive wiring and @directives for the easiest way to get input type validation.
+
+However there can be reasons why you cant use this approach and you have to manually use the API directly in your data fetching code.
+
+```java
+ 
+        //
+        // an example of writing your own custom validation rule
+        //
+        ValidationRule myCustomValidationRule = new ValidationRule() {
+            @Override
+            public boolean appliesTo(GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
+                return fieldDefinition.getName().equals("decide whether this rule applies here");
+            }
+
+            @Override
+            public boolean appliesTo(GraphQLArgument argument, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
+                return argument.getName().equals("decide whether this rule applies here to an argument");
+            }
+
+            @Override
+            public List<GraphQLError> runValidation(ValidationEnvironment validationEnvironment) {
+
+                List<GraphQLError> errors = new ArrayList<>();
+                Map<String, Object> argumentValues = validationEnvironment.getArgumentValues();
+                for (String argName : argumentValues.keySet()) {
+                    Object argValue = argumentValues.get(argName);
+                    GraphQLError error = runCodeThatValidatesInputHere(validationEnvironment, argName, argValue);
+                    if (error != null) {
+                        errors.add(error);
+                    }
+                }
+                return errors;
+            }
+        };
+
+        PossibleValidationRules possibleValidationRules = PossibleValidationRules
+                .newPossibleRules()
+                .addRule(myCustomValidationRule)
+                .build();
+
+        DataFetcher dataFetcher = new DataFetcher() {
+            @Override
+            public Object get(DataFetchingEnvironment env) {
+
+                List<GraphQLError> errors = possibleValidationRules.runValidationRules(env);
+                if (!errors.isEmpty()) {
+                    return DataFetcherResult.newResult().errors(errors).data(null).build();
+                }
+
+                return normalDataFetchingCodeRunsNow(env);
+            }
+        };
+```
+
+The above code shows a custom validation rule (with nonsense logic for demonstration purposes) and then a data fetcher
+that uses the `PossibleValidationRules` API to run validation rules.  Its is called "possible" because it can contain more rules that may 
+or may apply to a field, argument or parent field container.
+
 
 ## The supplied @Directive constraints
 
