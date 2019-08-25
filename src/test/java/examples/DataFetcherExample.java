@@ -7,12 +7,13 @@ import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLFieldsContainer;
-import graphql.validation.rules.PossibleValidationRules;
 import graphql.validation.rules.ValidationEnvironment;
 import graphql.validation.rules.ValidationRule;
+import graphql.validation.rules.ValidationRules;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @SuppressWarnings({"unused", "Convert2Lambda"})
@@ -51,20 +52,28 @@ public class DataFetcherExample {
             }
         };
 
-        PossibleValidationRules possibleValidationRules = PossibleValidationRules
-                .newPossibleRules()
-                .addRule(myCustomValidationRule)
-                .build();
-
         DataFetcher dataFetcher = new DataFetcher() {
             @Override
             public Object get(DataFetchingEnvironment env) {
 
-                List<GraphQLError> errors = possibleValidationRules.runValidationRules(env);
+                //
+                // By default the ValidationRule contains the SDL @directive rules, but
+                // you can also add your own as we do here.
+                //
+                ValidationRules validationRules = ValidationRules
+                        .newValidationRules()
+                        .locale(Locale.getDefault())
+                        .addRule(myCustomValidationRule)
+                        .build();
+
+                //
+                // The expected strategy is to return null data and the errors if there are any validation
+                // problems
+                //
+                List<GraphQLError> errors = validationRules.runValidationRules(env);
                 if (!errors.isEmpty()) {
                     return DataFetcherResult.newResult().errors(errors).data(null).build();
                 }
-
                 return normalDataFetchingCodeRunsNow(env);
             }
         };

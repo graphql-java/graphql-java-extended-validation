@@ -10,7 +10,7 @@ import spock.lang.Specification
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring
 
-class PossibleValidationRulesTest extends Specification {
+class ValidationRulesTest extends Specification {
 
 
     def directiveRules = DirectiveConstraints.newDirectiveConstraints().build()
@@ -40,9 +40,9 @@ class PossibleValidationRulesTest extends Specification {
 
 
         DataFetcher carsDF = { env ->
-            PossibleValidationRules possibleRules = PossibleValidationRules
-                    .newPossibleRules().build()
-            def errors = possibleRules.runValidationRules(env)
+            ValidationRules validationRules = ValidationRules
+                    .newValidationRules().build()
+            def errors = validationRules.runValidationRules(env)
             if (!errors.isEmpty()) {
                 return DataFetcherResult.newResult().errors(errors).data(null).build()
             }

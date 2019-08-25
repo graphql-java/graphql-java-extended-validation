@@ -9,8 +9,8 @@ import graphql.schema.idl.SchemaDirectiveWiring;
 import graphql.schema.idl.SchemaDirectiveWiringEnvironment;
 import graphql.validation.interpolation.MessageInterpolator;
 import graphql.validation.rules.OnValidationErrorStrategy;
-import graphql.validation.rules.PossibleValidationRules;
 import graphql.validation.rules.ValidationRules;
+import graphql.validation.rules.TargetedValidationRules;
 import graphql.validation.util.Util;
 
 import java.util.List;
@@ -18,18 +18,18 @@ import java.util.Locale;
 
 /**
  * A {@link graphql.schema.idl.SchemaDirectiveWiring} that can be used to inject validation rules into the data fetchers
- * when the graphql schema is being built.  It will use the possible rules and ask each one of they apply to the field and or its
+ * when the graphql schema is being built.  It will use the validation rules and ask each one of they apply to the field and or its
  * arguments.
  * <p>
  * If there are rules that apply then it will it will change the {@link graphql.schema.DataFetcher} of that field so that rules get run
- * BEFORE the original field fetch is
+ * BEFORE the original field fetch is run.
  */
 @PublicApi
 public class ValidationSchemaWiring implements SchemaDirectiveWiring {
 
-    private final PossibleValidationRules ruleCandidates;
+    private final ValidationRules ruleCandidates;
 
-    public ValidationSchemaWiring(PossibleValidationRules ruleCandidates) {
+    public ValidationSchemaWiring(ValidationRules ruleCandidates) {
         this.ruleCandidates = ruleCandidates;
     }
 
@@ -38,7 +38,7 @@ public class ValidationSchemaWiring implements SchemaDirectiveWiring {
         GraphQLFieldsContainer fieldsContainer = env.getFieldsContainer();
         GraphQLFieldDefinition fieldDefinition = env.getFieldDefinition();
 
-        ValidationRules rules = ruleCandidates.buildRulesFor(fieldDefinition, fieldsContainer);
+        TargetedValidationRules rules = ruleCandidates.buildRulesFor(fieldDefinition, fieldsContainer);
         if (rules.isEmpty()) {
             return fieldDefinition; // no rules - no validation needed
         }
@@ -55,7 +55,7 @@ public class ValidationSchemaWiring implements SchemaDirectiveWiring {
         return fieldDefinition;
     }
 
-    private DataFetcher buildValidatingDataFetcher(ValidationRules rules, OnValidationErrorStrategy errorStrategy, MessageInterpolator messageInterpolator, DataFetcher currentDF, Locale locale) {
+    private DataFetcher buildValidatingDataFetcher(TargetedValidationRules rules, OnValidationErrorStrategy errorStrategy, MessageInterpolator messageInterpolator, DataFetcher currentDF, Locale locale) {
         // ok we have some rules that need to be applied to this field and its arguments
         return environment -> {
             // TODO - get the Locale from the DFE instead of statically - this needs to go into graphql-java however

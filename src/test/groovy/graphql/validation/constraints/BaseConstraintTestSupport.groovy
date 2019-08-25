@@ -18,7 +18,7 @@ import graphql.validation.TestUtil
 import graphql.validation.interpolation.MessageInterpolator
 import graphql.validation.rules.ValidationCoordinates
 import graphql.validation.rules.ValidationEnvironment
-import graphql.validation.rules.ValidationRules
+import graphql.validation.rules.TargetedValidationRules
 import spock.lang.Specification
 
 class BaseConstraintTestSupport extends Specification {
@@ -48,7 +48,7 @@ class BaseConstraintTestSupport extends Specification {
 
         ValidationCoordinates coordinates = ValidationCoordinates.newCoordinates(fieldsContainer, fieldDefinition, argUnderTest)
 
-        def validationRules = ValidationRules.newValidationRules().addRule(coordinates, ruleUnderTest).build()
+        def validationRules = TargetedValidationRules.newValidationRules().addRule(coordinates, ruleUnderTest).build()
 
         def path = ExecutionPath.rootPath()
 

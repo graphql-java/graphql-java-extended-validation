@@ -121,12 +121,12 @@ The following shows how to setup the SDL generation so that the build schema wil
         //
         // This contains by default the standard library provided @Directive constraints
         //
-        PossibleValidationRules possibleRules = PossibleValidationRules.newPossibleRules()
+        ValidationRules validationRules = ValidationRules.newValidationRules()
                 .onValidationErrorStrategy(OnValidationErrorStrategy.RETURN_NULL)
                 .build();
         //
         // This will rewrite your data fetchers when rules apply to them so that validation
-        ValidationSchemaWiring schemaWiring = new ValidationSchemaWiring(possibleRules);
+        ValidationSchemaWiring schemaWiring = new ValidationSchemaWiring(validationRules);
         //
         // we add this schema wiring to the graphql runtime
         RuntimeWiring runtimeWiring = RuntimeWiring.newRuntimeWiring().directiveWiring(schemaWiring).build();
@@ -149,62 +149,69 @@ write your own strategy if you want.
 
 We recommend that you use the SDL schema directive wiring and @directives for the easiest way to get input type validation.
 
-However there can be reasons why you cant use this approach and you have to manually use the API directly in your data fetching code.
+However there can be reasons why you cant use this approach and you have use the API directly in your data fetching code.
 
 ```java
  
-        //
-        // an example of writing your own custom validation rule
-        //
-        ValidationRule myCustomValidationRule = new ValidationRule() {
-            @Override
-            public boolean appliesTo(GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
-                return fieldDefinition.getName().equals("decide whether this rule applies here");
-            }
-
-            @Override
-            public boolean appliesTo(GraphQLArgument argument, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
-                return argument.getName().equals("decide whether this rule applies here to an argument");
-            }
-
-            @Override
-            public List<GraphQLError> runValidation(ValidationEnvironment validationEnvironment) {
-
-                List<GraphQLError> errors = new ArrayList<>();
-                Map<String, Object> argumentValues = validationEnvironment.getArgumentValues();
-                for (String argName : argumentValues.keySet()) {
-                    Object argValue = argumentValues.get(argName);
-                    GraphQLError error = runCodeThatValidatesInputHere(validationEnvironment, argName, argValue);
-                    if (error != null) {
-                        errors.add(error);
-                    }
-                }
-                return errors;
-            }
-        };
-
-        PossibleValidationRules possibleValidationRules = PossibleValidationRules
-                .newPossibleRules()
-                .addRule(myCustomValidationRule)
-                .build();
-
-        DataFetcher dataFetcher = new DataFetcher() {
-            @Override
-            public Object get(DataFetchingEnvironment env) {
-
-                List<GraphQLError> errors = possibleValidationRules.runValidationRules(env);
-                if (!errors.isEmpty()) {
-                    return DataFetcherResult.newResult().errors(errors).data(null).build();
-                }
-
-                return normalDataFetchingCodeRunsNow(env);
-            }
-        };
+         //
+         // an example of writing your own custom validation rule
+         //
+         ValidationRule myCustomValidationRule = new ValidationRule() {
+             @Override
+             public boolean appliesTo(GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
+                 return fieldDefinition.getName().equals("decide whether this rule applies here");
+             }
+ 
+             @Override
+             public boolean appliesTo(GraphQLArgument argument, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
+                 return argument.getName().equals("decide whether this rule applies here to an argument");
+             }
+ 
+             @Override
+             public List<GraphQLError> runValidation(ValidationEnvironment validationEnvironment) {
+ 
+                 List<GraphQLError> errors = new ArrayList<>();
+                 Map<String, Object> argumentValues = validationEnvironment.getArgumentValues();
+                 for (String argName : argumentValues.keySet()) {
+                     Object argValue = argumentValues.get(argName);
+                     GraphQLError error = runCodeThatValidatesInputHere(validationEnvironment, argName, argValue);
+                     if (error != null) {
+                         errors.add(error);
+                     }
+                 }
+                 return errors;
+             }
+         };
+ 
+         DataFetcher dataFetcher = new DataFetcher() {
+             @Override
+             public Object get(DataFetchingEnvironment env) {
+ 
+                 //
+                 // By default the ValidationRule contains the SDL @directive rules, but
+                 // you can also add your own as we do here.
+                 //
+                 ValidationRules validationRules = ValidationRules
+                         .newValidationRules()
+                         .locale(Locale.getDefault())
+                         .addRule(myCustomValidationRule)
+                         .build();
+ 
+                 //
+                 // The expected strategy is to return null data and the errors if there are any validation
+                 // problems
+                 //
+                 List<GraphQLError> errors = validationRules.runValidationRules(env);
+                 if (!errors.isEmpty()) {
+                     return DataFetcherResult.newResult().errors(errors).data(null).build();
+                 }
+                 return normalDataFetchingCodeRunsNow(env);
+             }
+         };
 ```
 
 The above code shows a custom validation rule (with nonsense logic for demonstration purposes) and then a data fetcher
-that uses the `PossibleValidationRules` API to run validation rules.  Its is called "possible" because it can contain more rules that may 
-or may apply to a field, argument or parent field container.
+that uses the `ValidationRules` API to run validation rules.  
 
 
 ## The supplied @Directive constraints

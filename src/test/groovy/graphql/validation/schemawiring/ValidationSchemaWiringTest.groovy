@@ -5,7 +5,7 @@ import graphql.GraphQL
 import graphql.schema.idl.RuntimeWiring
 import graphql.validation.TestUtil
 import graphql.validation.constraints.DirectiveConstraints
-import graphql.validation.rules.PossibleValidationRules
+import graphql.validation.rules.ValidationRules
 import spock.lang.Specification
 
 class ValidationSchemaWiringTest extends Specification {
@@ -36,7 +36,7 @@ class ValidationSchemaWiringTest extends Specification {
             }
         '''
 
-        PossibleValidationRules possibleRules = PossibleValidationRules.newPossibleRules()
+        ValidationRules possibleRules = ValidationRules.newValidationRules()
                 .build()
 
         ValidationSchemaWiring schemaWiring = new ValidationSchemaWiring(possibleRules)

@@ -10,7 +10,7 @@ import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
 import graphql.validation.rules.OnValidationErrorStrategy;
-import graphql.validation.rules.PossibleValidationRules;
+import graphql.validation.rules.ValidationRules;
 import graphql.validation.schemawiring.ValidationSchemaWiring;
 
 import java.io.InputStream;
@@ -61,12 +61,12 @@ public class SchemaWiringExample {
         //
         // This contains by default the standard library provided @Directive constraints
         //
-        PossibleValidationRules possibleRules = PossibleValidationRules.newPossibleRules()
+        ValidationRules validationRules = ValidationRules.newValidationRules()
                 .onValidationErrorStrategy(OnValidationErrorStrategy.RETURN_NULL)
                 .build();
         //
         // This will rewrite your data fetchers when rules apply to them so that validation
-        ValidationSchemaWiring schemaWiring = new ValidationSchemaWiring(possibleRules);
+        ValidationSchemaWiring schemaWiring = new ValidationSchemaWiring(validationRules);
         //
         // we add this schema wiring to the graphql runtime
         RuntimeWiring runtimeWiring = RuntimeWiring.newRuntimeWiring().directiveWiring(schemaWiring).build();

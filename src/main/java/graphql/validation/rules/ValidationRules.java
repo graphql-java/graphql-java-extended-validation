@@ -1,232 +1,177 @@
 package graphql.validation.rules;
 
-import graphql.Assert;
 import graphql.GraphQLError;
 import graphql.PublicApi;
-import graphql.execution.ExecutionPath;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.GraphQLArgument;
-import graphql.schema.GraphQLDirective;
-import graphql.schema.GraphQLDirectiveContainer;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLFieldsContainer;
-import graphql.schema.GraphQLInputObjectField;
-import graphql.schema.GraphQLInputObjectType;
-import graphql.schema.GraphQLInputType;
-import graphql.schema.GraphQLList;
-import graphql.schema.GraphQLObjectType;
-import graphql.schema.GraphQLTypeUtil;
-import graphql.util.FpKit;
+import graphql.validation.constraints.DirectiveConstraints;
 import graphql.validation.interpolation.MessageInterpolator;
-import graphql.validation.util.Util;
+import graphql.validation.interpolation.ResourceBundleMessageInterpolator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+import java.util.stream.Collectors;
 
-import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.ARGUMENT;
-import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.FIELD;
-import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.INPUT_OBJECT_FIELD;
+import static graphql.Assert.assertNotNull;
 
 /**
- * ValidationRules is a holder of {@link graphql.validation.rules.ValidationRule}s against a specific
- * type, field and possible argument via {@link ValidationCoordinates}.  It then allows those rules
- * to be run against the specific fields based on runtime execution during {@link graphql.schema.DataFetcher}
- * invocations.
+ * {@link ValidationRules} is a holder of validation rules
+ * and you can then pass it field and arguments and narrow down the list of actual rules
+ * that apply to those fields and arguments.
+ * <p>
+ * It also allows you to run the appropriate rules via the
+ * {@link #runValidationRules(graphql.schema.DataFetchingEnvironment)} method.
  */
 @PublicApi
 public class ValidationRules {
 
-    private final Map<ValidationCoordinates, List<ValidationRule>> rulesMap;
+    private final OnValidationErrorStrategy onValidationErrorStrategy;
+    private final List<ValidationRule> rules;
+    private final MessageInterpolator messageInterpolator;
+    private final Locale locale;
 
-    public ValidationRules(Builder builder) {
-        this.rulesMap = new HashMap<>(builder.rulesMap);
+    private ValidationRules(Builder builder) {
+        this.rules = Collections.unmodifiableList(builder.rules);
+        this.messageInterpolator = builder.messageInterpolator;
+        this.onValidationErrorStrategy = builder.onValidationErrorStrategy;
+        this.locale = builder.locale;
     }
 
+    public MessageInterpolator getMessageInterpolator() {
+        return messageInterpolator;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public List<ValidationRule> getRules() {
+        return rules;
+    }
+
+    public OnValidationErrorStrategy getOnValidationErrorStrategy() {
+        return onValidationErrorStrategy;
+    }
+
+    public TargetedValidationRules buildRulesFor(GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
+        TargetedValidationRules.Builder rulesBuilder = TargetedValidationRules.newValidationRules();
+
+        ValidationCoordinates fieldCoordinates = ValidationCoordinates.newCoordinates(fieldsContainer, fieldDefinition);
+        List<ValidationRule> fieldRules = getRulesFor(fieldDefinition, fieldsContainer);
+        rulesBuilder.addRules(fieldCoordinates, fieldRules);
+
+        for (GraphQLArgument fieldArg : fieldDefinition.getArguments()) {
+            ValidationCoordinates validationCoordinates = ValidationCoordinates.newCoordinates(fieldsContainer, fieldDefinition, fieldArg);
+
+            List<ValidationRule> rules = getRulesFor(fieldArg, fieldDefinition, fieldsContainer);
+            rulesBuilder.addRules(validationCoordinates, rules);
+        }
+
+        return rulesBuilder.build();
+    }
+
+    public List<ValidationRule> getRulesFor(GraphQLArgument fieldArg, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
+        return rules.stream()
+                .filter(rule -> rule.appliesTo(fieldArg, fieldDefinition, fieldsContainer))
+                .collect(Collectors.toList());
+    }
+
+    public List<ValidationRule> getRulesFor(GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
+        return rules.stream()
+                .filter(rule -> rule.appliesTo(fieldDefinition, fieldsContainer))
+                .collect(Collectors.toList());
+    }
+
+
+    /**
+     * This helper method will run the validation rules that apply to the provided {@link graphql.schema.DataFetchingEnvironment}
+     *
+     * @param env the data fetching environment
+     * @return a list of zero or more input data validation errors
+     */
+    public List<GraphQLError> runValidationRules(DataFetchingEnvironment env) {
+        GraphQLFieldsContainer fieldsContainer = env.getExecutionStepInfo().getFieldContainer();
+        GraphQLFieldDefinition fieldDefinition = env.getFieldDefinition();
+
+        //
+        // a future version of graphql-java will have the locale within the DataFetchingEnvironment
+        Locale locale = this.getLocale();
+        MessageInterpolator messageInterpolator = this.getMessageInterpolator();
+
+        TargetedValidationRules rules = this.buildRulesFor(fieldDefinition, fieldsContainer);
+        return rules.runValidationRules(env, messageInterpolator, locale);
+    }
+
+    /**
+     * A builder of validation rules.  By default the SDL @directive rules from
+     * {@link graphql.validation.constraints.DirectiveConstraints#STANDARD_CONSTRAINTS} are included
+     * but you can add extra rules or call {@link graphql.validation.rules.ValidationRules.Builder#clearRules()}
+     * to start afresh.
+     *
+     * @return a new builder of rules
+     */
     public static Builder newValidationRules() {
         return new Builder();
     }
 
-    public boolean isEmpty() {
-        return rulesMap.isEmpty();
-    }
-
-    /**
-     * Runs the contained rules that match the currently executing field named by the {@link graphql.schema.DataFetchingEnvironment}
-     *
-     * @param env          the field being executed
-     * @param interpolator the message interpolator to use
-     * @param locale       the locale in play
-     * @return a list of zero or more input data validation errors
-     */
-    public List<GraphQLError> runValidationRules(DataFetchingEnvironment env, MessageInterpolator interpolator, Locale locale) {
-
-        List<GraphQLError> errors = new ArrayList<>();
-
-        GraphQLObjectType fieldContainer = env.getExecutionStepInfo().getFieldContainer();
-        GraphQLFieldDefinition fieldDefinition = env.getFieldDefinition();
-        ExecutionPath fieldPath = env.getExecutionStepInfo().getPath();
-        //
-        // run the field specific rules
-        ValidationCoordinates fieldCoords = ValidationCoordinates.newCoordinates(fieldContainer, fieldDefinition);
-        List<ValidationRule> rules = rulesMap.getOrDefault(fieldCoords, Collections.emptyList());
-        if (!rules.isEmpty()) {
-            ValidationEnvironment ruleEnvironment = ValidationEnvironment.newValidationEnvironment()
-                    .dataFetchingEnvironment(env)
-                    .messageInterpolator(interpolator)
-                    .validatedElement(FIELD)
-                    .validatedPath(fieldPath)
-                    .build();
-
-            for (ValidationRule rule : rules) {
-                List<GraphQLError> ruleErrors = rule.runValidation(ruleEnvironment);
-                errors.addAll(ruleErrors);
-            }
-        }
-        //
-        // run the argument specific rules next
-        List<GraphQLArgument> sortedArgs = Util.sort(fieldDefinition.getArguments(), GraphQLArgument::getName);
-        for (GraphQLArgument fieldArg : sortedArgs) {
-
-            ValidationCoordinates argCoords = ValidationCoordinates.newCoordinates(fieldContainer, fieldDefinition, fieldArg);
-
-            rules = rulesMap.getOrDefault(argCoords, Collections.emptyList());
-            if (rules.isEmpty()) {
-                continue;
-            }
-
-            Object argValue = env.getArgument(fieldArg.getName());
-            GraphQLInputType inputType = fieldArg.getType();
-
-            ValidationEnvironment ruleEnvironment = ValidationEnvironment.newValidationEnvironment()
-                    .dataFetchingEnvironment(env)
-                    .argument(fieldArg)
-                    .validatedElement(ARGUMENT)
-                    .validatedType(inputType)
-                    .validatedValue(argValue)
-                    .validatedPath(fieldPath.segment(fieldArg.getName()))
-                    .directives(fieldArg.getDirectives())
-                    .messageInterpolator(interpolator)
-                    .locale(locale)
-                    .build();
-
-            for (ValidationRule rule : rules) {
-                List<GraphQLError> ruleErrors = runValidationImpl(rule, ruleEnvironment, inputType, argValue);
-                errors.addAll(ruleErrors);
-            }
-        }
-
-        return errors;
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<GraphQLError> runValidationImpl(ValidationRule rule, ValidationEnvironment validationEnvironment, GraphQLInputType inputType, Object validatedValue) {
-        List<GraphQLError> errors = rule.runValidation(validationEnvironment);
-        if (validatedValue == null) {
-            return errors;
-        }
-
-        inputType = (GraphQLInputType) GraphQLTypeUtil.unwrapNonNull(inputType);
-
-        if (GraphQLTypeUtil.isList(inputType)) {
-            List<Object> values = new ArrayList<>(FpKit.toCollection(validatedValue));
-            List<GraphQLError> ruleErrors = walkListArg(rule, validationEnvironment, (GraphQLList) inputType, values);
-            errors.addAll(ruleErrors);
-        }
-
-        if (inputType instanceof GraphQLInputObjectType) {
-            if (validatedValue instanceof Map) {
-                Map<String, Object> objectValue = (Map<String, Object>) validatedValue;
-                List<GraphQLError> ruleErrors = walkObjectArg(rule, validationEnvironment, (GraphQLInputObjectType) inputType, objectValue);
-                errors.addAll(ruleErrors);
-            } else {
-                Assert.assertShouldNeverHappen("How can there be a `input` object type '%s' that does not have a matching Map java value", GraphQLTypeUtil.simplePrint(inputType));
-            }
-        }
-        return errors;
-    }
-
-
-    private List<GraphQLError> walkObjectArg(ValidationRule rule, ValidationEnvironment validationEnvironment, GraphQLInputObjectType argumentType, Map<String, Object> objectMap) {
-        List<GraphQLError> errors = new ArrayList<>();
-
-        // run them in a stable order
-        List<GraphQLInputObjectField> fieldDefinitions = Util.sort(argumentType.getFieldDefinitions(), GraphQLInputObjectField::getName);
-        for (GraphQLInputObjectField inputField : fieldDefinitions) {
-
-            GraphQLInputType fieldType = inputField.getType();
-            List<GraphQLDirective> directives = inputField.getDirectives();
-            Object validatedValue = objectMap.getOrDefault(inputField.getName(), inputField.getDefaultValue());
-            if (validatedValue == null) {
-                continue;
-            }
-
-            ExecutionPath newPath = validationEnvironment.getValidatedPath().segment(inputField.getName());
-
-            ValidationEnvironment newValidationEnvironment = validationEnvironment.transform(builder -> builder
-                    .validatedPath(newPath)
-                    .validatedValue(validatedValue)
-                    .validatedType(fieldType)
-                    .directives(inputField.getDirectives())
-                    .validatedElement(INPUT_OBJECT_FIELD)
-            );
-
-            List<GraphQLError> ruleErrors = runValidationImpl(rule, newValidationEnvironment, fieldType, validatedValue);
-            errors.addAll(ruleErrors);
-        }
-        return errors;
-    }
-
-    private List<GraphQLError> walkListArg(ValidationRule rule, ValidationEnvironment validationEnvironment, GraphQLList argumentType, List<Object> objectList) {
-        List<GraphQLError> errors = new ArrayList<>();
-
-        GraphQLInputType listItemType = Util.unwrapOneAndAllNonNull(argumentType);
-        List<GraphQLDirective> directives;
-        if (!(listItemType instanceof GraphQLDirectiveContainer)) {
-            directives = Collections.emptyList();
-        } else {
-            directives = ((GraphQLDirectiveContainer) listItemType).getDirectives();
-        }
-        int ix = 0;
-        for (Object value : objectList) {
-
-            ExecutionPath newPath = validationEnvironment.getValidatedPath().segment(ix);
-
-            ValidationEnvironment newValidationEnvironment = validationEnvironment.transform(builder -> builder
-                    .validatedPath(newPath)
-                    .validatedValue(value)
-                    .validatedType(listItemType)
-                    .directives(directives)
-            );
-
-            List<GraphQLError> ruleErrors = runValidationImpl(rule, newValidationEnvironment, listItemType, value);
-            errors.addAll(ruleErrors);
-            ix++;
-        }
-        return errors;
-    }
 
     public static class Builder {
-        Map<ValidationCoordinates, List<ValidationRule>> rulesMap = new HashMap<>();
+        private Locale locale;
+        private OnValidationErrorStrategy onValidationErrorStrategy = OnValidationErrorStrategy.RETURN_NULL;
+        private MessageInterpolator messageInterpolator = new ResourceBundleMessageInterpolator();
+        private List<ValidationRule> rules = new ArrayList<>();
 
-        public Builder addRule(ValidationCoordinates coordinates, ValidationRule rule) {
-            rulesMap.compute(coordinates, (key, listOfRules) -> {
-                if (listOfRules == null) {
-                    listOfRules = new ArrayList<>();
-                }
-                listOfRules.add(rule);
-                return listOfRules;
-            });
+
+        public Builder() {
+            // we start with the standard directive constraints to make us easier to use
+            addRules(DirectiveConstraints.STANDARD_CONSTRAINTS);
+        }
+
+        public Builder addRule(ValidationRule rule) {
+            rules.add(assertNotNull(rule));
             return this;
         }
 
-        public Builder addRules(ValidationCoordinates argCoords, List<ValidationRule> rules) {
-            for (ValidationRule rule : rules) {
-                addRule(argCoords, rule);
-            }
+        public Builder addRules(Collection<? extends ValidationRule> rules) {
+            rules.forEach(this::addRule);
+            return this;
+        }
+
+        public Builder addRules(ValidationRule... rules) {
+            return addRules(Arrays.asList(rules));
+        }
+
+        public Builder clearRules() {
+            rules.clear();
+            return this;
+        }
+
+        public Builder messageInterpolator(MessageInterpolator messageInterpolator) {
+            this.messageInterpolator = assertNotNull(messageInterpolator);
+            return this;
+        }
+
+        /**
+         * This sets the locale of the validation rules.  This is only needed while graphql-java does not allow you to get the
+         * locale from the {@link graphql.ExecutionInput}.  A PR for this is in the works.  Once that is available, then this method
+         * will not be as useful.
+         *
+         * @param locale the locale to use for message interpolation
+         * @return this builder
+         */
+        public Builder locale(Locale locale) {
+            this.locale = locale;
+            return this;
+        }
+
+        public Builder onValidationErrorStrategy(OnValidationErrorStrategy onValidationErrorStrategy) {
+            this.onValidationErrorStrategy = assertNotNull(onValidationErrorStrategy);
             return this;
         }
 
@@ -234,5 +179,4 @@ public class ValidationRules {
             return new ValidationRules(this);
         }
     }
-
 }
