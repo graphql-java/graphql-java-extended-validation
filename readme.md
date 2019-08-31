@@ -13,9 +13,24 @@ This library provides extended validation of fields and field arguments for [gra
 
 This code is currently under construction.  It is fairly complete in providing powerful validation
 but as it has NOT be consumed by a production like project then its API usefulness has not been tested
-and its code has not been battle tested. 
+and battle tested. 
 
 But the project welcomes all feedback and input on code design and validation requirements.
+
+```xml
+<dependency>
+  <groupId>com.graphql-java</groupId>
+  <artifactId>graphql-java-extended-validation</artifactId>
+  <version>0.0.1</version>
+  <type>pom</type>
+</dependency>
+```
+
+```groovy
+compile 'com.graphql-java:graphql-java-extended-validation:0.0.1'
+```
+
+Its currently available from JCenter repo and Maven central is pending.
 
 
 # SDL @Directive constraints
