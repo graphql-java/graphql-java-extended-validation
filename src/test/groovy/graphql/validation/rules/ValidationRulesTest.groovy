@@ -36,26 +36,25 @@ class ValidationRulesTest extends Specification {
             }
         '''
 
-    def "run rules for data fetcher environment direct from possible rules"() {
-
-
-        DataFetcher carsDF = { env ->
-            ValidationRules validationRules = ValidationRules
-                    .newValidationRules().build()
-            def errors = validationRules.runValidationRules(env)
-            if (!errors.isEmpty()) {
-                return DataFetcherResult.newResult().errors(errors).data(null).build()
-            }
-            return [
-                    [model: "Prado", make: "Toyota"]
-            ]
+    DataFetcher carsDF = { env ->
+        ValidationRules validationRules = ValidationRules
+                .newValidationRules().build()
+        def errors = validationRules.runValidationRules(env)
+        if (!errors.isEmpty()) {
+            return DataFetcherResult.newResult().errors(errors).data(null).build()
         }
+        return [
+                [model: "Prado", make: "Toyota"]
+        ]
+    }
 
-        def runtime = RuntimeWiring.newRuntimeWiring()
-                .type(newTypeWiring("Query").dataFetcher("cars", carsDF))
-                .build()
-        def schema = TestUtil.schema(sdl, runtime)
-        def graphQL = GraphQL.newGraphQL(schema).build()
+    def runtime = RuntimeWiring.newRuntimeWiring()
+            .type(newTypeWiring("Query").dataFetcher("cars", carsDF))
+            .build()
+    def schema = TestUtil.schema(sdl, runtime)
+    def graphQL = GraphQL.newGraphQL(schema).build()
+
+    def "run rules for data fetcher environment direct from possible rules"() {
 
         when:
         def er = graphQL.execute('''

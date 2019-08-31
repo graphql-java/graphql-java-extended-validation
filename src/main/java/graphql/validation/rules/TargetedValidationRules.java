@@ -17,6 +17,7 @@ import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLTypeUtil;
 import graphql.util.FpKit;
 import graphql.validation.interpolation.MessageInterpolator;
+import graphql.validation.locale.LocaleUtil;
 import graphql.validation.util.Util;
 
 import java.util.ArrayList;
@@ -56,12 +57,15 @@ public class TargetedValidationRules {
     /**
      * Runs the contained rules that match the currently executing field named by the {@link graphql.schema.DataFetchingEnvironment}
      *
-     * @param env          the field being executed
-     * @param interpolator the message interpolator to use
-     * @param locale       the locale in play
+     * @param env           the field being executed
+     * @param interpolator  the message interpolator to use
+     * @param defaultLocale the default locale in play
+     *
      * @return a list of zero or more input data validation errors
      */
-    public List<GraphQLError> runValidationRules(DataFetchingEnvironment env, MessageInterpolator interpolator, Locale locale) {
+    public List<GraphQLError> runValidationRules(DataFetchingEnvironment env, MessageInterpolator interpolator, Locale defaultLocale) {
+
+        defaultLocale = LocaleUtil.determineLocale(env, defaultLocale);
 
         List<GraphQLError> errors = new ArrayList<>();
 
@@ -76,6 +80,7 @@ public class TargetedValidationRules {
             ValidationEnvironment ruleEnvironment = ValidationEnvironment.newValidationEnvironment()
                     .dataFetchingEnvironment(env)
                     .messageInterpolator(interpolator)
+                    .locale(defaultLocale)
                     .validatedElement(FIELD)
                     .validatedPath(fieldPath)
                     .build();
@@ -109,7 +114,7 @@ public class TargetedValidationRules {
                     .validatedPath(fieldPath.segment(fieldArg.getName()))
                     .directives(fieldArg.getDirectives())
                     .messageInterpolator(interpolator)
-                    .locale(locale)
+                    .locale(defaultLocale)
                     .build();
 
             for (ValidationRule rule : rules) {

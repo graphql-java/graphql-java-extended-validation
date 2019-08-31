@@ -120,7 +120,20 @@ You can use Java EL syntax in the message templates to format even more powerful
 If you use directive arguments like `message : String = "graphql.validation.Size.message"` then the `ResourceBundleMessageInterpolator` class
 will use that as a resource bundle lookup key.  This too is inspired by the javax.validation annotations and how they work.
 
-Like javax.validation, this library ships with some default error message templates but you can override them. 
+Like javax.validation, this library ships with some default error message templates but you can override them.
+
+# I18n Locale Support
+
+The validation library aims to offer Internationalisation (18N) of the error messages.  When the validation rules
+run they are passed in a `java.util.Locale`.  A `ResourceBundleMessageInterpolator` can then be used to build up messages
+that come from I18N bundles.
+
+A `Locale` should be created per graphql execution.  However at the time of writing graphql-java does not
+pass in a `Locale` per request `ExecutionInput` .  A PR exists to fix this and it will be released in v14.0.  This
+library will then be updated to to take advantage of this.  
+
+In the mean time you can work around this by having the `context`, `source` or `root` implement `graphql.validation.locale.LocaleProvider` and
+the library will extract a `Locale` from that.
 
 # Schema Directive Wiring
 
