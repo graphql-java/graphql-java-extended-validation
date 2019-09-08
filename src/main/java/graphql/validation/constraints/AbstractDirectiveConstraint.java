@@ -218,6 +218,30 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
     }
 
     /**
+     * Returns a [String] argument from a directive (or its default) and throws an assertion of the argument is null
+     *
+     * @param directive the directive to check
+     * @param argName   the argument name
+     *
+     * @return a non null value
+     */
+    protected List<String> getStrListArg(GraphQLDirective directive, String argName) {
+        GraphQLArgument argument = directive.getArgument(argName);
+        if (argument == null) {
+            return assertExpectedArgType(argName, "List");
+        }
+        List<String> value = (List<String>) argument.getValue();
+        if (value == null) {
+            value = (List<String>) argument.getDefaultValue();
+            if (value == null) {
+                return assertExpectedArgType(argName, "List");
+            }
+        }
+
+        return value;
+    }
+
+    /**
      * Returns an boolean argument from a directive (or its default) and throws an assertion of the argument is null
      *
      * @param directive the directive to check

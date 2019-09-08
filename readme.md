@@ -439,4 +439,16 @@ The element size must be between the specified `min` and `max` boundaries (inclu
 
 - Message : `graphql.validation.Size.message`
 
+### @RelayID
+
+The ID must be a valid [relay global ID](https://facebook.github.io/relay/graphql/objectidentification.htm). Optionally a list of acceptable types can also be included
+
+- Example : `node( id : ID! @RelayID ) : Node`
+
+- Applies to : `ID`
+
+- SDL : `directive @RelayID(types = ["User""], message : String = "graphql.validation.RelayID.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
+
+- Message : `graphql.validation.RelayID.message`
+
 <!-- end -->

@@ -12,7 +12,7 @@ class DirectiveConstraintsTest extends BaseConstraintTestSupport {
         def rules = DirectiveConstraints.newDirectiveConstraints().build()
 
         then:
-        rules.getConstraints().size() == 17
+        rules.getConstraints().size() == 18
 
         when:
         rules = DirectiveConstraints.newDirectiveConstraints().clearRules().build()

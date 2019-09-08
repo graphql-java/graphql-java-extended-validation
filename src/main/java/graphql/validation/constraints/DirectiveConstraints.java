@@ -20,6 +20,7 @@ import graphql.validation.constraints.standard.PatternConstraint;
 import graphql.validation.constraints.standard.PositiveConstraint;
 import graphql.validation.constraints.standard.PositiveOrZeroConstraint;
 import graphql.validation.constraints.standard.RangeConstraint;
+import graphql.validation.constraints.standard.RelayIdConstraint;
 import graphql.validation.constraints.standard.SizeConstraint;
 
 import java.util.Arrays;
@@ -60,7 +61,8 @@ public class DirectiveConstraints {
             new PositiveOrZeroConstraint(),
             new PositiveConstraint(),
             new RangeConstraint(),
-            new SizeConstraint()
+            new SizeConstraint(),
+            new RelayIdConstraint()
     );
 
     private final Map<String, DirectiveConstraint> constraints;
