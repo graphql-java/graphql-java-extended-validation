@@ -1,5 +1,8 @@
 package graphql.validation.constraints;
 
+import graphql.schema.idl.SchemaParser;
+import graphql.schema.idl.TypeDefinitionRegistry;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,6 +11,7 @@ public class Documentation {
     private final String description;
     private final String example;
     private final String directiveSDL;
+    private final TypeDefinitionRegistry directiveDeclaration;
     private final String messageTemplate;
     private final List<String> applicableTypeNames;
 
@@ -15,6 +19,7 @@ public class Documentation {
         this.description = builder.description;
         this.example = builder.example;
         this.directiveSDL = builder.directiveSDL;
+        this.directiveDeclaration = new SchemaParser().parse(builder.directiveSDL);
         this.messageTemplate = builder.messageTemplate;
         this.applicableTypeNames = builder.applicableTypeNames;
     }
@@ -33,6 +38,10 @@ public class Documentation {
 
     public String getDirectiveSDL() {
         return directiveSDL;
+    }
+
+    public TypeDefinitionRegistry getDirectiveDeclaration() {
+        return directiveDeclaration;
     }
 
     public String getMessageTemplate() {

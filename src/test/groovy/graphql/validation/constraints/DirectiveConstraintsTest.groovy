@@ -107,4 +107,16 @@ class DirectiveConstraintsTest extends BaseConstraintTestSupport {
         "field( testArg : Int! @Size(max : 2) ) : ID" | _ // not allowed for Size
     }
 
+    def "can combine as type registry"() {
+
+        def directiveValidationRules = DirectiveConstraints.newDirectiveConstraints()
+                .build()
+
+        when:
+        def declaration = directiveValidationRules.getDirectivesDeclaration()
+        then:
+        declaration != null
+        declaration.getDirectiveDefinitions().size() == 17
+
+    }
 }
