@@ -4,12 +4,13 @@ import graphql.PublicApi;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLFieldsContainer;
-import graphql.validation.constraints.standard.ExpressionConstraint;
+import graphql.schema.idl.TypeDefinitionRegistry;
 import graphql.validation.constraints.standard.AssertFalseConstraint;
 import graphql.validation.constraints.standard.AssertTrueConstraint;
 import graphql.validation.constraints.standard.DecimalMaxConstraint;
 import graphql.validation.constraints.standard.DecimalMinConstraint;
 import graphql.validation.constraints.standard.DigitsConstraint;
+import graphql.validation.constraints.standard.ExpressionConstraint;
 import graphql.validation.constraints.standard.MaxConstraint;
 import graphql.validation.constraints.standard.MinConstraint;
 import graphql.validation.constraints.standard.NegativeConstraint;
@@ -83,6 +84,14 @@ public class DirectiveConstraints {
             sb.append("\n   ").append(directiveConstraint.getDocumentation().getDirectiveSDL()).append("\n");
         }
         return sb.toString();
+    }
+
+    public TypeDefinitionRegistry getDirectivesDeclaration() {
+        TypeDefinitionRegistry registry = new TypeDefinitionRegistry();
+        for (DirectiveConstraint directiveConstraint : constraints.values()) {
+            registry.merge(directiveConstraint.getDocumentation().getDirectiveDeclaration());
+        }
+        return registry;
     }
 
     public List<DirectiveConstraint> whichApplyTo(GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
