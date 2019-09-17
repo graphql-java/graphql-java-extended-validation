@@ -192,7 +192,7 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
         public Object toSpecification(GraphQLError error) {
             Map<String, Object> map = new LinkedHashMap<>();
             map.put("type", "ExtendedValidationError");
-            map.put("validatedPath", fieldOrArgumentPath);
+            map.put("validatedPath", fieldOrArgumentPath.toString());
             if (directive != null) {
                 map.put("constraint", "@" + directive.getName());
             }
