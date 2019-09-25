@@ -183,7 +183,7 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
         private final ExecutionPath fieldOrArgumentPath;
         private final GraphQLDirective directive;
 
-        public ValidationErrorType(ExecutionPath fieldOrArgumentPath, GraphQLDirective directive) {
+        ValidationErrorType(ExecutionPath fieldOrArgumentPath, GraphQLDirective directive) {
             this.fieldOrArgumentPath = fieldOrArgumentPath;
             this.directive = directive;
         }
@@ -192,7 +192,7 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
         public Object toSpecification(GraphQLError error) {
             Map<String, Object> map = new LinkedHashMap<>();
             map.put("type", "ExtendedValidationError");
-            map.put("validatedPath", fieldOrArgumentPath.toString());
+            map.put("validatedPath", fieldOrArgumentPath.toList());
             if (directive != null) {
                 map.put("constraint", "@" + directive.getName());
             }
