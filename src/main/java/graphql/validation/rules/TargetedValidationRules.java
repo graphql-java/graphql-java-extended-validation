@@ -1,5 +1,18 @@
 package graphql.validation.rules;
 
+import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.ARGUMENT;
+import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.FIELD;
+import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.INPUT_OBJECT_FIELD;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.springframework.web.servlet.tags.form.InputTag;
+
 import graphql.Assert;
 import graphql.GraphQLError;
 import graphql.PublicApi;
@@ -20,17 +33,6 @@ import graphql.validation.interpolation.MessageInterpolator;
 import graphql.validation.locale.LocaleUtil;
 import graphql.validation.util.Util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.ARGUMENT;
-import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.FIELD;
-import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.INPUT_OBJECT_FIELD;
-
 /**
  * TargetedValidationRules is a holder of {@link graphql.validation.rules.ValidationRule}s targeted against a specific
  * type, field and possible argument via {@link ValidationCoordinates}.  It then allows those rules
@@ -40,14 +42,17 @@ import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.IN
 @PublicApi
 public class TargetedValidationRules {
 
+    private final ValidationRules validationRules;
+    
     private final Map<ValidationCoordinates, List<ValidationRule>> rulesMap;
 
     public TargetedValidationRules(Builder builder) {
         this.rulesMap = new HashMap<>(builder.rulesMap);
+        this.validationRules=builder.validationRules;
     }
 
-    public static Builder newValidationRules() {
-        return new Builder();
+    public static Builder newValidationRules(ValidationRules validationRules) {
+        return new Builder(validationRules);
     }
 
     public boolean isEmpty() {
@@ -117,34 +122,37 @@ public class TargetedValidationRules {
                     .locale(defaultLocale)
                     .build();
 
-            for (ValidationRule rule : rules) {
-                List<GraphQLError> ruleErrors = runValidationImpl(rule, ruleEnvironment, inputType, argValue);
-                errors.addAll(ruleErrors);
-            }
+            errors.addAll(runValidationImpl(rules, ruleEnvironment, inputType, argValue));
         }
 
         return errors;
     }
 
     @SuppressWarnings("unchecked")
-    private List<GraphQLError> runValidationImpl(ValidationRule rule, ValidationEnvironment validationEnvironment, GraphQLInputType inputType, Object validatedValue) {
-        List<GraphQLError> errors = rule.runValidation(validationEnvironment);
+    private List<GraphQLError> runValidationImpl(List<ValidationRule> rules, ValidationEnvironment validationEnvironment, GraphQLInputType inputType, Object validatedValue) {
+        List<GraphQLError> errors = new ArrayList<GraphQLError>();
+        for(ValidationRule rule : rules) {
+            errors.addAll(rule.runValidation(validationEnvironment));
+        }
+        
         if (validatedValue == null) {
             return errors;
         }
 
         inputType = (GraphQLInputType) GraphQLTypeUtil.unwrapNonNull(inputType);
 
-        if (GraphQLTypeUtil.isList(inputType)) {
-            List<Object> values = new ArrayList<>(FpKit.toCollection(validatedValue));
-            List<GraphQLError> ruleErrors = walkListArg(rule, validationEnvironment, (GraphQLList) inputType, values);
-            errors.addAll(ruleErrors);
+        
+        if (GraphQLTypeUtil.isList(inputType)) { 
+            List<Object> values = new ArrayList<>(FpKit.toCollection(validatedValue)); 
+            List<GraphQLError> ruleErrors = walkListArg(rules, validationEnvironment, (GraphQLList) inputType, values); 
+            errors.addAll(ruleErrors); 
         }
+         
 
         if (inputType instanceof GraphQLInputObjectType) {
             if (validatedValue instanceof Map) {
                 Map<String, Object> objectValue = (Map<String, Object>) validatedValue;
-                List<GraphQLError> ruleErrors = walkObjectArg(rule, validationEnvironment, (GraphQLInputObjectType) inputType, objectValue);
+                List<GraphQLError> ruleErrors = walkObjectArg(validationEnvironment, (GraphQLInputObjectType) inputType, objectValue);
                 errors.addAll(ruleErrors);
             } else {
                 Assert.assertShouldNeverHappen("How can there be a `input` object type '%s' that does not have a matching Map java value", GraphQLTypeUtil.simplePrint(inputType));
@@ -154,7 +162,7 @@ public class TargetedValidationRules {
     }
 
 
-    private List<GraphQLError> walkObjectArg(ValidationRule rule, ValidationEnvironment validationEnvironment, GraphQLInputObjectType argumentType, Map<String, Object> objectMap) {
+    private List<GraphQLError> walkObjectArg(ValidationEnvironment validationEnvironment, GraphQLInputObjectType argumentType, Map<String, Object> objectMap) {
         List<GraphQLError> errors = new ArrayList<>();
 
         // run them in a stable order
@@ -162,7 +170,6 @@ public class TargetedValidationRules {
         for (GraphQLInputObjectField inputField : fieldDefinitions) {
 
             GraphQLInputType fieldType = inputField.getType();
-            List<GraphQLDirective> directives = inputField.getDirectives();
             Object validatedValue = objectMap.getOrDefault(inputField.getName(), inputField.getDefaultValue());
             if (validatedValue == null) {
                 continue;
@@ -177,14 +184,15 @@ public class TargetedValidationRules {
                     .directives(inputField.getDirectives())
                     .validatedElement(INPUT_OBJECT_FIELD)
             );
+          
+            List<ValidationRule> rulesChild = validationRules.getRulesFor(newValidationEnvironment.getArgument(), newValidationEnvironment.getFieldDefinition(), newValidationEnvironment.getFieldsContainer());
+            errors.addAll(runValidationImpl(rulesChild, newValidationEnvironment, fieldType, validatedValue));
 
-            List<GraphQLError> ruleErrors = runValidationImpl(rule, newValidationEnvironment, fieldType, validatedValue);
-            errors.addAll(ruleErrors);
         }
         return errors;
     }
 
-    private List<GraphQLError> walkListArg(ValidationRule rule, ValidationEnvironment validationEnvironment, GraphQLList argumentType, List<Object> objectList) {
+    private List<GraphQLError> walkListArg(List<ValidationRule> rules, ValidationEnvironment validationEnvironment, GraphQLList argumentType, List<Object> objectList) {
         List<GraphQLError> errors = new ArrayList<>();
 
         GraphQLInputType listItemType = Util.unwrapOneAndAllNonNull(argumentType);
@@ -206,7 +214,7 @@ public class TargetedValidationRules {
                     .directives(directives)
             );
 
-            List<GraphQLError> ruleErrors = runValidationImpl(rule, newValidationEnvironment, listItemType, value);
+            List<GraphQLError> ruleErrors = runValidationImpl(rules, newValidationEnvironment, listItemType, value);
             errors.addAll(ruleErrors);
             ix++;
         }
@@ -214,8 +222,13 @@ public class TargetedValidationRules {
     }
 
     public static class Builder {
+        ValidationRules validationRules;
         Map<ValidationCoordinates, List<ValidationRule>> rulesMap = new HashMap<>();
 
+        public Builder(ValidationRules validationRules) {
+            this.validationRules=validationRules;
+        }
+        
         public Builder addRule(ValidationCoordinates coordinates, ValidationRule rule) {
             rulesMap.compute(coordinates, (key, listOfRules) -> {
                 if (listOfRules == null) {

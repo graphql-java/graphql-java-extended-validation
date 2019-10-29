@@ -60,7 +60,7 @@ public class ValidationRules {
     }
 
     public TargetedValidationRules buildRulesFor(GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
-        TargetedValidationRules.Builder rulesBuilder = TargetedValidationRules.newValidationRules();
+        TargetedValidationRules.Builder rulesBuilder = TargetedValidationRules.newValidationRules(this);
 
         ValidationCoordinates fieldCoordinates = ValidationCoordinates.newCoordinates(fieldsContainer, fieldDefinition);
         List<ValidationRule> fieldRules = getRulesFor(fieldDefinition, fieldsContainer);
