@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.web.servlet.tags.form.InputTag;
-
 import graphql.Assert;
 import graphql.GraphQLError;
 import graphql.PublicApi;
