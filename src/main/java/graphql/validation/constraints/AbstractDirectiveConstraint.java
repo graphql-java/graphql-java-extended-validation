@@ -307,13 +307,13 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      *
      * @return true if one of the above
      */
-      @Override
-      public boolean appliesToType(GraphQLInputType inputType) {
+    protected boolean isStringOrListOrMap(GraphQLInputType inputType) {
         GraphQLInputType unwrappedType = Util.unwrapOneAndAllNonNull(inputType);
-        return Scalars.GraphQLString.equals(unwrappedType) || isList(inputType)
-            || (unwrappedType instanceof GraphQLInputObjectType)
-            || (unwrappedType instanceof GraphQLTypeReference);
-      }
+        return Scalars.GraphQLString.equals(unwrappedType) ||
+                isList(inputType) ||
+                (unwrappedType instanceof GraphQLInputObjectType) ||
+                (unwrappedType instanceof GraphQLTypeReference);
+    }
 
     /**
      * Casts the object as a Map with an assertion of it is not one
