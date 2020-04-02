@@ -6,6 +6,7 @@ import graphql.Internal;
 import graphql.execution.DataFetcherResult;
 import graphql.execution.ExecutionPath;
 import graphql.schema.GraphQLInputType;
+import graphql.schema.GraphQLNamedInputType;
 import graphql.schema.GraphQLType;
 import graphql.schema.GraphQLTypeUtil;
 
@@ -34,6 +35,16 @@ public class Util {
         type = GraphQLTypeUtil.unwrapNonNull(type);
         if (type instanceof GraphQLInputType) {
             return (GraphQLInputType) type;
+        } else {
+            String argType = GraphQLTypeUtil.simplePrint(inputType);
+            return Assert.assertShouldNeverHappen("You have a wrapped type that is in fact not a input type : %s", argType);
+        }
+    }
+
+    public static GraphQLNamedInputType unwrapNonNullNamedType(GraphQLInputType inputType) {
+        GraphQLType type = GraphQLTypeUtil.unwrapNonNull(inputType);
+        if (type instanceof GraphQLNamedInputType) {
+            return (GraphQLNamedInputType) type;
         } else {
             String argType = GraphQLTypeUtil.simplePrint(inputType);
             return Assert.assertShouldNeverHappen("You have a wrapped type that is in fact not a input type : %s", argType);
