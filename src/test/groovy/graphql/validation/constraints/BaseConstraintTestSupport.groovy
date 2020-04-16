@@ -16,9 +16,9 @@ import graphql.schema.GraphQLObjectType
 import graphql.schema.GraphQLSchema
 import graphql.validation.TestUtil
 import graphql.validation.interpolation.MessageInterpolator
+import graphql.validation.rules.TargetedValidationRules
 import graphql.validation.rules.ValidationCoordinates
 import graphql.validation.rules.ValidationEnvironment
-import graphql.validation.rules.TargetedValidationRules
 import spock.lang.Specification
 
 class BaseConstraintTestSupport extends Specification {

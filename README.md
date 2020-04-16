@@ -21,13 +21,13 @@ But the project welcomes all feedback and input on code design and validation re
 <dependency>
   <groupId>com.graphql-java</groupId>
   <artifactId>graphql-java-extended-validation</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.3</version>
   <type>pom</type>
 </dependency>
 ```
 
 ```groovy
-compile 'com.graphql-java:graphql-java-extended-validation:0.0.1'
+compile 'com.graphql-java:graphql-java-extended-validation:0.0.3'
 ```
 
 Its currently available from JCenter repo and Maven central is pending.
