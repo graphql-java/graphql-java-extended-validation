@@ -104,10 +104,10 @@ public class Util {
      */
     public static Map<String, Object> mkMap(Object... args) {
         Map<String, Object> params = new LinkedHashMap<>();
-        Assert.assertTrue(args.length % 2 == 0, "You MUST pass in an even number of arguments");
+        Assert.assertTrue(args.length % 2 == 0, () -> "You MUST pass in an even number of arguments");
         for (int ix = 0; ix < args.length; ix = ix + 2) {
             Object key = args[ix];
-            Assert.assertTrue(key instanceof String, "You MUST pass in a message param string key");
+            Assert.assertTrue(key instanceof String, () -> "You MUST pass in a message param string key");
             Object val = args[ix + 1];
             params.put(String.valueOf(key), val);
         }
