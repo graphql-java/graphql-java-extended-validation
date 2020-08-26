@@ -38,9 +38,9 @@ public class PatternConstraint extends AbstractDirectiveConstraint {
 
                 .description("The String must match the specified regular expression, which follows the Java regular expression conventions.")
 
-                .example("updateDriver( licencePlate : String @Patttern(regex : \"[A-Z][A-Z][A-Z]-[0-9][0-9][0-9]\") : DriverDetails")
+                .example("updateDriver( licencePlate : String @Pattern(regexp : \"[A-Z][A-Z][A-Z]-[0-9][0-9][0-9]\") : DriverDetails")
 
-                .applicableTypeNames(Scalars.GraphQLString.getName())
+                .applicableTypeNames(Scalars.GraphQLString.getName(), "Lists")
 
                 .directiveSDL("directive @Pattern(regexp : String! =\".*\", message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
