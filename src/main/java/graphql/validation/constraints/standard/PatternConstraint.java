@@ -57,6 +57,7 @@ public class PatternConstraint extends AbstractDirectiveConstraint {
     @Override
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
+        GraphQLInputType argumentType = validationEnvironment.getValidatedType();
 
         if (validatedValue == null) {
             return emptyList();
@@ -64,7 +65,7 @@ public class PatternConstraint extends AbstractDirectiveConstraint {
 
         List<Object> validatedValues;
 
-        if (validatedValue instanceof List) {
+        if (isList(argumentType)) {
             validatedValues = (ArrayList)validatedValue;
         } else {
             validatedValues = Arrays.asList(validatedValue);
