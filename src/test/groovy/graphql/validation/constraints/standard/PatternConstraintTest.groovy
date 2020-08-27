@@ -22,6 +22,8 @@ class PatternConstraintTest extends BaseConstraintTestSupport {
         fieldDeclaration                                       | argVal | expectedMessage
         'field( arg : String @Pattern(regexp:"[A-Z]*") ) : ID' | "ABCd" | 'Pattern;path=/arg;val:ABCd;\t'
         'field( arg : String @Pattern(regexp:"[A-Z]*") ) : ID' | "ABC"  | ''
+        'field( arg : [String] @Pattern(regexp:"[A-Z]*") ) : ID' | ["ABC"]  | ''
+        'field( arg : [String] @Pattern(regexp:"[A-Z]*") ) : ID' | ["ABC", "ABCd"]  | 'Pattern;path=/arg;val:[ABC, ABCd];\t'
 
         // nulls are valid
         'field( arg : String @Pattern(regexp:"[A-Z]*") ) : ID' | null   | ''

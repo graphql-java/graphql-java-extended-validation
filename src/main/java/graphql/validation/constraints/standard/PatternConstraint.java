@@ -8,12 +8,15 @@ import graphql.validation.constraints.AbstractDirectiveConstraint;
 import graphql.validation.constraints.Documentation;
 import graphql.validation.rules.ValidationEnvironment;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static graphql.schema.GraphQLTypeUtil.isList;
 import static java.util.Collections.emptyList;
 
 public class PatternConstraint extends AbstractDirectiveConstraint {
@@ -31,9 +34,9 @@ public class PatternConstraint extends AbstractDirectiveConstraint {
 
                 .description("The String must match the specified regular expression, which follows the Java regular expression conventions.")
 
-                .example("updateDriver( licencePlate : String @Patttern(regex : \"[A-Z][A-Z][A-Z]-[0-9][0-9][0-9]\") : DriverDetails")
+                .example("updateDriver( licencePlate : String @Pattern(regexp : \"[A-Z][A-Z][A-Z]-[0-9][0-9][0-9]\") : DriverDetails")
 
-                .applicableTypeNames(Scalars.GraphQLString.getName())
+                .applicableTypeNames(Scalars.GraphQLString.getName(), "Lists")
 
                 .directiveSDL("directive @Pattern(regexp : String! =\".*\", message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
@@ -44,28 +47,39 @@ public class PatternConstraint extends AbstractDirectiveConstraint {
     @Override
     public boolean appliesToType(GraphQLInputType inputType) {
         return isOneOfTheseTypes(inputType,
-                Scalars.GraphQLString
-        );
+            Scalars.GraphQLString) || isList(inputType);
     }
 
     @Override
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
+        GraphQLInputType argumentType = validationEnvironment.getValidatedType();
+
         if (validatedValue == null) {
             return emptyList();
         }
-        String strValue = String.valueOf(validatedValue);
 
-        GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
+        List<Object> validatedValues;
 
-        String patternArg = getStrArg(directive, "regexp");
-        Pattern pattern = cachedPattern(patternArg);
+        if (isList(argumentType)) {
+            validatedValues = (ArrayList)validatedValue;
+        } else {
+            validatedValues = Arrays.asList(validatedValue);
+        }
 
-        Matcher matcher = pattern.matcher(strValue);
-        if (!matcher.matches()) {
-            return mkError(validationEnvironment, directive, mkMessageParams(validatedValue, validationEnvironment,
-                    "regexp", patternArg
-            ));
+        for (Object value : validatedValues) {
+            String strValue = String.valueOf(value);
+
+            GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
+
+            String patternArg = getStrArg(directive, "regexp");
+            Pattern pattern = cachedPattern(patternArg);
+
+            Matcher matcher = pattern.matcher(strValue);
+            if (!matcher.matches()) {
+                return mkError(validationEnvironment, directive,
+                    mkMessageParams(validatedValue, validationEnvironment, "regexp", patternArg));
+            }
         }
         return emptyList();
     }
