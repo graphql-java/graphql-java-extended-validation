@@ -8,7 +8,6 @@ import graphql.validation.constraints.AbstractDirectiveConstraint;
 import graphql.validation.constraints.Documentation;
 import graphql.validation.rules.ValidationEnvironment;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +61,7 @@ public class PatternConstraint extends AbstractDirectiveConstraint {
         List<Object> validatedValues;
 
         if (isList(argumentType)) {
-            validatedValues = (ArrayList)validatedValue;
+            validatedValues = (List)validatedValue;
         } else {
             validatedValues = Arrays.asList(validatedValue);
         }
