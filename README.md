@@ -12,7 +12,7 @@ This library provides extended validation of fields and field arguments for [gra
 # Status
 
 This code is currently under construction.  It is fairly complete in providing powerful validation
-but as it has NOT be consumed by a production like project then its API usefulness has not been tested
+but as it has NOT been consumed by a production like project then its API usefulness has not been tested
 and battle tested. 
 
 But the project welcomes all feedback and input on code design and validation requirements.
@@ -409,7 +409,7 @@ The String must match the specified regular expression, which follows the Java r
 
 - Example : `updateDriver( licencePlate : String @Patttern(regex : "[A-Z][A-Z][A-Z]-[0-9][0-9][0-9]") : DriverDetails`
 
-- Applies to : `String`
+- Applies to : `String`, `Lists`
 
 - SDL : `directive @Pattern(regexp : String! =".*", message : String = "graphql.validation.Pattern.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
