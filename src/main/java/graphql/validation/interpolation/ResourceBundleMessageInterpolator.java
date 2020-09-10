@@ -7,16 +7,18 @@ import graphql.execution.ExecutionPath;
 import graphql.schema.GraphQLDirective;
 import graphql.validation.el.StandardELVariables;
 import graphql.validation.rules.ValidationEnvironment;
+import javax.validation.Path;
 import org.hibernate.validator.internal.engine.MessageInterpolatorContext;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
+import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl.ConstraintType;
+import org.hibernate.validator.internal.metadata.location.ConstraintLocation.ConstraintLocationKind;
 import org.hibernate.validator.internal.util.annotation.ConstraintAnnotationDescriptor;
 import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
 import org.hibernate.validator.spi.resourceloading.ResourceBundleLocator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.LinkedHashMap;
@@ -148,16 +150,18 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
 
         ConstraintDescriptorImpl<BridgeAnnotation> constraintDescriptor
                 = new ConstraintDescriptorImpl<>(
-                new ConstraintHelper(), null,
-                annotationDescriptor, ElementType.FIELD
+                ConstraintHelper.forAllBuiltinConstraints(), null,
+                annotationDescriptor, ConstraintLocationKind.FIELD, ConstraintType.GENERIC
         );
 
         Map<String, Object> expressionVariables = StandardELVariables.standardELVars(validationEnvironment);
 
         Class<?> rootBeanType = null;
+        Path propertyPath = null;
+
         return new MessageInterpolatorContext(
                 constraintDescriptor, validatedValue, rootBeanType,
-                messageParams, expressionVariables);
+                propertyPath, messageParams, expressionVariables);
     }
 
     private org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator hibernateInterpolator() {
