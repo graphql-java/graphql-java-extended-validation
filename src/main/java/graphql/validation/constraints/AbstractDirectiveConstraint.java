@@ -28,7 +28,6 @@ import java.util.Map;
 import static graphql.schema.GraphQLTypeUtil.isList;
 import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.FIELD;
 import static graphql.validation.util.Util.mkMap;
-import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 
 @SuppressWarnings("UnnecessaryLocalVariable")
@@ -73,10 +72,10 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
                 if (appliesToType) {
                     return true;
                 }
-                // if they have a @Directive on there BUT it can't handle that type
+                // if they have a @Directive on there BUT it cant handle that type
                 // then is a really bad situation
                 String argType = GraphQLTypeUtil.simplePrint(inputType);
-                Assert.assertTrue(false, () -> format("The directive rule '%s' cannot be placed on elements of type '%s'", "@" + this.getName(), argType));
+                Assert.assertTrue(false, "The directive rule '%s' cannot be placed on elements of type '%s'", "@" + this.getName(), argType);
             }
             return false;
         });
@@ -326,7 +325,7 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      */
     @SuppressWarnings("ConstantConditions")
     protected Map asMap(Object value) {
-        Assert.assertTrue(value instanceof Map, () -> "The argument value MUST be a Map value");
+        Assert.assertTrue(value instanceof Map, "The argument value MUST be a Map value");
         return (Map) value;
     }
 
