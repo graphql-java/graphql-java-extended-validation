@@ -9,13 +9,8 @@
 This library provides extended validation of fields and field arguments for [graphql-java](https://github.com/graphql-java/graphql-java)
 
 
-# Status
+# Using
 
-This code is currently under construction.  It is fairly complete in providing powerful validation
-but as it has NOT been consumed by a production like project then its API usefulness has not been tested
-and battle tested. 
-
-But the project welcomes all feedback and input on code design and validation requirements.
 
 ```xml
 <dependency>
