@@ -34,7 +34,7 @@ compile 'com.graphql-java:graphql-java-extended-validation:0.0.5'
 >
 > use 0.0.3 or below for graphql-java 13.x and below
 >
-> use 0.0.4 or above for graphql-java 14.x and above
+> use 14.0.1 or above for graphql-java 14.x and above
 
 Its currently available from JCenter repo and Maven central is pending.
 
