@@ -32,7 +32,7 @@ compile 'com.graphql-java:graphql-java-extended-validation:14.0.1'
 > use 14.0.1 or above for graphql-java 14.x and above
 
 
-Its currently available from JCenter repo and Maven central is pending.
+Its currently available from JCenter repo and Maven central.
 
 
 # SDL @Directive constraints
