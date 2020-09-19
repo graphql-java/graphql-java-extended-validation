@@ -160,7 +160,7 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      * @param inputType   the type to check
      * @param scalarTypes the array of scalar types
      *
-     * @return true ifits oneof them
+     * @return true if its one of them
      */
     protected boolean isOneOfTheseTypes(GraphQLInputType inputType, GraphQLScalarType... scalarTypes) {
         GraphQLInputType type = Util.unwrapNonNull(inputType);
@@ -303,17 +303,29 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
     }
 
     /**
-     * Return true if the type is a String or List type or {@link graphql.schema.GraphQLInputObjectType}, regardless of non null ness
+     * Return true if the type is a String or ID or List type or {@link graphql.schema.GraphQLInputObjectType}, regardless of non null ness
      *
      * @param inputType the type to check
      *
      * @return true if one of the above
      */
-    protected boolean isStringOrListOrMap(GraphQLInputType inputType) {
+    protected boolean isStringOrIDOrListOrMap(GraphQLInputType inputType) {
         GraphQLInputType unwrappedType = Util.unwrapOneAndAllNonNull(inputType);
-        return Scalars.GraphQLString.equals(unwrappedType) ||
+        return isStringOrID(inputType) ||
                 isList(inputType) ||
                 (unwrappedType instanceof GraphQLInputObjectType);
+    }
+
+    /**
+     * Return true if the type is a String or ID
+     *
+     * @param inputType the type to check
+     *
+     * @return true if one of the above
+     */
+    protected boolean isStringOrID(GraphQLInputType inputType) {
+        GraphQLInputType unwrappedType = Util.unwrapNonNull(inputType);
+        return Scalars.GraphQLString.equals(unwrappedType) || Scalars.GraphQLID.equals(unwrappedType);
     }
 
     /**
@@ -373,18 +385,18 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
     }
 
     /**
-     * Returns the length of a String of the size of a list or size of a Map
+     * Returns the length of a String, ID, size of a list or size of a Map
      *
      * @param inputType the input type
      * @param value     the value
      *
      * @return the length of a String or Map or List
      */
-    protected int getStringOrObjectOrMapLength(GraphQLInputType inputType, Object value) {
+    protected int getStringOrIDOrObjectOrMapLength(GraphQLInputType inputType, Object value) {
         int valLen;
         if (value == null) {
             valLen = 0;
-        } else if (Scalars.GraphQLString.equals(Util.unwrapNonNull(inputType))) {
+        } else if (isStringOrID(inputType)) {
             valLen = String.valueOf(value).length();
         } else if (isList(inputType)) {
             valLen = getListLength(value);

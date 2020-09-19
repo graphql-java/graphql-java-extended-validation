@@ -7,7 +7,6 @@ import graphql.schema.GraphQLInputType;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
 import graphql.validation.constraints.Documentation;
 import graphql.validation.rules.ValidationEnvironment;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class NotEmptyRule extends AbstractDirectiveConstraint {
 
                 .example("updateAccident( accidentNotes : [Notes]! @NotEmpty) : DriverDetails")
 
-                .applicableTypeNames(Scalars.GraphQLString.getName(), "Lists", "Input Objects")
+                .applicableTypeNames(Scalars.GraphQLString.getName(), Scalars.GraphQLID.getName(), "Lists", "Input Objects")
 
                 .directiveSDL("directive @NotEmpty(message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
@@ -36,7 +35,7 @@ public class NotEmptyRule extends AbstractDirectiveConstraint {
 
     @Override
     public boolean appliesToType(GraphQLInputType inputType) {
-        return isStringOrListOrMap(inputType);
+        return isStringOrIDOrListOrMap(inputType);
     }
 
     @Override
@@ -45,7 +44,7 @@ public class NotEmptyRule extends AbstractDirectiveConstraint {
         GraphQLInputType argumentType = validationEnvironment.getValidatedType();
 
         GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
-        int size = getStringOrObjectOrMapLength(argumentType, validatedValue);
+        int size = getStringOrIDOrObjectOrMapLength(argumentType, validatedValue);
 
         if (size <= 0) {
             return mkError(validationEnvironment, directive, mkMessageParams(validatedValue, validationEnvironment,
