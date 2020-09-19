@@ -28,7 +28,7 @@ public class SizeConstraint extends AbstractDirectiveConstraint {
 
                 .example("updateDrivingNotes( drivingNote : String @Size( min : 1000, max : 100000)) : DriverDetails")
 
-                .applicableTypeNames(Scalars.GraphQLString.getName(), "Lists", "Input Objects")
+                .applicableTypeNames(Scalars.GraphQLString.getName(), Scalars.GraphQLID.getName(), "Lists", "Input Objects")
 
                 .directiveSDL("directive @Size(min : Int = 0, max : Int = %d, message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
@@ -39,7 +39,7 @@ public class SizeConstraint extends AbstractDirectiveConstraint {
 
     @Override
     public boolean appliesToType(GraphQLInputType inputType) {
-        return isStringOrListOrMap(inputType);
+        return isStringOrIDOrListOrMap(inputType);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class SizeConstraint extends AbstractDirectiveConstraint {
         int max = getIntArg(directive, "max");
 
 
-        int size = getStringOrObjectOrMapLength(argType, validatedValue);
+        int size = getStringOrIDOrObjectOrMapLength(argType, validatedValue);
 
         if (size < min) {
             return mkError(validationEnvironment, directive, mkParams(validatedValue, validationEnvironment, min, max, size));

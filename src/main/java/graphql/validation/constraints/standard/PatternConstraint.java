@@ -35,7 +35,7 @@ public class PatternConstraint extends AbstractDirectiveConstraint {
 
                 .example("updateDriver( licencePlate : String @Pattern(regexp : \"[A-Z][A-Z][A-Z]-[0-9][0-9][0-9]\") : DriverDetails")
 
-                .applicableTypeNames(Scalars.GraphQLString.getName(), "Lists")
+                .applicableTypeNames(Scalars.GraphQLString.getName(), Scalars.GraphQLID.getName(), "Lists")
 
                 .directiveSDL("directive @Pattern(regexp : String! =\".*\", message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
@@ -45,8 +45,7 @@ public class PatternConstraint extends AbstractDirectiveConstraint {
 
     @Override
     public boolean appliesToType(GraphQLInputType inputType) {
-        return isOneOfTheseTypes(inputType,
-            Scalars.GraphQLString) || isList(inputType);
+        return isStringOrID(inputType) || isList(inputType);
     }
 
     @Override

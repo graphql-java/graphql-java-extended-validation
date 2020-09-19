@@ -26,7 +26,7 @@ public class NotBlankRule extends AbstractDirectiveConstraint {
 
                 .example("updateAccident( accidentNotes : String @NotBlank) : DriverDetails")
 
-                .applicableTypeNames(Scalars.GraphQLString.getName())
+                .applicableTypeNames(Scalars.GraphQLString.getName(), Scalars.GraphQLID.getName())
 
                 .directiveSDL("directive @NotBlank(message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
@@ -36,7 +36,7 @@ public class NotBlankRule extends AbstractDirectiveConstraint {
 
     @Override
     public boolean appliesToType(GraphQLInputType inputType) {
-        return isOneOfTheseTypes(inputType, Scalars.GraphQLString);
+        return isStringOrID(inputType);
     }
 
     @Override
