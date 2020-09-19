@@ -16,13 +16,13 @@ This library provides extended validation of fields and field arguments for [gra
 <dependency>
   <groupId>com.graphql-java</groupId>
   <artifactId>graphql-java-extended-validation</artifactId>
-  <version>14.0.1</version>
+  <version>15.0.1</version>
   <type>pom</type>
 </dependency>
 ```
 
 ```groovy
-compile 'com.graphql-java:graphql-java-extended-validation:14.0.1'
+compile 'com.graphql-java:graphql-java-extended-validation:15.0.1'
 ```
 
 > Note:
@@ -30,7 +30,8 @@ compile 'com.graphql-java:graphql-java-extended-validation:14.0.1'
 > use 0.0.3 or below for graphql-java 13.x and below
 >
 > use 14.0.1 or above for graphql-java 14.x and above
-
+>
+> use 15.0.1 or above for graphql-java 15.x and above
 
 Its currently available from JCenter repo and Maven central.
 
