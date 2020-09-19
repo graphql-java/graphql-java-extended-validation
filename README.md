@@ -390,7 +390,7 @@ The String must contain at least one non-whitespace character, according to Java
 
 - Example : `updateAccident( accidentNotes : String @NotBlank) : DriverDetails`
 
-- Applies to : `String`
+- Applies to : `String`, `ID`
 
 - SDL : `directive @NotBlank(message : String = "graphql.validation.NotBlank.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
@@ -403,7 +403,7 @@ The element must have a non zero size.
 
 - Example : `updateAccident( accidentNotes : [Notes]! @NotEmpty) : DriverDetails`
 
-- Applies to : `String`, `Lists`, `Input Objects`
+- Applies to : `String`, `ID`, `Lists`, `Input Objects`
 
 - SDL : `directive @NotEmpty(message : String = "graphql.validation.NotEmpty.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
@@ -414,9 +414,9 @@ The element must have a non zero size.
 
 The String must match the specified regular expression, which follows the Java regular expression conventions.
 
-- Example : `updateDriver( licencePlate : String @Patttern(regex : "[A-Z][A-Z][A-Z]-[0-9][0-9][0-9]") : DriverDetails`
+- Example : `updateDriver( licencePlate : String @Pattern(regexp : "[A-Z][A-Z][A-Z]-[0-9][0-9][0-9]") : DriverDetails`
 
-- Applies to : `String`, `Lists`
+- Applies to : `String`, `ID`, `Lists`
 
 - SDL : `directive @Pattern(regexp : String! =".*", message : String = "graphql.validation.Pattern.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
@@ -468,7 +468,7 @@ The element size must be between the specified `min` and `max` boundaries (inclu
 
 - Example : `updateDrivingNotes( drivingNote : String @Size( min : 1000, max : 100000)) : DriverDetails`
 
-- Applies to : `String`, `Lists`, `Input Objects`
+- Applies to : `String`, `ID`, `Lists`, `Input Objects`
 
 - SDL : `directive @Size(min : Int = 0, max : Int = 2147483647, message : String = "graphql.validation.Size.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 

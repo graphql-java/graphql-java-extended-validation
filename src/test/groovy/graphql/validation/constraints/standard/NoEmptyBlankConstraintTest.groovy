@@ -20,12 +20,17 @@ class NoEmptyBlankConstraintTest extends BaseConstraintTestSupport {
         where:
 
         fieldDeclaration                       | argVal     | expectedMessage
+        // strings
         'field( arg : String @NotBlank ) : ID' | "\t\n\r "  | 'NotBlank;path=/arg;val:\t\n\r ;\t'
         'field( arg : String @NotBlank ) : ID' | ""         | 'NotBlank;path=/arg;val:;\t'
         'field( arg : String @NotBlank ) : ID' | "\t\n\r X" | ''
-
-        // nulls are INVALID
         'field( arg : String @NotBlank ) : ID' | null       | 'NotBlank;path=/arg;val:null;\t'
+
+        // IDs
+        'field( arg : ID @NotBlank ) : ID' | "\t\n\r "  | 'NotBlank;path=/arg;val:\t\n\r ;\t'
+        'field( arg : ID @NotBlank ) : ID' | ""         | 'NotBlank;path=/arg;val:;\t'
+        'field( arg : ID @NotBlank ) : ID' | "\t\n\r X" | ''
+        'field( arg : ID @NotBlank ) : ID' | null       | 'NotBlank;path=/arg;val:null;\t'
     }
 
     @Unroll
@@ -47,6 +52,13 @@ class NoEmptyBlankConstraintTest extends BaseConstraintTestSupport {
         'field( arg : String @NotEmpty ) : ID'      | "\t\n\r"    | ''
         'field( arg : String @NotEmpty ) : ID'      | "ABC"       | ''
 
+        // IDs
+        'field( arg : ID @NotEmpty ) : ID'      | ""          | 'NotEmpty;path=/arg;val:;\t'
+        'field( arg : ID @NotEmpty ) : ID'      | null        | 'NotEmpty;path=/arg;val:null;\t'
+        'field( arg : ID @NotEmpty ) : ID'      | "\t\n\r"    | ''
+        'field( arg : ID @NotEmpty ) : ID'      | "ABC"       | ''
+
+
         // objects
         'field( arg : InputObject @NotEmpty ) : ID' | [:]         | 'NotEmpty;path=/arg;val:[:];\t'
         'field( arg : InputObject @NotEmpty ) : ID' | null        | 'NotEmpty;path=/arg;val:null;\t'
@@ -56,6 +68,9 @@ class NoEmptyBlankConstraintTest extends BaseConstraintTestSupport {
         'field( arg : [String] @NotEmpty ) : ID'    | []          | 'NotEmpty;path=/arg;val:[];\t'
         'field( arg : [String] @NotEmpty ) : ID'    | null        | 'NotEmpty;path=/arg;val:null;\t'
         'field( arg : [String] @NotEmpty ) : ID'    | ["x"]       | ''
+        'field( arg : [ID] @NotEmpty ) : ID'    | []          | 'NotEmpty;path=/arg;val:[];\t'
+        'field( arg : [ID] @NotEmpty ) : ID'    | null        | 'NotEmpty;path=/arg;val:null;\t'
+        'field( arg : [ID] @NotEmpty ) : ID'    | ["x"]       | ''
 
     }
 
