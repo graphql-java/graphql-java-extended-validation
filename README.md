@@ -1,6 +1,6 @@
 # Extended Validation for graphql-java
 
-[![Build Status](https://travis-ci.com/bbakerman/graphql-java-extended-validation.svg?branch=master)](https://travis-ci.com/bbakerman/graphql-java-extended-validation.svg?branch=master)&nbsp;&nbsp;
+[![Build Status](https://api.travis-ci.org/graphql-java/graphql-java-extended-validation.svg?branch=master)](https://api.travis-ci.org/graphql-java/graphql-java-extended-validation.svg?branch=master)&nbsp;&nbsp;
 [![MIT licensed](https://img.shields.io/badge/license-MIT-green)](https://github.com/graphql-java/graphql-java-extended-validation/blob/master/LICENSE)&nbsp;&nbsp;
 
 
