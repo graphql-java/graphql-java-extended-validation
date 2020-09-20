@@ -3,6 +3,7 @@ package graphql.validation.rules
 import graphql.GraphQL
 import graphql.execution.DataFetcherResult
 import graphql.schema.DataFetcher
+import graphql.schema.GraphQLSchema
 import graphql.schema.idl.RuntimeWiring
 import graphql.validation.TestUtil
 import graphql.validation.constraints.DirectiveConstraints
@@ -77,5 +78,44 @@ class ValidationRulesTest extends Specification {
         er.errors[1].path == ["cars"]
         er.errors[2].message == "/cars/filter/model size must be between 0 and 10"
         er.errors[2].path == ["cars"]
+    }
+
+    def "issue 17 - type references handled"() {
+
+        def directiveRules = DirectiveConstraints.newDirectiveConstraints().build()
+
+        def sdl = '''
+
+            ''' + directiveRules.directivesSDL + '''
+
+           input NameRequest {
+	         # The title associated to the name
+            title: String @Size(min : 1, max : 1)
+	        # The given name
+	        givenName: String! @Size(min : 1, max : 1)
+	        # Middle Name
+   	        middleName: String
+   	        # Last Name
+   	        surName: String!
+          }
+
+            type Query {
+                request( nameRequest : NameRequest!) : String
+            }
+        '''
+
+        def graphQLSchema = TestUtil.schema(sdl)
+        def graphQL = GraphQL.newGraphQL(graphQLSchema).build()
+
+        when:
+
+        def er = graphQL.execute('''
+            {
+                request (nameRequest : { title : "Mr BAD", givenName : "BADLEY" , surName : "FAKER"})
+            }
+        ''')
+        then:
+        er != null
+        er.errors.size() != 0
     }
 }
