@@ -3,10 +3,12 @@ package graphql.validation.rules
 import graphql.GraphQL
 import graphql.execution.DataFetcherResult
 import graphql.schema.DataFetcher
+import graphql.schema.DataFetchingEnvironment
 import graphql.schema.GraphQLSchema
 import graphql.schema.idl.RuntimeWiring
 import graphql.validation.TestUtil
 import graphql.validation.constraints.DirectiveConstraints
+import graphql.validation.schemawiring.ValidationSchemaWiring
 import spock.lang.Specification
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring
@@ -104,7 +106,19 @@ class ValidationRulesTest extends Specification {
             }
         '''
 
-        def graphQLSchema = TestUtil.schema(sdl)
+        ValidationRules validationRules = ValidationRules.newValidationRules()
+                .onValidationErrorStrategy(OnValidationErrorStrategy.RETURN_NULL).build()
+        def validationWiring = new ValidationSchemaWiring(validationRules)
+
+        DataFetcher df = { DataFetchingEnvironment env ->
+            return "OK"
+        }
+
+        def runtime = RuntimeWiring.newRuntimeWiring()
+                .type(newTypeWiring("Query").dataFetcher("request", df))
+                .directiveWiring(validationWiring)
+                .build()
+        def graphQLSchema = TestUtil.schema(sdl,runtime)
         def graphQL = GraphQL.newGraphQL(graphQLSchema).build()
 
         when:
