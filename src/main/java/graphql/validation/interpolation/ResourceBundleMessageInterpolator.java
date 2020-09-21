@@ -7,7 +7,6 @@ import graphql.execution.ExecutionPath;
 import graphql.schema.GraphQLDirective;
 import graphql.validation.el.StandardELVariables;
 import graphql.validation.rules.ValidationEnvironment;
-import javax.validation.Path;
 import org.hibernate.validator.internal.engine.MessageInterpolatorContext;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
@@ -18,6 +17,7 @@ import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
 import org.hibernate.validator.spi.resourceloading.ResourceBundleLocator;
 
 import javax.validation.Constraint;
+import javax.validation.Path;
 import javax.validation.Payload;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -40,7 +40,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * This message interpolator will try to convert message templates into I18N messages and then run message property replacement
  * and expression interpolation.
  * <p>
- *
+ * <p>
  * By default this looks for a resource bundle file called "ValidationMessages.properties" on the class path but you can can
  * override {@link #getResourceBundle(java.util.Locale)} to provide your own resource bundle
  * <p>
@@ -65,7 +65,6 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
      * @param messageTemplate       the message template
      * @param messageParams         the parameters
      * @param validationEnvironment the rule environment
-     *
      * @return an ErrorClassification
      */
     @SuppressWarnings("unused")
@@ -79,7 +78,6 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
      * You can override this to provide your own resource bundles for a given locale
      *
      * @param locale the locale in question
-     *
      * @return a resource bundle OR null if you don't have one
      */
     @SuppressWarnings("unused")
@@ -200,6 +198,13 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
                 map.put("constraint", "@" + directive.getName());
             }
             return map;
+        }
+
+        @Override
+        public String toString() {
+            String path = fieldOrArgumentPath.toString();
+            String directive = this.directive != null ? " @" + this.directive.getName() : "";
+            return "ExtendedValidationError: '" + path + "'" + directive;
         }
     }
 }

@@ -4,7 +4,6 @@ import graphql.GraphQL
 import graphql.execution.DataFetcherResult
 import graphql.schema.DataFetcher
 import graphql.schema.DataFetchingEnvironment
-import graphql.schema.GraphQLSchema
 import graphql.schema.idl.RuntimeWiring
 import graphql.validation.TestUtil
 import graphql.validation.constraints.DirectiveConstraints
@@ -118,7 +117,7 @@ class ValidationRulesTest extends Specification {
                 .type(newTypeWiring("Query").dataFetcher("request", df))
                 .directiveWiring(validationWiring)
                 .build()
-        def graphQLSchema = TestUtil.schema(sdl,runtime)
+        def graphQLSchema = TestUtil.schema(sdl, runtime)
         def graphQL = GraphQL.newGraphQL(graphQLSchema).build()
 
         when:
@@ -131,5 +130,8 @@ class ValidationRulesTest extends Specification {
         then:
         er != null
         er.errors.size() != 0
+
+        er.errors[0].getMessage() == "/request/nameRequest/givenName size must be between 1 and 1"
+        er.errors[1].getMessage() == "/request/nameRequest/title size must be between 1 and 1"
     }
 }
