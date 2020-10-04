@@ -65,7 +65,7 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
     @Override
     public boolean appliesTo(GraphQLArgument argument, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
 
-        boolean suitable = DirectivesAndTypeWalker.isSuitable(argument, (inputType, directive) -> {
+        boolean suitable = new DirectivesAndTypeWalker().isSuitable(argument, (inputType, directive) -> {
             boolean hasNamedDirective = directive.getName().equals(this.getName());
             if (hasNamedDirective) {
                 inputType = Util.unwrapNonNull(inputType);
