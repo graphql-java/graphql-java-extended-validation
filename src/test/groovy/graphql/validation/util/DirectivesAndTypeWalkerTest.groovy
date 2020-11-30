@@ -9,6 +9,8 @@ class DirectivesAndTypeWalkerTest extends Specification {
 
     def "can walk self referencing types"() {
         def sdl = """
+            directive @deprecated on INPUT_OBJECT
+
             input TestInput @deprecated {
                 name : String
                 list : [TestInput]
