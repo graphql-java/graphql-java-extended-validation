@@ -34,6 +34,7 @@ import graphql.schema.idl.errors.SchemaProblem
 import java.util.function.Supplier
 import java.util.stream.Collectors
 
+
 class TestUtil {
 
 
@@ -47,8 +48,9 @@ class TestUtil {
 
     static dummySchema = GraphQLSchema.newSchema()
             .query(GraphQLObjectType.newObject()
-            .name("QueryType")
-            .build())
+                    .name("QueryType")
+                    .field(GraphQLFieldDefinition.newFieldDefinition().name("field").type(Scalars.GraphQLString))
+                    .build())
             .build()
 
     static GraphQLSchema schemaFile(String fileName) {

@@ -3,7 +3,7 @@ package graphql.validation.interpolation;
 import graphql.ErrorClassification;
 import graphql.GraphQLError;
 import graphql.GraphqlErrorBuilder;
-import graphql.execution.ExecutionPath;
+import graphql.execution.ResultPath;
 import graphql.schema.GraphQLDirective;
 import graphql.validation.el.StandardELVariables;
 import graphql.validation.rules.ValidationEnvironment;
@@ -70,7 +70,7 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
      */
     @SuppressWarnings("unused")
     protected ErrorClassification buildErrorClassification(String messageTemplate, Map<String, Object> messageParams, ValidationEnvironment validationEnvironment) {
-        ExecutionPath fieldOrArgumentPath = validationEnvironment.getValidatedPath();
+        ResultPath fieldOrArgumentPath = validationEnvironment.getValidatedPath();
         GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
         return new ValidationErrorType(fieldOrArgumentPath, directive);
     }
@@ -183,10 +183,10 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
     }
 
     private static class ValidationErrorType implements ErrorClassification {
-        private final ExecutionPath fieldOrArgumentPath;
+        private final ResultPath fieldOrArgumentPath;
         private final GraphQLDirective directive;
 
-        ValidationErrorType(ExecutionPath fieldOrArgumentPath, GraphQLDirective directive) {
+        ValidationErrorType(ResultPath fieldOrArgumentPath, GraphQLDirective directive) {
             this.fieldOrArgumentPath = fieldOrArgumentPath;
             this.directive = directive;
         }

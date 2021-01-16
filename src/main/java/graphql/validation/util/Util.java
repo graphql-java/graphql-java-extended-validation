@@ -4,7 +4,7 @@ import graphql.Assert;
 import graphql.GraphQLError;
 import graphql.Internal;
 import graphql.execution.DataFetcherResult;
-import graphql.execution.ExecutionPath;
+import graphql.execution.ResultPath;
 import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLType;
 import graphql.schema.GraphQLTypeUtil;
@@ -79,7 +79,7 @@ public class Util {
     }
 
 
-    public static ExecutionPath concatPaths(ExecutionPath parent, ExecutionPath child) {
+    public static ResultPath concatPaths(ResultPath parent, ResultPath child) {
         if (child == null) {
             return parent;
         }
