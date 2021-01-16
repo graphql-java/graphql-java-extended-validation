@@ -1,6 +1,7 @@
 # Extended Validation for graphql-java
 
 [![Build Status](https://api.travis-ci.org/graphql-java/graphql-java-extended-validation.svg?branch=master)](https://api.travis-ci.org/graphql-java/graphql-java-extended-validation.svg?branch=master)&nbsp;&nbsp;
+[![Download](https://api.bintray.com/packages/graphql-java/graphql-java/graphql-java-extended-validation/images/download.svg) ](https://bintray.com/graphql-java/graphql-java/graphql-java-extended-validation/_latestVersion)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-green)](https://github.com/graphql-java/graphql-java-extended-validation/blob/master/LICENSE)&nbsp;&nbsp;
 
 

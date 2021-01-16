@@ -21,6 +21,7 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,11 +113,14 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
         }
 
         Object validatedValue = validationEnvironment.getValidatedValue();
-
         //
         // all the directives validation code does NOT care for NULL ness since the graphql engine covers that.
         // eg a @NonNull validation directive makes no sense in graphql like it might in Java
         //
+        if (validatedValue == null) {
+            return Collections.emptyList();
+        }
+
         GraphQLInputType inputType = Util.unwrapNonNull(validationEnvironment.getValidatedType());
         validationEnvironment = validationEnvironment.transform(b -> b.validatedType(inputType));
 
