@@ -1,5 +1,7 @@
 package graphql.validation.constraints.standard;
 
+import static graphql.schema.GraphQLTypeUtil.isList;
+
 import graphql.GraphQLError;
 import graphql.Scalars;
 import graphql.schema.GraphQLDirective;
@@ -8,6 +10,7 @@ import graphql.validation.constraints.AbstractDirectiveConstraint;
 import graphql.validation.constraints.Documentation;
 import graphql.validation.rules.ValidationEnvironment;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,7 +29,7 @@ public class NotBlankRule extends AbstractDirectiveConstraint {
 
                 .example("updateAccident( accidentNotes : String @NotBlank) : DriverDetails")
 
-                .applicableTypeNames(Scalars.GraphQLString.getName(), Scalars.GraphQLID.getName())
+                .applicableTypeNames(Scalars.GraphQLString.getName(), Scalars.GraphQLID.getName(), "Lists")
 
                 .directiveSDL("directive @NotBlank(message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
@@ -36,19 +39,38 @@ public class NotBlankRule extends AbstractDirectiveConstraint {
 
     @Override
     public boolean appliesToType(GraphQLInputType inputType) {
-        return isStringOrID(inputType);
+        return isStringOrIDOrList(inputType);
     }
 
     @Override
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
+        GraphQLInputType argumentType = validationEnvironment.getValidatedType();
 
         GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
 
-        if (validatedValue == null || isBlank(validatedValue)) {
+        if (validatedValue == null) {
             return mkError(validationEnvironment, directive, mkMessageParams(validatedValue, validationEnvironment));
-
         }
+
+        List<Object> validatedValues;
+
+        if (isList(argumentType)) {
+            validatedValues = (List)validatedValue;
+        } else {
+            validatedValues = Arrays.asList(validatedValue);
+        }
+
+        if (validatedValues.size() <= 0) {
+            return mkError(validationEnvironment, directive, mkMessageParams(validatedValue, validationEnvironment));
+        }
+
+        for (Object value : validatedValues) {
+            if (isBlank(value)) {
+                return mkError(validationEnvironment, directive, mkMessageParams(validatedValue, validationEnvironment));
+            }
+        }
+
         return Collections.emptyList();
     }
 

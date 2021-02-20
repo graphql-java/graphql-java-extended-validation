@@ -31,6 +31,18 @@ class NoEmptyBlankConstraintTest extends BaseConstraintTestSupport {
         'field( arg : ID @NotBlank ) : ID' | ""         | 'NotBlank;path=/arg;val:;\t'
         'field( arg : ID @NotBlank ) : ID' | "\t\n\r X" | ''
         'field( arg : ID @NotBlank ) : ID' | null       | ''
+
+        // Lists
+        'field( arg : [String] @NotBlank ) : ID'    | []          | 'NotBlank;path=/arg;val:[];\t'
+        'field( arg : [String] @NotBlank ) : ID'    | null        | ''
+        'field( arg : [String] @NotBlank ) : ID'    | ["x"]       | ''
+        'field( arg : [String] @NotBlank ) : ID'    | ["x", "y"]  | ''
+        'field( arg : [String] @NotBlank ) : ID'    | ["x", "  "] | 'NotBlank;path=/arg;val:[x,   ];\t'
+        'field( arg : [ID] @NotBlank ) : ID'        | []          | 'NotBlank;path=/arg;val:[];\t'
+        'field( arg : [ID] @NotBlank ) : ID'        | null        | ''
+        'field( arg : [ID] @NotBlank ) : ID'        | ["x"]       | ''
+        'field( arg : [ID] @NotBlank ) : ID'        | ["x", "y"]  | ''
+        'field( arg : [String] @NotBlank ) : ID'    | ["x", "  "] | 'NotBlank;path=/arg;val:[x,   ];\t'
     }
 
     @Unroll
