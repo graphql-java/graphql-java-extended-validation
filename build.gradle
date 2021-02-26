@@ -48,7 +48,7 @@ dependencies {
 
     testCompile 'org.slf4j:slf4j-simple:1.7.30'
     testCompile 'org.spockframework:spock-core:1.3-groovy-2.5'
-    testCompile 'org.codehaus.groovy:groovy-all:2.5.11'
+    testCompile 'org.codehaus.groovy:groovy-all:2.5.14'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
