@@ -2,13 +2,13 @@ import java.text.SimpleDateFormat
 
 
 plugins {
-    id "com.jfrog.bintray" version "1.8.5"
+    id 'java'
+    id 'java-library'
+    id 'maven'
+    id 'maven-publish'
+    id 'signing'
+    id "io.github.gradle-nexus.publish-plugin" version "1.0.0"
 }
-
-apply plugin: 'java'
-apply plugin: 'groovy'
-apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
 
 def getDevelopmentVersion() {
     def output = new StringBuilder()
@@ -25,8 +25,8 @@ def getDevelopmentVersion() {
 
 
 def releaseVersion = System.properties.RELEASE_VERSION
-println "Building version = " + releaseVersion
 version = releaseVersion ? releaseVersion : getDevelopmentVersion()
+println "Building version = " + version
 group = 'com.graphql-java'
 
 sourceCompatibility = 1.8
@@ -34,7 +34,7 @@ targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
-    maven { url "http://dl.bintray.com/andimarek/graphql-java" }
+    mavenLocal()
 }
 
 
@@ -64,6 +64,12 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts {
     archives sourcesJar
     archives javadocJar
+}
+
+test {
+    testLogging {
+        exceptionFormat = 'full'
+    }
 }
 
 publishing {
@@ -112,24 +118,24 @@ publishing {
     }
 }
 
-bintray {
-    user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_API_KEY')
-    publications = ['maven']
-    publish = true
-    pkg {
-        userOrg = 'graphql-java'
-        repo = 'graphql-java'
-        name = "graphql-java-extended-validation"
-        desc = 'A library fo extended validation for graphql-java'
-        licenses = ['MIT']
-        vcsUrl = 'https://github.com/graphql-java/graphql-java-extended-validation.git'
-        version {
-            released = new Date()
-            vcsTag = project.version
-            gpg {
-                sign = true
-            }
+nexusPublishing {
+    repositories {
+        sonatype {
+            username = System.env.MAVEN_CENTRAL_USER
+            password = System.env.MAVEN_CENTRAL_PASSWORD
         }
     }
 }
+
+signing {
+    def signingKey = System.env.MAVEN_CENTRAL_PGP_KEY
+    useInMemoryPgpKeys(signingKey, "")
+    sign publishing.publications
+}
+
+
+// all publish tasks depend on the build task
+tasks.withType(PublishToMavenRepository) {
+    dependsOn build
+}
+
