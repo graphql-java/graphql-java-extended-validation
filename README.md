@@ -1,8 +1,9 @@
 # Extended Validation for graphql-java
 
-[![Build Status](https://api.travis-ci.org/graphql-java/graphql-java-extended-validation.svg?branch=master)](https://api.travis-ci.org/graphql-java/graphql-java-extended-validation.svg?branch=master)&nbsp;&nbsp;
-[![Download](https://api.bintray.com/packages/graphql-java/graphql-java/graphql-java-extended-validation/images/download.svg) ](https://bintray.com/graphql-java/graphql-java/graphql-java-extended-validation/_latestVersion)
-[![MIT licensed](https://img.shields.io/badge/license-MIT-green)](https://github.com/graphql-java/graphql-java-extended-validation/blob/master/LICENSE)&nbsp;&nbsp;
+
+[![Build Status](https://github.com/graphql-java/graphql-java-extended-validation/actions/workflows/master.yml/badge.svg)](https://github.com/graphql-java/graphql-java-extended-validation/actions/workflows/master.yml)
+[![Latest Release](https://maven-badges.herokuapp.com/maven-central/com.graphql-java/graphql-java-extended-validation/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.graphql-java/graphql-java-extended-validation/)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-green)](https://github.com/graphql-java/graphql-java-extended-validation/blob/master/LICENSE.md)
 
 
 
