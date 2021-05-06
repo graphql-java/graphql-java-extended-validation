@@ -308,6 +308,18 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
     }
 
     /**
+     * Return true if the type is a String or ID or List type, regardless of non null ness
+     *
+     * @param inputType the type to check
+     *
+     * @return true if one of the above
+     */
+    protected boolean isStringOrIDOrList(GraphQLInputType inputType) {
+        return isStringOrID(inputType) ||
+            isList(inputType);
+    }
+
+    /**
      * Return true if the type is a String or ID or List type or {@link graphql.schema.GraphQLInputObjectType}, regardless of non null ness
      *
      * @param inputType the type to check

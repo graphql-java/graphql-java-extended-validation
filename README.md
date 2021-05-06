@@ -390,7 +390,7 @@ The String must contain at least one non-whitespace character, according to Java
 
 - Example : `updateAccident( accidentNotes : String @NotBlank) : DriverDetails`
 
-- Applies to : `String`, `ID`
+- Applies to : `String`, `ID`, `Lists`
 
 - SDL : `directive @NotBlank(message : String = "graphql.validation.NotBlank.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
