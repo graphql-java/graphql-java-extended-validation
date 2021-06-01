@@ -1,7 +1,7 @@
 package graphql.validation.rules;
 
 import graphql.PublicApi;
-import graphql.execution.ExecutionPath;
+import graphql.execution.ResultPath;
 import graphql.language.SourceLocation;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.GraphQLArgument;
@@ -45,8 +45,8 @@ public class ValidationEnvironment {
     private final GraphQLFieldsContainer fieldsContainer;
     private final GraphQLFieldDefinition fieldDefinition;
     private final GraphQLArgument argument;
-    private final ExecutionPath executionPath;
-    private final ExecutionPath validatedPath;
+    private final ResultPath executionPath;
+    private final ResultPath validatedPath;
     private final SourceLocation location;
     private final MessageInterpolator interpolator;
     private final Map<Class, Object> contextMap;
@@ -99,11 +99,11 @@ public class ValidationEnvironment {
         return location;
     }
 
-    public ExecutionPath getValidatedPath() {
+    public ResultPath getValidatedPath() {
         return validatedPath;
     }
 
-    public ExecutionPath getExecutionPath() {
+    public ResultPath getExecutionPath() {
         return executionPath;
     }
 
@@ -146,8 +146,8 @@ public class ValidationEnvironment {
         private GraphQLArgument argument;
         private Map<String, Object> argumentValues = new HashMap<>();
         private GraphQLFieldDefinition fieldDefinition;
-        private ExecutionPath validatedPath = ExecutionPath.rootPath();
-        private ExecutionPath executionPath;
+        private ResultPath validatedPath = ResultPath.rootPath();
+        private ResultPath executionPath;
         private GraphQLFieldsContainer fieldsContainer;
         private MessageInterpolator interpolator;
         private Locale locale;
@@ -202,7 +202,7 @@ public class ValidationEnvironment {
             return this;
         }
 
-        public Builder executionPath(ExecutionPath executionPath) {
+        public Builder executionPath(ResultPath executionPath) {
             this.executionPath = executionPath;
             return this;
         }
@@ -227,7 +227,7 @@ public class ValidationEnvironment {
             return this;
         }
 
-        public Builder validatedPath(ExecutionPath validatedPath) {
+        public Builder validatedPath(ResultPath validatedPath) {
             this.validatedPath = validatedPath;
             return this;
         }

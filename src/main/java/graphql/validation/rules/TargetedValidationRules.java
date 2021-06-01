@@ -3,7 +3,7 @@ package graphql.validation.rules;
 import graphql.Assert;
 import graphql.GraphQLError;
 import graphql.PublicApi;
-import graphql.execution.ExecutionPath;
+import graphql.execution.ResultPath;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLDirective;
@@ -71,7 +71,7 @@ public class TargetedValidationRules {
 
         GraphQLObjectType fieldContainer = env.getExecutionStepInfo().getFieldContainer();
         GraphQLFieldDefinition fieldDefinition = env.getFieldDefinition();
-        ExecutionPath fieldPath = env.getExecutionStepInfo().getPath();
+        ResultPath fieldPath = env.getExecutionStepInfo().getPath();
         //
         // run the field specific rules
         ValidationCoordinates fieldCoords = ValidationCoordinates.newCoordinates(fieldContainer, fieldDefinition);
@@ -168,7 +168,7 @@ public class TargetedValidationRules {
                 continue;
             }
 
-            ExecutionPath newPath = validationEnvironment.getValidatedPath().segment(inputField.getName());
+            ResultPath newPath = validationEnvironment.getValidatedPath().segment(inputField.getName());
 
             ValidationEnvironment newValidationEnvironment = validationEnvironment.transform(builder -> builder
                     .validatedPath(newPath)
@@ -197,7 +197,7 @@ public class TargetedValidationRules {
         int ix = 0;
         for (Object value : objectList) {
 
-            ExecutionPath newPath = validationEnvironment.getValidatedPath().segment(ix);
+            ResultPath newPath = validationEnvironment.getValidatedPath().segment(ix);
 
             ValidationEnvironment newValidationEnvironment = validationEnvironment.transform(builder -> builder
                     .validatedPath(newPath)
