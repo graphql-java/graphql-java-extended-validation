@@ -7,33 +7,24 @@ import graphql.execution.ResultPath;
 import graphql.schema.GraphQLDirective;
 import graphql.validation.el.StandardELVariables;
 import graphql.validation.rules.ValidationEnvironment;
-import javax.validation.Path;
 import org.hibernate.validator.internal.engine.MessageInterpolatorContext;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl.ConstraintType;
 import org.hibernate.validator.internal.metadata.location.ConstraintLocation.ConstraintLocationKind;
 import org.hibernate.validator.internal.util.annotation.ConstraintAnnotationDescriptor;
+import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
 import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
 import org.hibernate.validator.spi.resourceloading.ResourceBundleLocator;
 
 import javax.validation.Constraint;
+import javax.validation.Path;
 import javax.validation.Payload;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.CONSTRUCTOR;
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.ElementType.TYPE_USE;
+import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
@@ -161,7 +152,7 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
 
         return new MessageInterpolatorContext(
                 constraintDescriptor, validatedValue, rootBeanType,
-                propertyPath, messageParams, expressionVariables);
+                propertyPath, messageParams, expressionVariables, ExpressionLanguageFeatureLevel.DEFAULT, true);
     }
 
     private org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator hibernateInterpolator() {
