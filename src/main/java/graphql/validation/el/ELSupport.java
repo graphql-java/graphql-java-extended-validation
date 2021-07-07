@@ -1,16 +1,15 @@
 package graphql.validation.el;
 
 import graphql.Internal;
-import org.hibernate.validator.internal.engine.messageinterpolation.FormatterWrapper;
-
-import javax.el.ELContext;
-import javax.el.ELManager;
-import javax.el.ExpressionFactory;
-import javax.el.StandardELContext;
-import javax.el.ValueExpression;
+import jakarta.el.ELContext;
+import jakarta.el.ELManager;
+import jakarta.el.ExpressionFactory;
+import jakarta.el.StandardELContext;
+import jakarta.el.ValueExpression;
 import java.lang.reflect.Method;
 import java.util.Locale;
 import java.util.Map;
+import org.hibernate.validator.internal.engine.messageinterpolation.FormatterWrapper;
 
 @Internal
 @SuppressWarnings("unused")
