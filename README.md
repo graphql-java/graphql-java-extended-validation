@@ -1,7 +1,9 @@
 # Extended Validation for graphql-java
 
-[![Build Status](https://api.travis-ci.org/graphql-java/graphql-java-extended-validation.svg?branch=master)](https://api.travis-ci.org/graphql-java/graphql-java-extended-validation.svg?branch=master)&nbsp;&nbsp;
-[![MIT licensed](https://img.shields.io/badge/license-MIT-green)](https://github.com/graphql-java/graphql-java-extended-validation/blob/master/LICENSE)&nbsp;&nbsp;
+
+[![Build Status](https://github.com/graphql-java/graphql-java-extended-validation/actions/workflows/master.yml/badge.svg)](https://github.com/graphql-java/graphql-java-extended-validation/actions/workflows/master.yml)
+[![Latest Release](https://maven-badges.herokuapp.com/maven-central/com.graphql-java/graphql-java-extended-validation/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.graphql-java/graphql-java-extended-validation/)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-green)](https://github.com/graphql-java/graphql-java-extended-validation/blob/master/LICENSE.md)
 
 
 
@@ -16,13 +18,13 @@ This library provides extended validation of fields and field arguments for [gra
 <dependency>
   <groupId>com.graphql-java</groupId>
   <artifactId>graphql-java-extended-validation</artifactId>
-  <version>15.0.1</version>
+  <version>16.0.0</version>
   <type>pom</type>
 </dependency>
 ```
 
 ```groovy
-compile 'com.graphql-java:graphql-java-extended-validation:15.0.1'
+compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
 ```
 
 > Note:
@@ -32,6 +34,8 @@ compile 'com.graphql-java:graphql-java-extended-validation:15.0.1'
 > use 14.0.1 or above for graphql-java 14.x and above
 >
 > use 15.0.1 or above for graphql-java 15.x and above
+> 
+> use 16.0.0 or above for graphql-java 16.x and above
 
 Its currently available from JCenter repo and Maven central.
 
@@ -386,7 +390,7 @@ The String must contain at least one non-whitespace character, according to Java
 
 - Example : `updateAccident( accidentNotes : String @NotBlank) : DriverDetails`
 
-- Applies to : `String`, `ID`
+- Applies to : `String`, `ID`, `Lists`
 
 - SDL : `directive @NotBlank(message : String = "graphql.validation.NotBlank.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 

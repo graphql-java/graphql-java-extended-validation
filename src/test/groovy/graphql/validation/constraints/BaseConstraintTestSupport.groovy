@@ -2,7 +2,7 @@ package graphql.validation.constraints
 
 import graphql.GraphQLError
 import graphql.GraphqlErrorBuilder
-import graphql.execution.ExecutionPath
+import graphql.execution.ResultPath
 import graphql.execution.ExecutionStepInfo
 import graphql.execution.MergedField
 import graphql.language.Field
@@ -50,7 +50,7 @@ class BaseConstraintTestSupport extends Specification {
 
         def validationRules = TargetedValidationRules.newValidationRules().addRule(coordinates, ruleUnderTest).build()
 
-        def path = ExecutionPath.rootPath()
+        def path = ResultPath.rootPath()
 
         def astField = Field.newField()
                 .name(fieldDefinition.name)
@@ -100,8 +100,8 @@ class BaseConstraintTestSupport extends Specification {
                 .validatedType(argUnderTest.getType())
                 .fieldDefinition(fieldDefinition)
                 .fieldsContainer(fieldsContainer)
-                .executionPath(ExecutionPath.rootPath().segment(fieldDefinition.getName()))
-                .validatedPath(ExecutionPath.rootPath().segment(argName))
+                .executionPath(ResultPath.rootPath().segment(fieldDefinition.getName()))
+                .validatedPath(ResultPath.rootPath().segment(argName))
                 .context(GraphQLDirective.class, argUnderTest.getDirective(targetDirective))
                 .messageInterpolator(interpolator)
                 .build()
@@ -112,7 +112,7 @@ class BaseConstraintTestSupport extends Specification {
         GraphQLFieldsContainer fieldsContainer = schema.getObjectType("Query") as GraphQLFieldsContainer
         GraphQLFieldDefinition fieldDefinition = fieldsContainer.getFieldDefinition("field")
 
-        def path = ExecutionPath.rootPath().segment(fieldDefinition.getName())
+        def path = ResultPath.rootPath().segment(fieldDefinition.getName())
         def ruleEnvironment = ValidationEnvironment.newValidationEnvironment()
                 .argumentValues(arguments)
                 .fieldsContainer(fieldsContainer)

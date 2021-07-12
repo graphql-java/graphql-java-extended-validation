@@ -1,6 +1,6 @@
 package graphql.validation.interpolation
 
-import graphql.execution.ExecutionPath
+import graphql.execution.ResultPath
 import graphql.schema.GraphQLArgument
 import graphql.schema.GraphQLFieldDefinition
 import graphql.schema.GraphQLFieldsContainer
@@ -24,8 +24,8 @@ class ResourceBundleMessageInterpolatorTest extends Specification {
                 .fieldDefinition(fieldDefinition)
                 .fieldsContainer(fieldsContainer)
                 .messageInterpolator(interpolator)
-                .executionPath(ExecutionPath.rootPath().segment(fieldDefinition.getName()))
-                .validatedPath(ExecutionPath.rootPath().segment(argName))
+                .executionPath(ResultPath.rootPath().segment(fieldDefinition.getName()))
+                .validatedPath(ResultPath.rootPath().segment(argName))
                 .locale(locale)
                 .build()
         ruleEnvironment

@@ -21,6 +21,7 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +66,7 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
     @Override
     public boolean appliesTo(GraphQLArgument argument, GraphQLFieldDefinition fieldDefinition, GraphQLFieldsContainer fieldsContainer) {
 
-        boolean suitable = DirectivesAndTypeWalker.isSuitable(argument, (inputType, directive) -> {
+        boolean suitable = new DirectivesAndTypeWalker().isSuitable(argument, (inputType, directive) -> {
             boolean hasNamedDirective = directive.getName().equals(this.getName());
             if (hasNamedDirective) {
                 inputType = Util.unwrapNonNull(inputType);
@@ -112,11 +113,14 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
         }
 
         Object validatedValue = validationEnvironment.getValidatedValue();
-
         //
         // all the directives validation code does NOT care for NULL ness since the graphql engine covers that.
         // eg a @NonNull validation directive makes no sense in graphql like it might in Java
         //
+        if (validatedValue == null) {
+            return Collections.emptyList();
+        }
+
         GraphQLInputType inputType = Util.unwrapNonNull(validationEnvironment.getValidatedType());
         validationEnvironment = validationEnvironment.transform(b -> b.validatedType(inputType));
 
@@ -301,6 +305,18 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
         String messageTemplate = getMessageTemplate(directive);
         GraphQLError error = validationEnvironment.getInterpolator().interpolate(messageTemplate, msgParams, validationEnvironment);
         return singletonList(error);
+    }
+
+    /**
+     * Return true if the type is a String or ID or List type, regardless of non null ness
+     *
+     * @param inputType the type to check
+     *
+     * @return true if one of the above
+     */
+    protected boolean isStringOrIDOrList(GraphQLInputType inputType) {
+        return isStringOrID(inputType) ||
+            isList(inputType);
     }
 
     /**
