@@ -26,16 +26,12 @@ public class ExpressionConstraint extends AbstractDirectiveConstraint {
     public Documentation getDocumentation() {
         return Documentation.newDocumentation()
                 .messageTemplate(getMessageTemplate())
-
                 .description("The provided expression must evaluate to true.  " +
                         "The expression language is <a href=\"https://javaee.github.io/tutorial/jsf-el001.html\">Java EL</a> " +
                         "and expressions MUST resolve to a boolean value, ie. it is valid or not.")
-
                 .example("drivers( first : Int, after : String!, last : Int, before : String) \n" +
                         " : DriverConnection @Expression(value : \"${args.containsOneOf('first','last') }\"")
-
                 .applicableTypeNames("All Types and Scalars")
-
                 .directiveSDL("directive @Expression(value : String!, message : String = \"%s\") " +
                                 "on FIELD_DEFINITION | ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
                         getMessageTemplate())

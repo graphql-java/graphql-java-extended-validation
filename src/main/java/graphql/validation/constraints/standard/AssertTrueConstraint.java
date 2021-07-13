@@ -14,13 +14,9 @@ public class AssertTrueConstraint extends AbstractAssertConstraint {
     public Documentation getDocumentation() {
         return Documentation.newDocumentation()
                 .messageTemplate(getMessageTemplate())
-
                 .description("The boolean value must be true.")
-
                 .example("driveCar( hasLicence : Boolean @AssertTrue) : DriverDetails")
-
                 .applicableTypeNames(GraphQLBoolean.getName())
-
                 .directiveSDL("directive @AssertTrue(message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
                         getMessageTemplate())

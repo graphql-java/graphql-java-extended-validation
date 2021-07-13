@@ -20,6 +20,7 @@ import graphql.validation.util.Util;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -103,7 +104,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
     abstract protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment);
 
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<GraphQLError> runValidation(ValidationEnvironment validationEnvironment) {
 
@@ -131,7 +131,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
         return runConstraintOnDirectives(validationEnvironment);
     }
 
-    @SuppressWarnings("unchecked")
     private List<GraphQLError> runValidationImpl(ValidationEnvironment validationEnvironment, GraphQLInputType inputType, Object validatedValue) {
         return runConstraintOnDirectives(validationEnvironment);
     }
@@ -159,6 +158,9 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
     }
 
 
+    protected boolean isOneOfTheseTypes(GraphQLInputType inputType, GraphQLScalarType... scalarTypes) {
+        return isOneOfTheseTypes(inputType, Arrays.asList(scalarTypes));
+    }
     /**
      * Returns true of the input type is one of the specified scalar types, regardless of non null ness
      *
@@ -167,7 +169,7 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      *
      * @return true if its one of them
      */
-    protected boolean isOneOfTheseTypes(GraphQLInputType inputType, GraphQLScalarType... scalarTypes) {
+    protected boolean isOneOfTheseTypes(GraphQLInputType inputType, Collection<GraphQLScalarType> scalarTypes) {
         GraphQLInputType type = Util.unwrapNonNull(inputType);
         if (type instanceof GraphQLNamedInputType) {
             final GraphQLNamedInputType unwrappedType = (GraphQLNamedInputType) type;

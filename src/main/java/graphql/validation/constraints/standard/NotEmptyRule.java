@@ -20,13 +20,9 @@ public class NotEmptyRule extends AbstractDirectiveConstraint {
     public Documentation getDocumentation() {
         return Documentation.newDocumentation()
                 .messageTemplate(getMessageTemplate())
-
                 .description("The element must have a non zero size.")
-
                 .example("updateAccident( accidentNotes : [Notes]! @NotEmpty) : DriverDetails")
-
                 .applicableTypeNames(Scalars.GraphQLString.getName(), Scalars.GraphQLID.getName(), "Lists", "Input Objects")
-
                 .directiveSDL("directive @NotEmpty(message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
                         getMessageTemplate())
@@ -53,6 +49,4 @@ public class NotEmptyRule extends AbstractDirectiveConstraint {
         }
         return Collections.emptyList();
     }
-
-
 }

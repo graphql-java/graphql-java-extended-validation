@@ -6,8 +6,8 @@ import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLScalarType;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
+import graphql.validation.constraints.GraphQLScalars;
 import graphql.validation.rules.ValidationEnvironment;
-
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +15,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 abstract class AbstractDecimalMinMaxConstraint extends AbstractDirectiveConstraint {
+    private static final List<GraphQLScalarType> SUPPORTED_SCALARS = Stream.concat(
+            Stream.of(Scalars.GraphQLString),
+            GraphQLScalars.GRAPHQL_NUMBER_TYPES.stream()
+    ).collect(Collectors.toList());
 
     public AbstractDecimalMinMaxConstraint(String name) {
         super(name);
@@ -22,27 +26,11 @@ abstract class AbstractDecimalMinMaxConstraint extends AbstractDirectiveConstrai
 
     @Override
     public boolean appliesToType(GraphQLInputType inputType) {
-        return isOneOfTheseTypes(inputType,
-                Scalars.GraphQLString, // note we allow strings
-                Scalars.GraphQLByte,
-                Scalars.GraphQLShort,
-                Scalars.GraphQLInt,
-                Scalars.GraphQLLong,
-                Scalars.GraphQLBigDecimal,
-                Scalars.GraphQLBigInteger,
-                Scalars.GraphQLFloat
-        );
+        return isOneOfTheseTypes(inputType, SUPPORTED_SCALARS);
     }
 
     public List<String> getApplicableTypeNames() {
-        return Stream.of(Scalars.GraphQLString, // note we allow strings
-                Scalars.GraphQLByte,
-                Scalars.GraphQLShort,
-                Scalars.GraphQLInt,
-                Scalars.GraphQLLong,
-                Scalars.GraphQLBigDecimal,
-                Scalars.GraphQLBigInteger,
-                Scalars.GraphQLFloat)
+        return SUPPORTED_SCALARS.stream()
                 .map(GraphQLScalarType::getName)
                 .collect(Collectors.toList());
     }
@@ -50,10 +38,6 @@ abstract class AbstractDecimalMinMaxConstraint extends AbstractDirectiveConstrai
     @Override
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
-        //null values are valid
-        if (validatedValue == null) {
-            return Collections.emptyList();
-        }
 
         GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
         String value = getStrArg(directive, "value");

@@ -20,18 +20,12 @@ abstract class AbstractAssertConstraint extends AbstractDirectiveConstraint {
 
     @Override
     public boolean appliesToType(GraphQLInputType inputType) {
-        return isOneOfTheseTypes(inputType,
-                GraphQLBoolean
-        );
+        return isOneOfTheseTypes(inputType, GraphQLBoolean);
     }
 
     @Override
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
-        //null values are valid
-        if (validatedValue == null) {
-            return Collections.emptyList();
-        }
 
         GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
 

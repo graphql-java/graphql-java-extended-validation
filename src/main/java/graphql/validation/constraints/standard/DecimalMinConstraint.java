@@ -12,13 +12,9 @@ public class DecimalMinConstraint extends AbstractDecimalMinMaxConstraint {
     public Documentation getDocumentation() {
         return Documentation.newDocumentation()
                 .messageTemplate(getMessageTemplate())
-
                 .description("The element must be a number whose value must be greater than or equal to the specified minimum.")
-
                 .example("driveCar( carHorsePower : Float @DecimalMin(value : \"300.50\") : DriverDetails")
-
                 .applicableTypeNames(getApplicableTypeNames())
-
                 .directiveSDL("directive @DecimalMin(value : String!, inclusive : Boolean! = true, message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
                         getMessageTemplate())
