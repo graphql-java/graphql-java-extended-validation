@@ -2,7 +2,6 @@ package graphql.validation.constraints.standard;
 
 import graphql.GraphQLError;
 import graphql.Scalars;
-import graphql.scalars.ExtendedScalars;
 import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLScalarType;
@@ -50,17 +49,14 @@ abstract class AbstractDecimalMinMaxConstraint extends AbstractDirectiveConstrai
             BigDecimal argBD = asBigDecimal(validatedValue);
             int comparisonResult = argBD.compareTo(directiveBD);
             isOK = isOK(inclusive, comparisonResult);
-
         } catch (NumberFormatException nfe) {
             isOK = false;
         }
 
         if (!isOK) {
-            return mkError(validationEnvironment, directive, mkMessageParams(validatedValue, validationEnvironment,
-                    "value", validatedValue,
-                    "inclusive", inclusive));
-
+            return mkError(validationEnvironment, "value", validatedValue, "inclusive", inclusive);
         }
+
         return Collections.emptyList();
     }
 

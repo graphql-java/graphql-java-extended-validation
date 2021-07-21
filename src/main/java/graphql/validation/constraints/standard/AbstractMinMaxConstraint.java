@@ -34,11 +34,6 @@ abstract class AbstractMinMaxConstraint extends AbstractDirectiveConstraint {
     @Override
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
-        //null values are valid
-        if (validatedValue == null) {
-            return Collections.emptyList();
-        }
-
         GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
         int value = getIntArg(directive, "value");
 
@@ -55,10 +50,9 @@ abstract class AbstractMinMaxConstraint extends AbstractDirectiveConstraint {
 
 
         if (!isOK) {
-            return mkError(validationEnvironment, directive, mkMessageParams(validatedValue, validationEnvironment,
-                    "value", value));
-
+            return mkError(validationEnvironment,"value", value);
         }
+
         return Collections.emptyList();
     }
 

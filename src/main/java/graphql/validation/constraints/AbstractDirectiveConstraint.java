@@ -89,7 +89,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      * A derived class will be called to indicate whether this input type applies to the constraint
      *
      * @param inputType the input type
-     *
      * @return true if the constraint can handle that type
      */
     abstract protected boolean appliesToType(GraphQLInputType inputType);
@@ -98,7 +97,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      * This is called to perform the constraint validation
      *
      * @param validationEnvironment the validation environment
-     *
      * @return a list of errors or an empty one if there are no errors
      */
     abstract protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment);
@@ -161,12 +159,12 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
     protected boolean isOneOfTheseTypes(GraphQLInputType inputType, GraphQLScalarType... scalarTypes) {
         return isOneOfTheseTypes(inputType, Arrays.asList(scalarTypes));
     }
+
     /**
      * Returns true of the input type is one of the specified scalar types, regardless of non null ness
      *
      * @param inputType   the type to check
      * @param scalarTypes the array of scalar types
-     *
      * @return true if its one of them
      */
     protected boolean isOneOfTheseTypes(GraphQLInputType inputType, Collection<GraphQLScalarType> scalarTypes) {
@@ -187,7 +185,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      *
      * @param directive the directive to check
      * @param argName   the argument name
-     *
      * @return a non null value
      */
     protected int getIntArg(GraphQLDirective directive, String argName) {
@@ -211,7 +208,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      *
      * @param directive the directive to check
      * @param argName   the argument name
-     *
      * @return a non null value
      */
     protected String getStrArg(GraphQLDirective directive, String argName) {
@@ -234,7 +230,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      *
      * @param directive the directive to check
      * @param argName   the argument name
-     *
      * @return a non null value
      */
     protected boolean getBoolArg(GraphQLDirective directive, String argName) {
@@ -257,7 +252,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      * called "graphql.validation.{name}.message"
      *
      * @param directive the directive to check
-     *
      * @return a non null value
      */
     protected String getMessageTemplate(GraphQLDirective directive) {
@@ -281,7 +275,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      * @param validatedValue        the value being validated
      * @param validationEnvironment the validation environment
      * @param args                  must be an key / value array with String keys as the even params and values as then odd params
-     *
      * @return a map of message parameters
      */
     protected Map<String, Object> mkMessageParams(Object validatedValue, ValidationEnvironment validationEnvironment, Object... args) {
@@ -301,7 +294,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      * @param validationEnvironment the current validation environment
      * @param directive             the directive being run
      * @param msgParams             the map of parameters
-     *
      * @return a list of a single error
      */
     protected List<GraphQLError> mkError(ValidationEnvironment validationEnvironment, GraphQLDirective directive, Map<String, Object> msgParams) {
@@ -310,11 +302,18 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
         return singletonList(error);
     }
 
+    protected List<GraphQLError> mkError(ValidationEnvironment validationEnvironment, Object... messageParameters) {
+        GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
+        String messageTemplate = getMessageTemplate(directive);
+        Object validatedValue = validationEnvironment.getValidatedValue();
+        GraphQLError error = validationEnvironment.getInterpolator().interpolate(messageTemplate, mkMessageParams(validatedValue, validationEnvironment, messageParameters), validationEnvironment);
+        return singletonList(error);
+    }
+
     /**
      * Return true if the type is a String or ID or List type, regardless of non null ness
      *
      * @param inputType the type to check
-     *
      * @return true if one of the above
      */
     protected boolean isStringOrIDOrList(GraphQLInputType inputType) {
@@ -326,7 +325,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      * Return true if the type is a String or ID or List type or {@link graphql.schema.GraphQLInputObjectType}, regardless of non null ness
      *
      * @param inputType the type to check
-     *
      * @return true if one of the above
      */
     protected boolean isStringOrIDOrListOrMap(GraphQLInputType inputType) {
@@ -340,7 +338,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      * Return true if the type is a String or ID
      *
      * @param inputType the type to check
-     *
      * @return true if one of the above
      */
     protected boolean isStringOrID(GraphQLInputType inputType) {
@@ -352,7 +349,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      * Casts the object as a Map with an assertion of it is not one
      *
      * @param value the object to turn into a map
-     *
      * @return a Map
      */
     @SuppressWarnings("ConstantConditions")
@@ -365,7 +361,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      * Makes the object a BigDecimal with an assertion if we have no conversion of it
      *
      * @param value the object to turn into a BigDecimal
-     *
      * @return a BigDecimal
      */
     protected BigDecimal asBigDecimal(Object value) throws NumberFormatException {
@@ -390,7 +385,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      * Makes the object a boolean with an assertion if we have no conversion of it
      *
      * @param value the boolean object
-     *
      * @return a boolean
      */
     protected boolean asBoolean(Object value) {
@@ -409,7 +403,6 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      *
      * @param inputType the input type
      * @param value     the value
-     *
      * @return the length of a String or Map or List
      */
     protected int getStringOrIDOrObjectOrMapLength(GraphQLInputType inputType, Object value) {

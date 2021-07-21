@@ -2,15 +2,12 @@ package graphql.validation.constraints.standard;
 
 import graphql.GraphQLError;
 import graphql.Scalars;
-import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLInputType;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
 import graphql.validation.constraints.Documentation;
 import graphql.validation.rules.ValidationEnvironment;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import static graphql.schema.GraphQLTypeUtil.isList;
 
 public class NotBlankRule extends AbstractDirectiveConstraint {
 
@@ -39,26 +36,11 @@ public class NotBlankRule extends AbstractDirectiveConstraint {
     @Override
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
-        GraphQLInputType argumentType = validationEnvironment.getValidatedType();
 
-        GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
-
-        List<?> validatedValues;
-
-        if (isList(argumentType)) {
-            validatedValues = (List<?>) validatedValue;
-        } else {
-            validatedValues = Collections.singletonList(validatedValue);
+        if (validatedValue.toString().trim().isEmpty()) {
+            return mkError(validationEnvironment);
         }
 
-        if (validatedValues.isEmpty()) {
-            return mkError(validationEnvironment, directive, mkMessageParams(validatedValue, validationEnvironment));
-        }
-
-        return validatedValues
-                .stream()
-                .filter((value) -> !value.toString().trim().isEmpty())
-                .flatMap((value) -> mkError(validationEnvironment, directive, mkMessageParams(validatedValue, validationEnvironment)).stream())
-                .collect(Collectors.toList());
+        return Collections.emptyList();
     }
 }
