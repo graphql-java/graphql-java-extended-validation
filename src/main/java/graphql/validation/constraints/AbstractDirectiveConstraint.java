@@ -193,9 +193,10 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
         if (argument == null) {
             return assertExpectedArgType(argName, "Int");
         }
-        Number value = (Number) argument.getValue();
+
+        Number value = GraphQLArgument.getArgumentValue(argument);
         if (value == null) {
-            value = (Number) argument.getDefaultValue();
+            value = GraphQLArgument.getArgumentDefaultValue(argument);
             if (value == null) {
                 return assertExpectedArgType(argName, "Int");
             }
@@ -216,9 +217,9 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
         if (argument == null) {
             return assertExpectedArgType(argName, "String");
         }
-        String value = (String) argument.getValue();
+        String value = GraphQLArgument.getArgumentValue(argument);
         if (value == null) {
-            value = (String) argument.getDefaultValue();
+            value = GraphQLArgument.getArgumentDefaultValue(argument);
             if (value == null) {
                 return assertExpectedArgType(argName, "String");
             }
@@ -239,9 +240,9 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
         if (argument == null) {
             return assertExpectedArgType(argName, "Boolean");
         }
-        Object value = argument.getValue();
+        Object value = GraphQLArgument.getArgumentValue(argument);
         if (value == null) {
-            value = argument.getDefaultValue();
+            value = GraphQLArgument.getArgumentDefaultValue(argument);
             if (value == null) {
                 return assertExpectedArgType(argName, "Boolean");
             }
@@ -261,9 +262,9 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
         String msg = null;
         GraphQLArgument arg = directive.getArgument("message");
         if (arg != null) {
-            msg = (String) arg.getValue();
+            msg = GraphQLArgument.getArgumentValue(arg);
             if (msg == null) {
-                msg = (String) arg.getDefaultValue();
+                msg = GraphQLArgument.getArgumentDefaultValue(arg);
             }
         }
         if (msg == null) {
@@ -316,7 +317,7 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      */
     protected boolean isStringOrIDOrList(GraphQLInputType inputType) {
         return isStringOrID(inputType) ||
-            isList(inputType);
+                isList(inputType);
     }
 
     /**

@@ -2,6 +2,7 @@ package graphql.validation.constraints.standard;
 
 import graphql.GraphQLError;
 import graphql.Scalars;
+import graphql.scalars.ExtendedScalars;
 import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLScalarType;
@@ -35,12 +36,12 @@ public class RangeConstraint extends AbstractDirectiveConstraint {
                 .example("driver( milesTravelled : Int @Range( min : 1000, max : 100000)) : DriverDetails")
 
                 .applicableTypeNames(Stream.of(GraphQLString,
-                        Scalars.GraphQLByte,
-                        Scalars.GraphQLShort,
+                        ExtendedScalars.GraphQLByte,
+                        ExtendedScalars.GraphQLShort,
                         Scalars.GraphQLInt,
-                        Scalars.GraphQLLong,
-                        Scalars.GraphQLBigDecimal,
-                        Scalars.GraphQLBigInteger,
+                        ExtendedScalars.GraphQLLong,
+                        ExtendedScalars.GraphQLBigDecimal,
+                        ExtendedScalars.GraphQLBigInteger,
                         Scalars.GraphQLFloat)
                         .map(GraphQLScalarType::getName)
                         .collect(toList()))
@@ -55,12 +56,12 @@ public class RangeConstraint extends AbstractDirectiveConstraint {
     public boolean appliesToType(GraphQLInputType inputType) {
         return isOneOfTheseTypes(inputType,
                 GraphQLString,
-                Scalars.GraphQLByte,
-                Scalars.GraphQLShort,
+                ExtendedScalars.GraphQLByte,
+                ExtendedScalars.GraphQLShort,
                 Scalars.GraphQLInt,
-                Scalars.GraphQLLong,
-                Scalars.GraphQLBigDecimal,
-                Scalars.GraphQLBigInteger,
+                ExtendedScalars.GraphQLLong,
+                ExtendedScalars.GraphQLBigDecimal,
+                ExtendedScalars.GraphQLBigInteger,
                 Scalars.GraphQLFloat
         );
     }
