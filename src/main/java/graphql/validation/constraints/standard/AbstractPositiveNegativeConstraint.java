@@ -34,7 +34,6 @@ abstract class AbstractPositiveNegativeConstraint extends AbstractDirectiveConst
     @Override
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
-        GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
 
         boolean isOK;
         try {
@@ -45,7 +44,7 @@ abstract class AbstractPositiveNegativeConstraint extends AbstractDirectiveConst
         }
 
         if (!isOK) {
-            return mkError(validationEnvironment, directive, mkMessageParams(validatedValue, validationEnvironment));
+            return mkError(validationEnvironment);
 
         }
         return Collections.emptyList();

@@ -2,7 +2,6 @@ package graphql.validation.constraints.standard;
 
 import graphql.GraphQLError;
 import graphql.Scalars;
-import graphql.scalars.ExtendedScalars;
 import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLScalarType;
@@ -66,10 +65,9 @@ public class DigitsConstraint extends AbstractDirectiveConstraint {
         }
 
         if (!isOk) {
-            return mkError(validationEnvironment, directive, mkMessageParams(validatedValue, validationEnvironment,
-                    "integer", maxIntegerLength,
-                    "fraction", maxFractionLength));
+            return mkError(validationEnvironment, "integer", maxIntegerLength,"fraction", maxFractionLength);
         }
+
         return Collections.emptyList();
     }
 

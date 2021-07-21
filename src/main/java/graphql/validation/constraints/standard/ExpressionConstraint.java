@@ -53,18 +53,15 @@ public class ExpressionConstraint extends AbstractDirectiveConstraint {
         GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
         String expression = helpWithCurlyBraces(getStrArg(directive, "value"));
 
-        Object validatedValue = validationEnvironment.getValidatedValue();
-
         Map<String, Object> variables = StandardELVariables.standardELVars(validationEnvironment);
 
         ELSupport elSupport = new ELSupport(validationEnvironment.getLocale());
         boolean isOK = elSupport.evaluateBoolean(expression, variables);
 
         if (!isOK) {
-            return mkError(validationEnvironment, directive, mkMessageParams(validatedValue, validationEnvironment,
-                    "value", expression));
-
+            return mkError(validationEnvironment,"value", expression);
         }
+
         return Collections.emptyList();
     }
 

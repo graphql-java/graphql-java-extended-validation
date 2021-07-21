@@ -23,10 +23,8 @@ public class NegativeOrZeroConstraint extends AbstractPositiveNegativeConstraint
                 .build();
     }
 
-
     @Override
     protected boolean isOK(BigDecimal bigDecimal) {
         return bigDecimal.compareTo(BigDecimal.ZERO) <= 0;
     }
-
 }
