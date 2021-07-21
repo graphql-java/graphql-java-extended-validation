@@ -1,3 +1,11 @@
+import jakarta.el.ELContext;
+import jakarta.el.ELManager;
+import jakarta.el.ExpressionFactory;
+import jakarta.el.StandardELContext;
+import jakarta.el.ValueExpression;
+import jakarta.validation.MessageInterpolator;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.internal.engine.MessageInterpolatorContext;
 import org.hibernate.validator.internal.engine.path.PathImpl;
@@ -6,16 +14,9 @@ import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptor
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl.ConstraintType;
 import org.hibernate.validator.internal.metadata.location.ConstraintLocation.ConstraintLocationKind;
 import org.hibernate.validator.internal.util.annotation.ConstraintAnnotationDescriptor;
+import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 
-import javax.el.ELContext;
-import javax.el.ELManager;
-import javax.el.ExpressionFactory;
-import javax.el.StandardELContext;
-import javax.el.ValueExpression;
-import javax.validation.MessageInterpolator;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
@@ -104,8 +105,13 @@ public class ELDiscover {
 
         PathImpl rootPath = PathImpl.createRootPath();
 
+        ExpressionLanguageFeatureLevel level = ExpressionLanguageFeatureLevel.BEAN_METHODS;
         MessageInterpolator.Context context = new MessageInterpolatorContext(
-                constraintDescriptor, user, null, rootPath, Collections.emptyMap(), Collections.emptyMap());
+                constraintDescriptor, user, null, rootPath,
+                Collections.emptyMap(), Collections.emptyMap(),
+                level,
+                true);
+
 
         print("${validatedValue.age}", messageInterpolator, context);
         print("${validatedValue}", messageInterpolator, context);

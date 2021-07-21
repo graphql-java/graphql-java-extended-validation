@@ -69,7 +69,7 @@ public class TargetedValidationRules {
 
         List<GraphQLError> errors = new ArrayList<>();
 
-        GraphQLObjectType fieldContainer = env.getExecutionStepInfo().getFieldContainer();
+        GraphQLObjectType fieldContainer = env.getExecutionStepInfo().getObjectType();
         GraphQLFieldDefinition fieldDefinition = env.getFieldDefinition();
         ResultPath fieldPath = env.getExecutionStepInfo().getPath();
         //
@@ -162,8 +162,7 @@ public class TargetedValidationRules {
         for (GraphQLInputObjectField inputField : fieldDefinitions) {
 
             GraphQLInputType fieldType = inputField.getType();
-            List<GraphQLDirective> directives = inputField.getDirectives();
-            Object validatedValue = objectMap.getOrDefault(inputField.getName(), inputField.getDefaultValue());
+            Object validatedValue = objectMap.getOrDefault(inputField.getName(), GraphQLInputObjectField.getInputFieldDefaultValue(inputField));
             if (validatedValue == null) {
                 continue;
             }

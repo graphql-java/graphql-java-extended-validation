@@ -3,6 +3,7 @@ import java.text.SimpleDateFormat
 
 plugins {
     id 'java'
+    id 'groovy'
     id 'java-library'
     id 'maven-publish'
     id 'signing'
@@ -38,8 +39,9 @@ repositories {
 
 
 dependencies {
-    api "com.graphql-java:graphql-java:16.2"
-    api "org.hibernate.validator:hibernate-validator:6.2.0.Final"
+    api "com.graphql-java:graphql-java:17.0-beta1"
+    api "com.graphql-java:graphql-java-extended-scalars:17.0-beta1"
+    api "org.hibernate.validator:hibernate-validator:7.0.1.Final"
     api "org.glassfish:jakarta.el:4.0.0"
 
     testImplementation 'org.slf4j:slf4j-simple:1.7.31'

@@ -18,13 +18,13 @@ This library provides extended validation of fields and field arguments for [gra
 <dependency>
   <groupId>com.graphql-java</groupId>
   <artifactId>graphql-java-extended-validation</artifactId>
-  <version>16.0.0</version>
+  <version>17.0.0</version>
   <type>pom</type>
 </dependency>
 ```
 
 ```groovy
-compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
+compile 'com.graphql-java:graphql-java-extended-validation:17.0.0'
 ```
 
 > Note:
@@ -36,8 +36,10 @@ compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
 > use 15.0.1 or above for graphql-java 15.x and above
 > 
 > use 16.0.0 or above for graphql-java 16.x and above
+> 
+> use 17.0.0 or above for graphql-java 17.x and above
 
-Its currently available from JCenter repo and Maven central.
+It's currently available from Maven central.
 
 
 # SDL @Directive constraints
