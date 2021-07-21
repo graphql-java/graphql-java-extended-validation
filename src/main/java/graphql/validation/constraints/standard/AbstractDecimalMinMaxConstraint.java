@@ -2,6 +2,7 @@ package graphql.validation.constraints.standard;
 
 import graphql.GraphQLError;
 import graphql.Scalars;
+import graphql.scalars.ExtendedScalars;
 import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLScalarType;
@@ -24,24 +25,24 @@ abstract class AbstractDecimalMinMaxConstraint extends AbstractDirectiveConstrai
     public boolean appliesToType(GraphQLInputType inputType) {
         return isOneOfTheseTypes(inputType,
                 Scalars.GraphQLString, // note we allow strings
-                Scalars.GraphQLByte,
-                Scalars.GraphQLShort,
+                ExtendedScalars.GraphQLByte,
+                ExtendedScalars.GraphQLShort,
                 Scalars.GraphQLInt,
-                Scalars.GraphQLLong,
-                Scalars.GraphQLBigDecimal,
-                Scalars.GraphQLBigInteger,
+                ExtendedScalars.GraphQLLong,
+                ExtendedScalars.GraphQLBigDecimal,
+                ExtendedScalars.GraphQLBigInteger,
                 Scalars.GraphQLFloat
         );
     }
 
     public List<String> getApplicableTypeNames() {
         return Stream.of(Scalars.GraphQLString, // note we allow strings
-                Scalars.GraphQLByte,
-                Scalars.GraphQLShort,
+                ExtendedScalars.GraphQLByte,
+                ExtendedScalars.GraphQLShort,
                 Scalars.GraphQLInt,
-                Scalars.GraphQLLong,
-                Scalars.GraphQLBigDecimal,
-                Scalars.GraphQLBigInteger,
+                ExtendedScalars.GraphQLLong,
+                ExtendedScalars.GraphQLBigDecimal,
+                ExtendedScalars.GraphQLBigInteger,
                 Scalars.GraphQLFloat)
                 .map(GraphQLScalarType::getName)
                 .collect(Collectors.toList());

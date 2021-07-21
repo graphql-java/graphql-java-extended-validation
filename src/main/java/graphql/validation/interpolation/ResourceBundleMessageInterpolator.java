@@ -15,9 +15,9 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import javax.validation.Constraint;
-import javax.validation.Path;
-import javax.validation.Payload;
+import jakarta.validation.Constraint;
+import jakarta.validation.Path;
+import jakarta.validation.Payload;
 import org.hibernate.validator.internal.engine.MessageInterpolatorContext;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
@@ -160,7 +160,7 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
 
         return new MessageInterpolatorContext(
                 constraintDescriptor, validatedValue, rootBeanType,
-                propertyPath, messageParams, expressionVariables, ExpressionLanguageFeatureLevel.DEFAULT, true);
+                propertyPath, messageParams, expressionVariables, ExpressionLanguageFeatureLevel.BEAN_PROPERTIES, true);
     }
 
     private org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator hibernateInterpolator() {
