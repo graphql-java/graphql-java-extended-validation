@@ -16,7 +16,7 @@ public class AssertFalseConstraint extends AbstractAssertConstraint {
                 .messageTemplate(getMessageTemplate())
                 .description("The boolean value must be false.")
                 .example("updateDriver( isDrunk : Boolean @AssertFalse) : DriverDetails")
-                .applicableTypeNames(GraphQLBoolean.getName())
+                .applicableTypes(GraphQLBoolean)
                 .directiveSDL("directive @AssertFalse(message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
                         getMessageTemplate())

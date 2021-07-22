@@ -10,7 +10,6 @@ import graphql.validation.rules.ValidationEnvironment;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
-import static java.util.stream.Collectors.toList;
 
 abstract class AbstractMinMaxConstraint extends AbstractDirectiveConstraint {
 
@@ -23,11 +22,8 @@ abstract class AbstractMinMaxConstraint extends AbstractDirectiveConstraint {
         return isOneOfTheseTypes(inputType, GraphQLScalars.GRAPHQL_NUMBER_TYPES);
     }
 
-    public List<String> getApplicableTypeNames() {
-        return GraphQLScalars.GRAPHQL_NUMBER_TYPES
-                .stream()
-                .map(GraphQLScalarType::getName)
-                .collect(toList());
+    public List<GraphQLScalarType> getApplicableTypes() {
+        return GraphQLScalars.GRAPHQL_NUMBER_TYPES;
     }
 
 

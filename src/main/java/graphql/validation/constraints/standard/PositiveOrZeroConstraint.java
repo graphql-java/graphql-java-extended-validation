@@ -14,13 +14,9 @@ public class PositiveOrZeroConstraint extends AbstractPositiveNegativeConstraint
     public Documentation getDocumentation() {
         return Documentation.newDocumentation()
                 .messageTemplate(getMessageTemplate())
-
                 .description("The element must be a positive number or zero.")
-
                 .example("driver( licencePoints : Int @PositiveOrZero) : DriverDetails")
-
-                .applicableTypeNames(getApplicableTypeNames())
-
+                .applicableTypes(getApplicableTypes())
                 .directiveSDL("directive @PositiveOrZero(message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
                         getMessageTemplate())

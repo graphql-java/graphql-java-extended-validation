@@ -7,7 +7,6 @@ import graphql.schema.GraphQLInputType;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
 import graphql.validation.constraints.Documentation;
 import graphql.validation.rules.ValidationEnvironment;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,30 +44,19 @@ public class PatternConstraint extends AbstractDirectiveConstraint {
     @Override
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
-        GraphQLInputType argumentType = validationEnvironment.getValidatedType();
 
-        List<?> validatedValues;
+        String strValue = String.valueOf(validatedValue);
 
-        if (isList(argumentType)) {
-            validatedValues = (List<?>)validatedValue;
-        } else {
-            validatedValues = Collections.singletonList(validatedValue);
+        GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
+
+        String patternArg = getStrArg(directive, "regexp");
+        Pattern pattern = cachedPattern(patternArg);
+
+        Matcher matcher = pattern.matcher(strValue);
+        if (!matcher.matches()) {
+            return mkError(validationEnvironment, "regexp", patternArg);
         }
 
-        for (Object value : validatedValues) {
-            String strValue = String.valueOf(value);
-
-            GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
-
-            String patternArg = getStrArg(directive, "regexp");
-            Pattern pattern = cachedPattern(patternArg);
-
-            Matcher matcher = pattern.matcher(strValue);
-            if (!matcher.matches()) {
-                return mkError(validationEnvironment, directive,
-                    mkMessageParams(validatedValue, validationEnvironment, "regexp", patternArg));
-            }
-        }
         return emptyList();
     }
 

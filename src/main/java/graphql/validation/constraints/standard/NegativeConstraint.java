@@ -16,7 +16,7 @@ public class NegativeConstraint extends AbstractPositiveNegativeConstraint {
                 .messageTemplate(getMessageTemplate())
                 .description("The element must be a negative number.")
                 .example("driveCar( lostLicencePoints : Int @Negative) : DriverDetails")
-                .applicableTypeNames(getApplicableTypeNames())
+                .applicableTypes(getApplicableTypes())
                 .directiveSDL("directive @Negative(message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
                         getMessageTemplate())

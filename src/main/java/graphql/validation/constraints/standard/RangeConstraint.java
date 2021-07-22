@@ -8,17 +8,20 @@ import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLScalarType;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
 import graphql.validation.constraints.Documentation;
+import graphql.validation.constraints.GraphQLScalars;
 import graphql.validation.rules.ValidationEnvironment;
-
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import static graphql.Scalars.GraphQLString;
-import static java.util.stream.Collectors.toList;
 
 public class RangeConstraint extends AbstractDirectiveConstraint {
+    private static final List<GraphQLScalarType> SUPPORTED_SCALARS = Stream.concat(
+            Stream.of(Scalars.GraphQLString),
+            GraphQLScalars.GRAPHQL_NUMBER_TYPES.stream()
+    ).collect(Collectors.toList());
 
     public RangeConstraint() {
         super("Range");
@@ -29,23 +32,10 @@ public class RangeConstraint extends AbstractDirectiveConstraint {
     public Documentation getDocumentation() {
         return Documentation.newDocumentation()
                 .messageTemplate(getMessageTemplate())
-
                 .description("The element range must be between the specified `min` and `max` boundaries (inclusive).  It " +
                         "accepts numbers and strings that represent numerical values.")
-
                 .example("driver( milesTravelled : Int @Range( min : 1000, max : 100000)) : DriverDetails")
-
-                .applicableTypeNames(Stream.of(GraphQLString,
-                        ExtendedScalars.GraphQLByte,
-                        ExtendedScalars.GraphQLShort,
-                        Scalars.GraphQLInt,
-                        ExtendedScalars.GraphQLLong,
-                        ExtendedScalars.GraphQLBigDecimal,
-                        ExtendedScalars.GraphQLBigInteger,
-                        Scalars.GraphQLFloat)
-                        .map(GraphQLScalarType::getName)
-                        .collect(toList()))
-
+                .applicableTypes(SUPPORTED_SCALARS)
                 .directiveSDL("directive @Range(min : Int = 0, max : Int = %d, message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
                         Integer.MAX_VALUE, getMessageTemplate())

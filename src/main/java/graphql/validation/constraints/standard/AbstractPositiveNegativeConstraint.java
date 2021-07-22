@@ -1,7 +1,6 @@
 package graphql.validation.constraints.standard;
 
 import graphql.GraphQLError;
-import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLScalarType;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
@@ -10,7 +9,6 @@ import graphql.validation.rules.ValidationEnvironment;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
-import static java.util.stream.Collectors.toList;
 
 abstract class AbstractPositiveNegativeConstraint extends AbstractDirectiveConstraint {
 
@@ -23,11 +21,8 @@ abstract class AbstractPositiveNegativeConstraint extends AbstractDirectiveConst
         return isOneOfTheseTypes(inputType, GraphQLScalars.GRAPHQL_NUMBER_TYPES);
     }
 
-    public List<String> getApplicableTypeNames() {
-        return GraphQLScalars.GRAPHQL_NUMBER_TYPES
-                .stream()
-                .map(GraphQLScalarType::getName)
-                .collect(toList());
+    public List<GraphQLScalarType> getApplicableTypes() {
+        return GraphQLScalars.GRAPHQL_NUMBER_TYPES;
     }
 
 
