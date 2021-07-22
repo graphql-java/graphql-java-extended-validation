@@ -1,14 +1,12 @@
 package graphql.validation.constraints.standard;
 
-import graphql.schema.GraphQLInputObjectType;
 import graphql.schema.GraphQLInputType;
 import graphql.validation.constraints.Documentation;
 import static graphql.schema.GraphQLTypeUtil.isList;
 
-public class NotEmptyContainerRule extends AbstractNotEmptyRule {
-
-    public NotEmptyContainerRule() {
-        super("NotEmptyContainer");
+public class ContainerNotEmptyRule extends AbstractNotEmptyRule {
+    public ContainerNotEmptyRule() {
+        super("ContainerNotEmpty");
     }
 
     @Override
@@ -16,9 +14,9 @@ public class NotEmptyContainerRule extends AbstractNotEmptyRule {
         return Documentation.newDocumentation()
                 .messageTemplate(getMessageTemplate())
                 .description("The container must have a non-zero size")
-                .example("updateAccident( accidentNotes : [Notes]! @NotEmptyContainer) : DriverDetails")
+                .example("updateAccident( accidentNotes : [Notes]! @ContainerNotEmpty) : DriverDetails")
                 .applicableTypeNames("Lists", "Input Objects")
-                .directiveSDL("directive @NotEmptyContainer(message : String = \"%s\") " +
+                .directiveSDL("directive @ContainerNotEmpty(message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
                         getMessageTemplate())
                 .build();
@@ -26,6 +24,6 @@ public class NotEmptyContainerRule extends AbstractNotEmptyRule {
 
     @Override
     public boolean appliesToType(GraphQLInputType inputType) {
-        return isList(inputType) || inputType instanceof GraphQLInputObjectType;
+        return isList(inputType) || isMap(inputType);
     }
 }

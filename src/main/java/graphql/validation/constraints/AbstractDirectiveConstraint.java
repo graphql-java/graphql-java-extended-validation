@@ -328,10 +328,14 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      * @return true if one of the above
      */
     protected boolean isStringOrIDOrListOrMap(GraphQLInputType inputType) {
-        GraphQLInputType unwrappedType = Util.unwrapOneAndAllNonNull(inputType);
         return isStringOrID(inputType) ||
                 isList(inputType) ||
-                (unwrappedType instanceof GraphQLInputObjectType);
+                isMap(inputType);
+    }
+
+    protected boolean isMap(GraphQLInputType inputType) {
+        GraphQLInputType unwrappedType = Util.unwrapOneAndAllNonNull(inputType);
+        return (unwrappedType instanceof GraphQLInputObjectType);
     }
 
     /**
