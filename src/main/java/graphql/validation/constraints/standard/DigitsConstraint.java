@@ -52,7 +52,7 @@ public class DigitsConstraint extends AbstractDirectiveConstraint {
         }
 
         if (!isOk) {
-            return mkError(validationEnvironment, "integer", maxIntegerLength,"fraction", maxFractionLength);
+            return mkError(validationEnvironment, "integer", maxIntegerLength, "fraction", maxFractionLength);
         }
 
         return Collections.emptyList();
@@ -63,5 +63,10 @@ public class DigitsConstraint extends AbstractDirectiveConstraint {
         int fractionPartLength = Math.max(bigNum.scale(), 0);
 
         return maxIntegerLength >= integerPartLength && maxFractionLength >= fractionPartLength;
+    }
+
+    @Override
+    protected boolean appliesToListElements() {
+        return true;
     }
 }

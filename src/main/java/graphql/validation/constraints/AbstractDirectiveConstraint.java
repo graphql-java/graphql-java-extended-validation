@@ -16,7 +16,6 @@ import graphql.schema.GraphQLTypeUtil;
 import graphql.validation.rules.ValidationEnvironment;
 import graphql.validation.util.DirectivesAndTypeWalker;
 import graphql.validation.util.Util;
-
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -26,7 +25,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import static graphql.schema.GraphQLTypeUtil.isList;
 import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.FIELD;
 import static graphql.validation.util.Util.mkMap;
@@ -71,10 +69,18 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
             boolean hasNamedDirective = directive.getName().equals(this.getName());
             if (hasNamedDirective) {
                 inputType = Util.unwrapNonNull(inputType);
-                boolean appliesToType = appliesToType(inputType);
+
+                boolean appliesToType;
+                if (appliesToListElements()) {
+                    appliesToType = appliesToType((GraphQLInputType) GraphQLTypeUtil.unwrapAll(inputType));
+                } else {
+                    appliesToType = appliesToType(inputType);
+                }
+
                 if (appliesToType) {
                     return true;
                 }
+
                 // if they have a @Directive on there BUT it can't handle that type
                 // then is a really bad situation
                 String argType = GraphQLTypeUtil.simplePrint(inputType);
@@ -104,13 +110,8 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
 
     @Override
     public List<GraphQLError> runValidation(ValidationEnvironment validationEnvironment) {
-
-        // output fields are special
-        if (validationEnvironment.getValidatedElement() == FIELD) {
-            return runFieldValidationImpl(validationEnvironment);
-        }
-
         Object validatedValue = validationEnvironment.getValidatedValue();
+
         //
         // all the directives validation code does NOT care for NULL ness since the graphql engine covers that.
         // eg a @NonNull validation directive makes no sense in graphql like it might in Java
@@ -119,17 +120,18 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
             return Collections.emptyList();
         }
 
+        // output fields are special
+        if (validationEnvironment.getValidatedElement() == FIELD) {
+            return runValidationImpl(validationEnvironment);
+        }
+
         GraphQLInputType inputType = Util.unwrapNonNull(validationEnvironment.getValidatedType());
         validationEnvironment = validationEnvironment.transform(b -> b.validatedType(inputType));
 
-        return runValidationImpl(validationEnvironment, inputType, validatedValue);
+        return runValidationImpl(validationEnvironment);
     }
 
-    private List<GraphQLError> runFieldValidationImpl(ValidationEnvironment validationEnvironment) {
-        return runConstraintOnDirectives(validationEnvironment);
-    }
-
-    private List<GraphQLError> runValidationImpl(ValidationEnvironment validationEnvironment, GraphQLInputType inputType, Object validatedValue) {
+    private List<GraphQLError> runValidationImpl(ValidationEnvironment validationEnvironment) {
         return runConstraintOnDirectives(validationEnvironment);
     }
 
@@ -149,11 +151,23 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
             validationEnvironment = validationEnvironment.transform(b -> b.context(GraphQLDirective.class, directive));
             //
             // now run the directive rule with this directive instance
-            List<GraphQLError> ruleErrors = this.runConstraint(validationEnvironment);
+            List<GraphQLError> ruleErrors = this.runConstrainOnPossibleListElements(validationEnvironment);
             errors.addAll(ruleErrors);
         }
+
         return errors;
     }
+
+    private List<GraphQLError> runConstrainOnPossibleListElements(ValidationEnvironment validationEnvironment) {
+        if (appliesToListElements()) {
+            final GraphQLListElementValidator validator = new GraphQLListElementValidator();
+            return validator.runConstraintOnListElements(validationEnvironment, this::runConstraint);
+        }
+
+        return runConstraint(validationEnvironment);
+    }
+
+    protected abstract boolean appliesToListElements();
 
 
     protected boolean isOneOfTheseTypes(GraphQLInputType inputType, GraphQLScalarType... scalarTypes) {

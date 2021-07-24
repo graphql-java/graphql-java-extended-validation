@@ -27,4 +27,9 @@ public class NotEmptyRule extends AbstractNotEmptyRule {
     public boolean appliesToType(GraphQLInputType inputType) {
         return isStringOrID(inputType);
     }
+
+    @Override
+    protected boolean appliesToListElements() {
+        return true;
+    }
 }

@@ -26,4 +26,9 @@ public class ContainerNotEmptyRule extends AbstractNotEmptyRule {
     public boolean appliesToType(GraphQLInputType inputType) {
         return isList(inputType) || isMap(inputType);
     }
+
+    @Override
+    protected boolean appliesToListElements() {
+        return false;
+    }
 }

@@ -64,5 +64,8 @@ public class PatternConstraint extends AbstractDirectiveConstraint {
         return SEEN_PATTERNS.computeIfAbsent(patternArg, Pattern::compile);
     }
 
-
+    @Override
+    protected boolean appliesToListElements() {
+        return true;
+    }
 }

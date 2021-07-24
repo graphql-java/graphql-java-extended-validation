@@ -43,4 +43,9 @@ public class NotBlankRule extends AbstractDirectiveConstraint {
 
         return Collections.emptyList();
     }
+
+    @Override
+    protected boolean appliesToListElements() {
+        return true;
+    }
 }

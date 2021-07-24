@@ -5,7 +5,6 @@ import graphql.validation.constraints.Documentation;
 import java.math.BigDecimal;
 
 public class PositiveConstraint extends AbstractPositiveNegativeConstraint {
-
     public PositiveConstraint() {
         super("Positive");
     }
@@ -27,5 +26,4 @@ public class PositiveConstraint extends AbstractPositiveNegativeConstraint {
     protected boolean isOK(BigDecimal bigDecimal) {
         return bigDecimal.compareTo(BigDecimal.ZERO) > 0;
     }
-
 }

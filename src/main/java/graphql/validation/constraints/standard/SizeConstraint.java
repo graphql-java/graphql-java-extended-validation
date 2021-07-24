@@ -28,4 +28,8 @@ public class SizeConstraint extends AbstractSizeConstraint {
         return isStringOrID(inputType);
     }
 
+    @Override
+    protected boolean appliesToListElements() {
+        return true;
+    }
 }

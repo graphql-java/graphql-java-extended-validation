@@ -12,20 +12,19 @@ import java.util.Collections;
 import java.util.List;
 
 abstract class AbstractMinMaxConstraint extends AbstractDirectiveConstraint {
-
     public AbstractMinMaxConstraint(String name) {
         super(name);
-    }
-
-    @Override
-    public boolean appliesToType(GraphQLInputType inputType) {
-        return isOneOfTheseTypes(inputType, GraphQLScalars.GRAPHQL_NUMBER_TYPES);
     }
 
     public List<GraphQLScalarType> getApplicableTypes() {
         return GraphQLScalars.GRAPHQL_NUMBER_TYPES;
     }
 
+
+    @Override
+    protected boolean appliesToType(GraphQLInputType inputType) {
+        return isOneOfTheseTypes(inputType, GraphQLScalars.GRAPHQL_NUMBER_TYPES);
+    }
 
     @Override
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
@@ -46,11 +45,16 @@ abstract class AbstractMinMaxConstraint extends AbstractDirectiveConstraint {
 
 
         if (!isOK) {
-            return mkError(validationEnvironment,"value", value);
+            return mkError(validationEnvironment, "value", value);
         }
 
         return Collections.emptyList();
     }
 
     abstract protected boolean isOK(int comparisonResult);
+    
+    @Override
+    protected boolean appliesToListElements() {
+        return true;
+    }
 }

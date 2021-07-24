@@ -46,4 +46,9 @@ abstract class AbstractPositiveNegativeConstraint extends AbstractDirectiveConst
     }
 
     abstract protected boolean isOK(BigDecimal bigDecimal);
+
+    @Override
+    protected boolean appliesToListElements() {
+        return true;
+    }
 }

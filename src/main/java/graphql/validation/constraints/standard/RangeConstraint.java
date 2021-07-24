@@ -97,4 +97,9 @@ public class RangeConstraint extends AbstractDirectiveConstraint {
         }
         return true;
     }
+
+    @Override
+    protected boolean appliesToListElements() {
+        return true;
+    }
 }

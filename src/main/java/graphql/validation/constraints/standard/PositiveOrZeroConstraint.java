@@ -27,5 +27,4 @@ public class PositiveOrZeroConstraint extends AbstractPositiveNegativeConstraint
     protected boolean isOK(BigDecimal bigDecimal) {
         return bigDecimal.compareTo(BigDecimal.ZERO) >= 0;
     }
-
 }

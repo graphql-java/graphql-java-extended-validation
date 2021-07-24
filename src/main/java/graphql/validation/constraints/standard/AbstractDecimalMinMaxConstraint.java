@@ -16,13 +16,13 @@ abstract class AbstractDecimalMinMaxConstraint extends AbstractDirectiveConstrai
         super(name);
     }
 
-    @Override
-    public boolean appliesToType(GraphQLInputType inputType) {
-        return isOneOfTheseTypes(inputType, GRAPHQL_NUMBER_AND_STRING_TYPES);
-    }
-
     public List<GraphQLScalarType> getApplicableTypes() {
         return GRAPHQL_NUMBER_AND_STRING_TYPES;
+    }
+
+    @Override
+    protected boolean appliesToType(GraphQLInputType inputType) {
+        return isOneOfTheseTypes(inputType, GRAPHQL_NUMBER_AND_STRING_TYPES);
     }
 
     @Override
@@ -52,5 +52,8 @@ abstract class AbstractDecimalMinMaxConstraint extends AbstractDirectiveConstrai
 
     abstract protected boolean isOK(boolean inclusive, int comparisonResult);
 
-
+    @Override
+    protected boolean appliesToListElements() {
+        return true;
+    }
 }

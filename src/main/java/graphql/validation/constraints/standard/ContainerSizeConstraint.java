@@ -27,4 +27,9 @@ public class ContainerSizeConstraint extends AbstractSizeConstraint {
     public boolean appliesToType(GraphQLInputType inputType) {
         return isList(inputType) || isMap(inputType);
     }
+
+    @Override
+    protected boolean appliesToListElements() {
+        return false;
+    }
 }

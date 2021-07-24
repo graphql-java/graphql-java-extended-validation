@@ -9,11 +9,9 @@ import java.util.List;
 import static graphql.Scalars.GraphQLBoolean;
 
 abstract class AbstractAssertConstraint extends AbstractDirectiveConstraint {
-
     public AbstractAssertConstraint(String name) {
         super(name);
     }
-
 
     @Override
     public boolean appliesToType(GraphQLInputType inputType) {
@@ -35,5 +33,8 @@ abstract class AbstractAssertConstraint extends AbstractDirectiveConstraint {
 
     protected abstract boolean isOK(boolean isTrue);
 
-
+    @Override
+    protected boolean appliesToListElements() {
+        return true;
+    }
 }
