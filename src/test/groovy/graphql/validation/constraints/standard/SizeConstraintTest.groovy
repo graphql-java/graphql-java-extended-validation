@@ -34,7 +34,7 @@ class SizeConstraintTest extends BaseConstraintTestSupport {
         "field( arg : ID @Size(min : 5) ) : ID"                         | null            | ""
 
         // Lists
-        'field (arg : [String] @Size(min: 5)) : ID'                     | []              | '' // Validated by @ContainerSize
+        'field (arg : [String] @Size(min: 5)) : ID'                     | []              | "" // Validated by @ContainerSize
     }
 
     @Unroll
@@ -50,9 +50,11 @@ class SizeConstraintTest extends BaseConstraintTestSupport {
 
         fieldDeclaration                                     | argVal         | expectedMessage
         // Lists
-        'field (arg : [String] @ContainerSize(min: 2)) : ID' | []             | 'ContainerSize;path=/arg;val:[];\t'
-        'field (arg : [String] @ContainerSize(min: 2)) : ID' | ["a", "b"]     | ''
-        'field (arg : [String] @ContainerSize(max: 5)) : ID' | []             | ''
-        'field (arg : [String] @ContainerSize(max: 2)) : ID' | ["asd", "sdf"] | 'ContainerSize;path=/arg;val:[];\t'
+        'field (arg : [String] @ContainerSize(min: 2)) : ID' | []             | "ContainerSize;path=/arg;val:[];\t"
+        'field (arg : [String] @ContainerSize(max: 1)) : ID' | ["asd", "sdf"] | "ContainerSize;path=/arg;val:[asd, sdf];\t"
+        'field (arg : [String] @ContainerSize(min: 2)) : ID' | ["a", "b"]     | ""
+        'field (arg : [String] @ContainerSize(max: 2)) : ID' | ["a", "b"]     | ""
+        'field (arg : [String] @ContainerSize(max: 5)) : ID' | []             | ""
+        'field (arg : [String] @ContainerSize(min: 2)) : ID' | null           | ""
     }
 }
