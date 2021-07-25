@@ -20,7 +20,7 @@ public class GraphQLScalars {
     );
 
     public static final List<GraphQLScalarType> GRAPHQL_NUMBER_AND_STRING_TYPES = Stream.concat(
-            Stream.of(Scalars.GraphQLString),
+            Stream.of(Scalars.GraphQLString, Scalars.GraphQLID),
             GraphQLScalars.GRAPHQL_NUMBER_TYPES.stream()
     ).collect(Collectors.toList());
 }

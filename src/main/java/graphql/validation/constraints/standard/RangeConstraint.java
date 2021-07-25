@@ -1,32 +1,20 @@
 package graphql.validation.constraints.standard;
 
 import graphql.GraphQLError;
-import graphql.Scalars;
-import graphql.scalars.ExtendedScalars;
 import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLInputType;
-import graphql.schema.GraphQLScalarType;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
 import graphql.validation.constraints.Documentation;
-import graphql.validation.constraints.GraphQLScalars;
 import graphql.validation.rules.ValidationEnvironment;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import static graphql.Scalars.GraphQLString;
+import static graphql.validation.constraints.GraphQLScalars.GRAPHQL_NUMBER_AND_STRING_TYPES;
 
 public class RangeConstraint extends AbstractDirectiveConstraint {
-    private static final List<GraphQLScalarType> SUPPORTED_SCALARS = Stream.concat(
-            Stream.of(Scalars.GraphQLString),
-            GraphQLScalars.GRAPHQL_NUMBER_TYPES.stream()
-    ).collect(Collectors.toList());
-
     public RangeConstraint() {
         super("Range");
     }
-
 
     @Override
     public Documentation getDocumentation() {
@@ -35,7 +23,7 @@ public class RangeConstraint extends AbstractDirectiveConstraint {
                 .description("The element range must be between the specified `min` and `max` boundaries (inclusive).  It " +
                         "accepts numbers and strings that represent numerical values.")
                 .example("driver( milesTravelled : Int @Range( min : 1000, max : 100000)) : DriverDetails")
-                .applicableTypes(SUPPORTED_SCALARS)
+                .applicableTypes(GRAPHQL_NUMBER_AND_STRING_TYPES)
                 .directiveSDL("directive @Range(min : Int = 0, max : Int = %d, message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
                         Integer.MAX_VALUE, getMessageTemplate())
@@ -44,27 +32,13 @@ public class RangeConstraint extends AbstractDirectiveConstraint {
 
     @Override
     public boolean appliesToType(GraphQLInputType inputType) {
-        return isOneOfTheseTypes(inputType,
-                GraphQLString,
-                ExtendedScalars.GraphQLByte,
-                ExtendedScalars.GraphQLShort,
-                Scalars.GraphQLInt,
-                ExtendedScalars.GraphQLLong,
-                ExtendedScalars.GraphQLBigDecimal,
-                ExtendedScalars.GraphQLBigInteger,
-                Scalars.GraphQLFloat
-        );
+        return isOneOfTheseTypes(inputType, GRAPHQL_NUMBER_AND_STRING_TYPES);
     }
 
 
     @Override
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
-
         Object validatedValue = validationEnvironment.getValidatedValue();
-        //null values are valid
-        if (validatedValue == null) {
-            return Collections.emptyList();
-        }
 
         GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
         BigDecimal min = asBigDecimal(getIntArg(directive, "min"));
@@ -79,10 +53,7 @@ public class RangeConstraint extends AbstractDirectiveConstraint {
         }
 
         if (!isOK) {
-            return mkError(validationEnvironment, directive, mkMessageParams(validatedValue, validationEnvironment,
-                    "min", min,
-                    "max", max
-            ));
+            return mkError(validationEnvironment, "min", min, "max", max);
 
         }
         return Collections.emptyList();
@@ -92,10 +63,8 @@ public class RangeConstraint extends AbstractDirectiveConstraint {
         if (argBD.compareTo(max) > 0) {
             return false;
         }
-        if (argBD.compareTo(min) < 0) {
-            return false;
-        }
-        return true;
+
+        return argBD.compareTo(min) >= 0;
     }
 
     @Override
