@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GraphQLListElementValidator {
     public boolean appliesToType(GraphQLInputType inputType, Function<GraphQLInputType, Boolean> appliesToTypeOrListElement) {
@@ -26,7 +27,7 @@ public class GraphQLListElementValidator {
             final AtomicInteger index = new AtomicInteger(0);
             return ((Collection<?>) validatedValue)
                     .stream()
-                    .flatMap((item) -> runConstraintOnElement.apply(validationEnvironment.transform((environment) -> {
+                    .flatMap((item) -> item == null ? Stream.empty() : runConstraintOnElement.apply(validationEnvironment.transform((environment) -> {
                         environment
                                 .validatedValue(item)
                                 .validatedPath(validationEnvironment.getValidatedPath().segment(index.getAndIncrement()))
