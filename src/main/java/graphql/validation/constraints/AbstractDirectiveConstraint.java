@@ -112,17 +112,17 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
     public List<GraphQLError> runValidation(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
 
+        // output fields are special
+        if (validationEnvironment.getValidatedElement() == FIELD) {
+            return runValidationImpl(validationEnvironment);
+        }
+
         //
         // all the directives validation code does NOT care for NULL ness since the graphql engine covers that.
         // eg a @NonNull validation directive makes no sense in graphql like it might in Java
         //
         if (validatedValue == null) {
             return Collections.emptyList();
-        }
-
-        // output fields are special
-        if (validationEnvironment.getValidatedElement() == FIELD) {
-            return runValidationImpl(validationEnvironment);
         }
 
         GraphQLInputType inputType = Util.unwrapNonNull(validationEnvironment.getValidatedType());
