@@ -9,7 +9,6 @@ class NoEmptyBlankConstraintTest extends BaseConstraintTestSupport {
 
     @Unroll
     def "not blank rule constraints"() {
-
         DirectiveConstraint ruleUnderTest = new NotBlankRule()
 
         expect:
@@ -47,7 +46,6 @@ class NoEmptyBlankConstraintTest extends BaseConstraintTestSupport {
 
     @Unroll
     def "not empty rule constraints"() {
-
         DirectiveConstraint ruleUnderTest = new NotEmptyRule()
 
         expect:
@@ -87,6 +85,32 @@ class NoEmptyBlankConstraintTest extends BaseConstraintTestSupport {
         'field( arg : [ID] @NotEmpty ) : ID'        | ["x"]       | ''
         'field( arg : [ID] @NotEmpty ) : ID'        | ["\t"]      | ''
         'field( arg : [ID] @NotEmpty ) : ID'        | [""]        | 'NotEmpty;path=/arg[0];val:;\t'
+    }
+
+    @Unroll
+    def "container not empty rule constraints"() {
+
+        DirectiveConstraint ruleUnderTest = new ContainerNotEmptyConstraint()
+
+        expect:
+
+        def errors = runValidation(ruleUnderTest, fieldDeclaration, "arg", argVal)
+        assertErrors(errors, expectedMessage)
+
+        where:
+
+        fieldDeclaration                            | argVal      | expectedMessage
+        // lists
+        'field( arg : [String] @ContainerNotEmpty ) : ID'    | []          | 'ContainerNotEmpty;path=/arg;val:[];\t'
+        'field( arg : [String] @ContainerNotEmpty ) : ID'    | null        | ''
+        'field( arg : [String] @ContainerNotEmpty ) : ID'    | ["x"]       | ''
+        'field( arg : [String] @ContainerNotEmpty ) : ID'    | ["\t"]      | ''
+        'field( arg : [String] @ContainerNotEmpty ) : ID'    | [""]        | ''
+        'field( arg : [ID] @ContainerNotEmpty ) : ID'        | []          | 'ContainerNotEmpty;path=/arg;val:[];\t'
+        'field( arg : [ID] @ContainerNotEmpty ) : ID'        | null        | ''
+        'field( arg : [ID] @ContainerNotEmpty ) : ID'        | ["x"]       | ''
+        'field( arg : [ID] @ContainerNotEmpty ) : ID'        | ["\t"]      | ''
+        'field( arg : [ID] @ContainerNotEmpty ) : ID'        | [""]        | ''
     }
 
 }

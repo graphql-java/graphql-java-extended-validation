@@ -78,6 +78,6 @@ public class ExpressionConstraint extends AbstractDirectiveConstraint {
 
     @Override
     protected boolean appliesToListElements() {
-        return false; // @Expression allow you to perform some things on a list elements individually if you want
+        return false;
     }
 }

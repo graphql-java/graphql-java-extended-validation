@@ -4,8 +4,8 @@ import graphql.schema.GraphQLInputType;
 import graphql.validation.constraints.Documentation;
 import static graphql.schema.GraphQLTypeUtil.isList;
 
-public class ContainerNotEmptyRule extends AbstractNotEmptyRule {
-    public ContainerNotEmptyRule() {
+public class ContainerNotEmptyConstraint extends AbstractNotEmptyRule {
+    public ContainerNotEmptyConstraint() {
         super("ContainerNotEmpty");
     }
 
