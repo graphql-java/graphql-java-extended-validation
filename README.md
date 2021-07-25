@@ -413,7 +413,7 @@ The element must have a non-zero size.
 
 ### @ContainerNotEmpty
 
-The element must have a non-zero size.
+The list or input object must have a non-zero size.
 
 - Example : `updateAccident( accidentNotes : [Notes]! @ContainerNotEmpty) : DriverDetails`
 
@@ -482,7 +482,7 @@ The string's size must be between the specified `min` and `max` boundaries (incl
 
 - Example : `updateDrivingNotes( drivingNote : String @Size( min : 1000, max : 100000)) : DriverDetails`
 
-- Applies to : `String`, `ID`
+- Applies to : `String`, `ID`, `Lists`
 
 - SDL : `directive @Size(min : Int = 0, max : Int = 2147483647, message : String = "graphql.validation.Size.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
