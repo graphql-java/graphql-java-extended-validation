@@ -1,0 +1,39 @@
+def generatedSrc = "$buildDir/generated-src";
+def generatedTestSrc = "$buildDir/generated-testSrc";
+def generatedGroovyTestSrc = "$buildDir/generated-testGroovySrc";
+
+task generateSources() {
+    println "[jakarta build] replacing `javax.` with new `jakarta.`"
+    dependsOn("copyJavaSources", "copyTestJavaSources", "copyTestGroovySources")
+}
+
+task copyTestGroovySources(type: Copy) {
+    into generatedGroovyTestSrc
+    from 'src/test/groovy'
+    filter { line -> line.replaceAll("javax\\.", "jakarta\\.") }
+}
+
+task copyTestJavaSources(type: Copy) {
+    into generatedTestSrc
+    from 'src/test/java'
+    filter { line -> line.replaceAll("javax\\.", "jakarta\\.") }
+}
+
+task copyJavaSources(type: Copy) {
+    into generatedSrc
+    from 'src/main/java'
+    filter { line -> line.replaceAll("javax\\.", "jakarta\\.") }
+}
+
+println "[jakarta build] set generated source codes as sourceSets"
+sourceSets {
+    main {
+        java.srcDirs = [generatedSrc]
+        resources.srcDirs = ["src/main/resources"]
+    }
+    test {
+        java.srcDirs = [generatedTestSrc]
+        groovy.srcDirs = [generatedGroovyTestSrc]
+    }
+}
+compileJava.dependsOn("generateSources")
