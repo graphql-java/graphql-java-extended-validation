@@ -17,7 +17,7 @@ This library provides extended validation of fields and field arguments for [gra
 ```xml
 <dependency>
   <groupId>com.graphql-java</groupId>
-  <artifactId<<>graphql-java-extended-validation</artifactId>
+  <artifactId>graphql-java-extended-validation</artifactId>
   <version>17.0.0</version>
   <type>pom</type>
 </dependency>
