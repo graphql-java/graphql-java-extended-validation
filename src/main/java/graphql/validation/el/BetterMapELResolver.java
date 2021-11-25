@@ -1,8 +1,8 @@
 package graphql.validation.el;
 
 import graphql.Internal;
-import jakarta.el.ELContext;
-import jakarta.el.MapELResolver;
+import javax.el.ELContext;
+import javax.el.MapELResolver;
 
 import java.util.Arrays;
 import java.util.List;
