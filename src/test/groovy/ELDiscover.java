@@ -1,11 +1,8 @@
-import jakarta.el.ELContext;
-import jakarta.el.ELManager;
-import jakarta.el.ExpressionFactory;
-import jakarta.el.StandardELContext;
-import jakarta.el.ValueExpression;
-import jakarta.validation.MessageInterpolator;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
+import javax.el.ELContext;
+import javax.el.ELManager;
+import javax.el.ExpressionFactory;
+import javax.el.StandardELContext;
+import javax.el.ValueExpression;
 import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.internal.engine.MessageInterpolatorContext;
 import org.hibernate.validator.internal.engine.path.PathImpl;
@@ -17,6 +14,9 @@ import org.hibernate.validator.internal.util.annotation.ConstraintAnnotationDesc
 import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 
+import javax.validation.MessageInterpolator;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
