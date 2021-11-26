@@ -54,6 +54,11 @@ class DecimalMinMaxConstraintTest extends BaseConstraintTestSupport {
 
         // nulls are valid
         'field( arg : Int @DecimalMin(value : "50" inclusive:false) ) : ID'      | null                 | ''
+
+        // Lists
+        'field( arg : [Int] @DecimalMin( value: "50", inclusive: false ) ) : ID' | [50]                 | 'DecimalMin;path=/arg[0];val:50;\t'
+        'field( arg : [Int] @DecimalMin( value: "50", inclusive: false ) ) : ID' | [51, 52]             | ''
+        'field( arg : [Int] @DecimalMin( value: "50", inclusive: false ) ) : ID' | [null]           | ''
     }
 
     @Unroll
@@ -68,24 +73,28 @@ class DecimalMinMaxConstraintTest extends BaseConstraintTestSupport {
 
         where:
 
-        fieldDeclaration                                                         | argVal | expectedMessage
-        'field( arg : Int @DecimalMax(value : "100") ) : ID'                     | 150    | 'DecimalMax;path=/arg;val:150;\t'
-        'field( arg : Int @DecimalMax(value : "100") ) : ID'                     | 50     | ''
+        fieldDeclaration                                                         | argVal     | expectedMessage
+        'field( arg : Int @DecimalMax(value : "100") ) : ID'                     | 150        | 'DecimalMax;path=/arg;val:150;\t'
+        'field( arg : Int @DecimalMax(value : "100") ) : ID'                     | 50         | ''
 
-        'field( arg : Int @DecimalMax(value : "100", message : "custom") ) : ID' | 150    | 'custom;path=/arg;val:150;\t'
+        'field( arg : Int @DecimalMax(value : "100", message : "custom") ) : ID' | 150        | 'custom;path=/arg;val:150;\t'
         // edge case
-        'field( arg : Int @DecimalMax(value : "50") ) : ID'                      | 51     | 'DecimalMax;path=/arg;val:51;\t'
-        'field( arg : Int @DecimalMax(value : "50") ) : ID'                      | 50     | ''
-        'field( arg : Int @DecimalMax(value : "50") ) : ID'                      | 49     | ''
+        'field( arg : Int @DecimalMax(value : "50") ) : ID'                      | 51         | 'DecimalMax;path=/arg;val:51;\t'
+        'field( arg : Int @DecimalMax(value : "50") ) : ID'                      | 50         | ''
+        'field( arg : Int @DecimalMax(value : "50") ) : ID'                      | 49         | ''
 
         // exclusive
-        'field( arg : Int @DecimalMax(value : "50" inclusive:false) ) : ID'      | 50     | 'DecimalMax;path=/arg;val:50;\t'
-        'field( arg : Int @DecimalMax(value : "50" inclusive:false) ) : ID'      | 51     | 'DecimalMax;path=/arg;val:51;\t'
-        'field( arg : Int @DecimalMax(value : "50" inclusive:false) ) : ID'      | 49     | ''
+        'field( arg : Int @DecimalMax(value : "50" inclusive:false) ) : ID'      | 50         | 'DecimalMax;path=/arg;val:50;\t'
+        'field( arg : Int @DecimalMax(value : "50" inclusive:false) ) : ID'      | 51         | 'DecimalMax;path=/arg;val:51;\t'
+        'field( arg : Int @DecimalMax(value : "50" inclusive:false) ) : ID'      | 49         | ''
 
         // nulls are valid
-        'field( arg : Int @DecimalMax(value : "50" inclusive:false) ) : ID'      | null   | ''
+        'field( arg : Int @DecimalMax(value : "50" inclusive:false) ) : ID'      | null       | ''
 
+        // Lists
+        'field( arg : [Int] @DecimalMax( value: "50", inclusive: false ) ) : ID' | [50]       | 'DecimalMax;path=/arg[0];val:50;\t'
+        'field( arg : [Int] @DecimalMax( value: "50", inclusive: false ) ) : ID' | [48, 49]   | ''
+        'field( arg : [Int] @DecimalMax( value: "50", inclusive: false ) ) : ID' | [null] | ''
     }
 
 }

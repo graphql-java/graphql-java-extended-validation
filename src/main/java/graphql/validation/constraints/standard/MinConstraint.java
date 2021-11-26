@@ -12,13 +12,9 @@ public class MinConstraint extends AbstractMinMaxConstraint {
     public Documentation getDocumentation() {
         return Documentation.newDocumentation()
                 .messageTemplate(getMessageTemplate())
-
                 .description("The element must be a number whose value must be greater than or equal to the specified minimum.")
-
                 .example("driveCar( age : Int @Min(value : 18) : DriverDetails")
-
-                .applicableTypeNames(getApplicableTypeNames())
-
+                .applicableTypes(getApplicableTypes())
                 .directiveSDL("directive @Min(value : Int! = 0, message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
                         getMessageTemplate())

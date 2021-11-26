@@ -261,7 +261,7 @@ The boolean value must be false.
 
 - Example : `updateDriver( isDrunk : Boolean @AssertFalse) : DriverDetails`
 
-- Applies to : `Boolean`
+- Applies to : `Boolean`, `Lists`
 
 - SDL : `directive @AssertFalse(message : String = "graphql.validation.AssertFalse.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
@@ -274,7 +274,7 @@ The boolean value must be true.
 
 - Example : `driveCar( hasLicence : Boolean @AssertTrue) : DriverDetails`
 
-- Applies to : `Boolean`
+- Applies to : `Boolean`, `Lists`
 
 - SDL : `directive @AssertTrue(message : String = "graphql.validation.AssertTrue.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
@@ -287,7 +287,7 @@ The element must be a number whose value must be less than or equal to the speci
 
 - Example : `driveCar( bloodAlcoholLevel : Float @DecimalMax(value : "0.05") : DriverDetails`
 
-- Applies to : `String`, `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
+- Applies to : `String`, `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`, `Lists`
 
 - SDL : `directive @DecimalMax(value : String!, inclusive : Boolean! = true, message : String = "graphql.validation.DecimalMax.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
@@ -300,7 +300,7 @@ The element must be a number whose value must be greater than or equal to the sp
 
 - Example : `driveCar( carHorsePower : Float @DecimalMin(value : "300.50") : DriverDetails`
 
-- Applies to : `String`, `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
+- Applies to : `String`, `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`, `Lists`
 
 - SDL : `directive @DecimalMin(value : String!, inclusive : Boolean! = true, message : String = "graphql.validation.DecimalMin.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
@@ -313,7 +313,7 @@ The element must be a number inside the specified `integer` and `fraction` range
 
 - Example : `buyCar( carCost : Float @Digits(integer : 5, fraction : 2) : DriverDetails`
 
-- Applies to : `String`, `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
+- Applies to : `String`, `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`, `Lists`
 
 - SDL : `directive @Digits(integer : Int!, fraction : Int!, message : String = "graphql.validation.Digits.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
@@ -340,7 +340,7 @@ The element must be a number whose value must be less than or equal to the speci
 
 - Example : `driveCar( horsePower : Float @Max(value : 1000) : DriverDetails`
 
-- Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
+- Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`, `Lists`
 
 - SDL : `directive @Max(value : Int! = 2147483647, message : String = "graphql.validation.Max.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
@@ -353,7 +353,7 @@ The element must be a number whose value must be greater than or equal to the sp
 
 - Example : `driveCar( age : Int @Min(value : 18) : DriverDetails`
 
-- Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
+- Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`, `Lists`
 
 - SDL : `directive @Min(value : Int! = 0, message : String = "graphql.validation.Min.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
@@ -366,7 +366,7 @@ The element must be a negative number.
 
 - Example : `driveCar( lostLicencePoints : Int @Negative) : DriverDetails`
 
-- Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
+- Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`, `Lists`
 
 - SDL : `directive @Negative(message : String = "graphql.validation.Negative.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
@@ -379,7 +379,7 @@ The element must be a negative number or zero.
 
 - Example : `driveCar( lostLicencePoints : Int @NegativeOrZero) : DriverDetails`
 
-- Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
+- Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`, `Lists`
 
 - SDL : `directive @NegativeOrZero(message : String = "graphql.validation.NegativeOrZero.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
@@ -401,15 +401,27 @@ The String must contain at least one non-whitespace character, according to Java
 
 ### @NotEmpty
 
-The element must have a non zero size.
+The element must have a non-zero size.
 
-- Example : `updateAccident( accidentNotes : [Notes]! @NotEmpty) : DriverDetails`
+- Example : `updateAccident( accidentNotes : String! @NotEmpty) : DriverDetails`
 
-- Applies to : `String`, `ID`, `Lists`, `Input Objects`
+- Applies to : `String`, `ID`, `Lists`
 
 - SDL : `directive @NotEmpty(message : String = "graphql.validation.NotEmpty.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.NotEmpty.message`
+
+### @ContainerNotEmpty
+
+The list or input object must have a non-zero size.
+
+- Example : `updateAccident( accidentNotes : [Notes]! @ContainerNotEmpty) : DriverDetails`
+
+- Applies to : `Lists`, `Input Objects`
+
+- SDL : `directive @ContainerNotEmpty(message : String = "graphql.validation.ContainerNotEmpty.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
+
+- Message : `graphql.validation.ContainerNotEmpty.message`
 
 
 ### @Pattern
@@ -431,7 +443,7 @@ The element must be a positive number.
 
 - Example : `driver( licencePoints : Int @Positive) : DriverDetails`
 
-- Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
+- Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`, `Lists`
 
 - SDL : `directive @Positive(message : String = "graphql.validation.Positive.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
@@ -444,7 +456,7 @@ The element must be a positive number or zero.
 
 - Example : `driver( licencePoints : Int @PositiveOrZero) : DriverDetails`
 
-- Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
+- Applies to : `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`, `Lists`
 
 - SDL : `directive @PositiveOrZero(message : String = "graphql.validation.PositiveOrZero.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
@@ -457,7 +469,7 @@ The element range must be between the specified `min` and `max` boundaries (incl
 
 - Example : `driver( milesTravelled : Int @Range( min : 1000, max : 100000)) : DriverDetails`
 
-- Applies to : `String`, `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`
+- Applies to : `String`, `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`, `Lists`
 
 - SDL : `directive @Range(min : Int = 0, max : Int = 2147483647, message : String = "graphql.validation.Range.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
@@ -466,14 +478,26 @@ The element range must be between the specified `min` and `max` boundaries (incl
 
 ### @Size
 
-The element size must be between the specified `min` and `max` boundaries (inclusive).
+The string's size must be between the specified `min` and `max` boundaries (inclusive).
 
 - Example : `updateDrivingNotes( drivingNote : String @Size( min : 1000, max : 100000)) : DriverDetails`
 
-- Applies to : `String`, `ID`, `Lists`, `Input Objects`
+- Applies to : `String`, `ID`, `Lists`
 
 - SDL : `directive @Size(min : Int = 0, max : Int = 2147483647, message : String = "graphql.validation.Size.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.Size.message`
+
+### @ContainerSize
+
+The list's or input object's size must be between the specified `min` and `max` boundaries (inclusive).
+
+- Example : `updateDrivingNotes( drivingNote : [String!]! @ContainerSize( min : 10, max : 20)) : DriverDetails`
+
+- Applies to : `Lists`, `Input Objects`
+
+- SDL : `directive @ContainerSize(min : Int = 0, max : Int = 2147483647, message : String = "graphql.validation.ContainerSize.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
+
+- Message : `graphql.validation.ContainerSize.message`
 
 <!-- end -->
