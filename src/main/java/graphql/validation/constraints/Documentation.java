@@ -1,10 +1,11 @@
 package graphql.validation.constraints;
 
+import graphql.schema.GraphQLNamedType;
 import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
-
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Documentation {
 
@@ -80,14 +81,23 @@ public class Documentation {
             return this;
         }
 
+        public Builder applicableTypes(List<? extends GraphQLNamedType> applicableTypes) {
+            this.applicableTypeNames = applicableTypes.stream().map(GraphQLNamedType::getName).collect(Collectors.toList());
+            return this;
+        }
+
+        public Builder applicableTypes(GraphQLNamedType... applicableTypes) {
+            return applicableTypes(Arrays.asList(applicableTypes));
+        }
+
+
         public Builder applicableTypeNames(List<String> applicableTypeNames) {
             this.applicableTypeNames = applicableTypeNames;
             return this;
         }
 
         public Builder applicableTypeNames(String... applicableTypeNames) {
-            this.applicableTypeNames = Arrays.asList(applicableTypeNames);
-            return this;
+            return applicableTypeNames(Arrays.asList(applicableTypeNames));
         }
 
         public Documentation build() {

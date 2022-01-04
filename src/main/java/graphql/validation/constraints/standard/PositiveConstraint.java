@@ -5,7 +5,6 @@ import graphql.validation.constraints.Documentation;
 import java.math.BigDecimal;
 
 public class PositiveConstraint extends AbstractPositiveNegativeConstraint {
-
     public PositiveConstraint() {
         super("Positive");
     }
@@ -14,13 +13,9 @@ public class PositiveConstraint extends AbstractPositiveNegativeConstraint {
     public Documentation getDocumentation() {
         return Documentation.newDocumentation()
                 .messageTemplate(getMessageTemplate())
-
                 .description("The element must be a positive number.")
-
                 .example("driver( licencePoints : Int @Positive) : DriverDetails")
-
-                .applicableTypeNames(getApplicableTypeNames())
-
+                .applicableTypes(getApplicableTypes())
                 .directiveSDL("directive @Positive(message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
                         getMessageTemplate())
@@ -31,5 +26,4 @@ public class PositiveConstraint extends AbstractPositiveNegativeConstraint {
     protected boolean isOK(BigDecimal bigDecimal) {
         return bigDecimal.compareTo(BigDecimal.ZERO) > 0;
     }
-
 }
