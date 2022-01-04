@@ -7,6 +7,8 @@ import graphql.schema.GraphQLFieldsContainer;
 import graphql.schema.idl.TypeDefinitionRegistry;
 import graphql.validation.constraints.standard.AssertFalseConstraint;
 import graphql.validation.constraints.standard.AssertTrueConstraint;
+import graphql.validation.constraints.standard.ContainerNotEmptyConstraint;
+import graphql.validation.constraints.standard.ContainerSizeConstraint;
 import graphql.validation.constraints.standard.DecimalMaxConstraint;
 import graphql.validation.constraints.standard.DecimalMinConstraint;
 import graphql.validation.constraints.standard.DigitsConstraint;
@@ -61,7 +63,10 @@ public class DirectiveConstraints {
             new PositiveOrZeroConstraint(),
             new PositiveConstraint(),
             new RangeConstraint(),
-            new SizeConstraint()
+            new SizeConstraint(),
+            new ContainerSizeConstraint(),
+            new ContainerNotEmptyConstraint()
+
     );
 
     private final Map<String, DirectiveConstraint> constraints;

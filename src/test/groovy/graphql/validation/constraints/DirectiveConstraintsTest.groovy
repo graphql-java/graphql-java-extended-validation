@@ -12,7 +12,7 @@ class DirectiveConstraintsTest extends BaseConstraintTestSupport {
         def rules = DirectiveConstraints.newDirectiveConstraints().build()
 
         then:
-        rules.getConstraints().size() == 17
+        rules.getConstraints().size() == 19
 
         when:
         rules = DirectiveConstraints.newDirectiveConstraints().clearRules().build()
@@ -69,8 +69,8 @@ class DirectiveConstraintsTest extends BaseConstraintTestSupport {
 
         "field( testArg : NoSizeDirectives ) : ID"                      | "Range"
 
-        "field( testArg : [Product!] @Size(max : 2) ) : ID"             | "Size"
-        "field( testArg : Product! @Size(max : 2) ) : ID"               | "Size"
+        "field( testArg : [Product!] @ContainerSize(max : 2) ) : ID"    | "ContainerSize,Size"
+        "field( testArg : Product! @ContainerSize(max : 2) ) : ID"      | "ContainerSize,Size"
         "field( testArg : [Product!] ) : ID"                            | "Size"
     }
 
@@ -116,7 +116,7 @@ class DirectiveConstraintsTest extends BaseConstraintTestSupport {
         def declaration = directiveValidationRules.getDirectivesDeclaration()
         then:
         declaration != null
-        declaration.getDirectiveDefinitions().size() == 17
+        declaration.getDirectiveDefinitions().size() == 19
 
     }
 }

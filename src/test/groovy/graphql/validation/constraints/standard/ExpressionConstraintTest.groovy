@@ -11,7 +11,6 @@ class ExpressionConstraintTest extends BaseConstraintTestSupport {
 
     @Unroll
     def "expression constraints on a field"() {
-
         DirectiveConstraint ruleUnderTest = new ExpressionConstraint()
 
         expect:
@@ -27,8 +26,8 @@ class ExpressionConstraintTest extends BaseConstraintTestSupport {
         where:
 
 
-        fieldDeclaration                                     | args                  | expectedMessage
-        'field( first : Int, last : Int) : ID ' + relayCheck | [first: 10]           | ""
+        fieldDeclaration                                     | args        | expectedMessage
+        'field( first : Int, last : Int) : ID ' + relayCheck | [first: 10] | ""
         'field( first : Int, last : Int) : ID ' + relayCheck | [first: 10, last: 20] | "Expression;path=/field;val:null;\t"
     }
 

@@ -12,13 +12,9 @@ public class MaxConstraint extends AbstractMinMaxConstraint {
     public Documentation getDocumentation() {
         return Documentation.newDocumentation()
                 .messageTemplate(getMessageTemplate())
-
                 .description("The element must be a number whose value must be less than or equal to the specified maximum.")
-
                 .example("driveCar( horsePower : Float @Max(value : 1000) : DriverDetails")
-
-                .applicableTypeNames(getApplicableTypeNames())
-
+                .applicableTypes(getApplicableTypes())
                 .directiveSDL("directive @Max(value : Int! = %d, message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
                         Integer.MAX_VALUE, getMessageTemplate())

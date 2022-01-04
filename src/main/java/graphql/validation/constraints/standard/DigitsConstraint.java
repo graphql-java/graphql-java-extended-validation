@@ -1,24 +1,17 @@
 package graphql.validation.constraints.standard;
 
 import graphql.GraphQLError;
-import graphql.Scalars;
-import graphql.scalars.ExtendedScalars;
 import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLInputType;
-import graphql.schema.GraphQLScalarType;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
 import graphql.validation.constraints.Documentation;
 import graphql.validation.rules.ValidationEnvironment;
-
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
+import static graphql.validation.constraints.GraphQLScalars.GRAPHQL_NUMBER_AND_STRING_TYPES;
 
 public class DigitsConstraint extends AbstractDirectiveConstraint {
-
     public DigitsConstraint() {
         super("Digits");
     }
@@ -27,22 +20,9 @@ public class DigitsConstraint extends AbstractDirectiveConstraint {
     public Documentation getDocumentation() {
         return Documentation.newDocumentation()
                 .messageTemplate(getMessageTemplate())
-
                 .description("The element must be a number inside the specified `integer` and `fraction` range.")
-
                 .example("buyCar( carCost : Float @Digits(integer : 5, fraction : 2) : DriverDetails")
-
-                .applicableTypeNames(Stream.of(Scalars.GraphQLString,
-                        ExtendedScalars.GraphQLByte,
-                        ExtendedScalars.GraphQLShort,
-                        Scalars.GraphQLInt,
-                        ExtendedScalars.GraphQLLong,
-                        ExtendedScalars.GraphQLBigDecimal,
-                        ExtendedScalars.GraphQLBigInteger,
-                        Scalars.GraphQLFloat)
-                        .map(GraphQLScalarType::getName)
-                        .collect(toList()))
-
+                .applicableTypes(GRAPHQL_NUMBER_AND_STRING_TYPES)
                 .directiveSDL("directive @Digits(integer : Int!, fraction : Int!, message : String = \"%s\") " +
                                 "on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION",
                         getMessageTemplate())
@@ -51,25 +31,13 @@ public class DigitsConstraint extends AbstractDirectiveConstraint {
 
     @Override
     public boolean appliesToType(GraphQLInputType inputType) {
-        return isOneOfTheseTypes(inputType,
-                Scalars.GraphQLString,
-                ExtendedScalars.GraphQLByte,
-                ExtendedScalars.GraphQLShort,
-                Scalars.GraphQLInt,
-                ExtendedScalars.GraphQLLong,
-                ExtendedScalars.GraphQLBigDecimal,
-                ExtendedScalars.GraphQLBigInteger,
-                Scalars.GraphQLFloat
-        );
+        return isOneOfTheseTypes(inputType, GRAPHQL_NUMBER_AND_STRING_TYPES);
     }
 
 
     @Override
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
-        if (validatedValue == null) {
-            return Collections.emptyList();
-        }
 
         GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
         int maxIntegerLength = getIntArg(directive, "integer");
@@ -84,17 +52,21 @@ public class DigitsConstraint extends AbstractDirectiveConstraint {
         }
 
         if (!isOk) {
-            return mkError(validationEnvironment, directive, mkMessageParams(validatedValue, validationEnvironment,
-                    "integer", maxIntegerLength,
-                    "fraction", maxFractionLength));
+            return mkError(validationEnvironment, "integer", maxIntegerLength, "fraction", maxFractionLength);
         }
+
         return Collections.emptyList();
     }
 
     private boolean isOk(BigDecimal bigNum, int maxIntegerLength, int maxFractionLength) {
         int integerPartLength = bigNum.precision() - bigNum.scale();
-        int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
+        int fractionPartLength = Math.max(bigNum.scale(), 0);
 
         return maxIntegerLength >= integerPartLength && maxFractionLength >= fractionPartLength;
+    }
+
+    @Override
+    protected boolean appliesToListElements() {
+        return true;
     }
 }

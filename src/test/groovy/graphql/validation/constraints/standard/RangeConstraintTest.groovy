@@ -33,5 +33,10 @@ class RangeConstraintTest extends BaseConstraintTestSupport {
         "field( arg : String @Range(max : 10) ) : ID"                    | Long.valueOf("12")    | "Range;path=/arg;val:12;\t"
         "field( arg : String @Range(max : 10) ) : ID"                    | Integer.valueOf("12") | "Range;path=/arg;val:12;\t"
         "field( arg : String @Range(max : 10) ) : ID"                    | Short.valueOf("12")   | "Range;path=/arg;val:12;\t"
+
+        // Lists
+        'field( arg : [String] @Range(max : 10) ) : ID'                  | [50, 0]               | 'Range;path=/arg[0];val:50;\t'
+        'field( arg : [String] @Range(max : 10) ) : ID'                  | [9, 8]                | ''
+        'field( arg : [String] @Range(max : 10) ) : ID'                  | [null]                | ''
     }
 }
