@@ -19,7 +19,6 @@ This library provides extended validation of fields and field arguments for [gra
   <groupId>com.graphql-java</groupId>
   <artifactId>graphql-java-extended-validation</artifactId>
   <version>17.0.0</version>
-  <type>pom</type>
 </dependency>
 ```
 
@@ -37,7 +36,7 @@ compile 'com.graphql-java:graphql-java-extended-validation:17.0.0'
 > 
 > use 16.0.0 or above for graphql-java 16.x and above
 > 
-> use 17.0.0 or above for graphql-java 17.x and above
+> use 17.0 or above for graphql-java 17.x and above
 
 It's currently available from Maven central.
 
