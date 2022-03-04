@@ -23,7 +23,7 @@ This library provides extended validation of fields and field arguments for [gra
 ```
 
 ```groovy
-compile 'com.graphql-java:graphql-java-extended-validation:17.0.0'
+compile 'com.graphql-java:graphql-java-extended-validation:17.0'
 ```
 
 > Note:
@@ -37,7 +37,8 @@ compile 'com.graphql-java:graphql-java-extended-validation:17.0.0'
 > use 16.0.0 or above for graphql-java 16.x and above
 > 
 > use 17.0 or above for graphql-java 17.x and above
-
+> 
+> use 17.0-hibernate-validator-6.2.0.Final for graphql-java 17.x and SpringBoot 2.x support
 It's currently available from Maven central.
 
 
