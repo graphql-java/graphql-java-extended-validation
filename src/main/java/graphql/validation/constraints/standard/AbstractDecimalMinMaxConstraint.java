@@ -73,7 +73,7 @@ abstract class AbstractDecimalMinMaxConstraint extends AbstractDirectiveConstrai
 
         if (!isOK) {
             return mkError(validationEnvironment, directive, mkMessageParams(validatedValue, validationEnvironment,
-                    "value", validatedValue,
+                    "value", value,
                     "inclusive", inclusive));
 
         }
