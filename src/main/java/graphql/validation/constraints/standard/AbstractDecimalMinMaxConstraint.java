@@ -44,7 +44,7 @@ abstract class AbstractDecimalMinMaxConstraint extends AbstractDirectiveConstrai
         }
 
         if (!isOK) {
-            return mkError(validationEnvironment, "value", validatedValue, "inclusive", inclusive);
+            return mkError(validationEnvironment, "value", value, "inclusive", inclusive);
         }
 
         return Collections.emptyList();
