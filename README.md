@@ -2,9 +2,9 @@
 
 
 [![Build Status](https://github.com/graphql-java/graphql-java-extended-validation/actions/workflows/master.yml/badge.svg)](https://github.com/graphql-java/graphql-java-extended-validation/actions/workflows/master.yml)
-[![Latest Release](https://maven-badges.herokuapp.com/maven-central/com.graphql-java/graphql-java-extended-validation/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.graphql-java/graphql-java-extended-validation/)
+[![Latest Release](https://img.shields.io/maven-central/v/com.graphql-java/graphql-java-extended-validation?versionPrefix=17)](https://maven-badges.herokuapp.com/maven-central/com.graphql-java/graphql-java-extended-validation/)
+[![Latest Snapshot](https://img.shields.io/maven-central/v/com.graphql-java/graphql-java-extended-validation?label=maven-central%20snapshot)](https://maven-badges.herokuapp.com/maven-central/com.graphql-java/graphql-java-extended-validation/)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-green)](https://github.com/graphql-java/graphql-java-extended-validation/blob/master/LICENSE.md)
-
 
 
 
