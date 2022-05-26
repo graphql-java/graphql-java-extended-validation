@@ -9,9 +9,10 @@ import graphql.validation.constraints.Documentation;
 import graphql.validation.rules.ValidationEnvironment;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,7 +21,7 @@ import static java.util.Collections.emptyList;
 
 public class PatternConstraint extends AbstractDirectiveConstraint {
 
-    private final static Map<String, Pattern> SEEN_PATTERNS = new HashMap<>();
+    private final static ConcurrentMap<String, Pattern> SEEN_PATTERNS = new ConcurrentHashMap<>();
 
     public PatternConstraint() {
         super("Pattern");
