@@ -2,7 +2,8 @@
 
 
 [![Build Status](https://github.com/graphql-java/graphql-java-extended-validation/actions/workflows/master.yml/badge.svg)](https://github.com/graphql-java/graphql-java-extended-validation/actions/workflows/master.yml)
-[![Latest Release](https://img.shields.io/maven-central/v/com.graphql-java/graphql-java-extended-validation?versionPrefix=17)](https://maven-badges.herokuapp.com/maven-central/com.graphql-java/graphql-java-extended-validation/)
+[![Latest Release](https://maven-badges.herokuapp.com/maven-central/com.graphql-java/graphql-java-extended-validation/badge.svg?version=18.1&color=blue)](https://maven-badges.herokuapp.com/maven-central/com.graphql-java/graphql-java-extended-validation/)
+[![Latest Release - Jakarta EE8](https://img.shields.io/maven-central/v/com.graphql-java/graphql-java-extended-validation?versionSuffix=6.2.0.Final&label=maven-central%20jakarta%20ee8)](https://maven-badges.herokuapp.com/maven-central/com.graphql-java/graphql-java-extended-validation/)
 [![Latest Snapshot](https://img.shields.io/maven-central/v/com.graphql-java/graphql-java-extended-validation?label=maven-central%20snapshot)](https://maven-badges.herokuapp.com/maven-central/com.graphql-java/graphql-java-extended-validation/)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-green)](https://github.com/graphql-java/graphql-java-extended-validation/blob/master/LICENSE.md)
 
@@ -18,27 +19,25 @@ This library provides extended validation of fields and field arguments for [gra
 <dependency>
   <groupId>com.graphql-java</groupId>
   <artifactId>graphql-java-extended-validation</artifactId>
-  <version>17.0</version>
+  <version>18.1</version>
 </dependency>
 ```
 
 ```groovy
-compile 'com.graphql-java:graphql-java-extended-validation:17.0'
+compile 'com.graphql-java:graphql-java-extended-validation:18.1'
 ```
 
 > Note:
->
-> use 0.0.3 or below for graphql-java 13.x and below
->
-> use 14.0.1 or above for graphql-java 14.x and above
->
-> use 15.0.1 or above for graphql-java 15.x and above
 > 
 > use 16.0.0 or above for graphql-java 16.x and above
 > 
 > use 17.0 or above for graphql-java 17.x and above
 > 
 > use 17.0-hibernate-validator-6.2.0.Final for graphql-java 17.x and SpringBoot 2.x support
+>
+> use 18.1 or above for graphql-java 18.x and above
+>
+> use 18.1-hibernate-validator-6.2.0.Final for graphql-java 18.x and SpringBoot 2.x support
 
 It's currently available from Maven central.
 
