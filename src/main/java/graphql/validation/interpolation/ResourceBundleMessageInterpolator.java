@@ -4,20 +4,9 @@ import graphql.ErrorClassification;
 import graphql.GraphQLError;
 import graphql.GraphqlErrorBuilder;
 import graphql.execution.ResultPath;
-import graphql.schema.GraphQLDirective;
+import graphql.schema.GraphQLAppliedDirective;
 import graphql.validation.el.StandardELVariables;
 import graphql.validation.rules.ValidationEnvironment;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import jakarta.validation.Constraint;
-import jakarta.validation.Path;
-import jakarta.validation.Payload;
 import org.hibernate.validator.internal.engine.MessageInterpolatorContext;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
@@ -27,12 +16,15 @@ import org.hibernate.validator.internal.util.annotation.ConstraintAnnotationDesc
 import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
 import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
 import org.hibernate.validator.spi.resourceloading.ResourceBundleLocator;
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.CONSTRUCTOR;
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.ElementType.TYPE_USE;
+
+import jakarta.validation.Constraint;
+import jakarta.validation.Path;
+import jakarta.validation.Payload;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import java.util.*;
+
+import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
@@ -70,7 +62,7 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
     @SuppressWarnings("unused")
     protected ErrorClassification buildErrorClassification(String messageTemplate, Map<String, Object> messageParams, ValidationEnvironment validationEnvironment) {
         ResultPath fieldOrArgumentPath = validationEnvironment.getValidatedPath();
-        GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
+        GraphQLAppliedDirective directive = validationEnvironment.getContextObject(GraphQLAppliedDirective.class);
         return new ValidationErrorType(fieldOrArgumentPath, directive);
     }
 
@@ -183,9 +175,9 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
 
     private static class ValidationErrorType implements ErrorClassification {
         private final ResultPath fieldOrArgumentPath;
-        private final GraphQLDirective directive;
+        private final GraphQLAppliedDirective directive;
 
-        ValidationErrorType(ResultPath fieldOrArgumentPath, GraphQLDirective directive) {
+        ValidationErrorType(ResultPath fieldOrArgumentPath, GraphQLAppliedDirective directive) {
             this.fieldOrArgumentPath = fieldOrArgumentPath;
             this.directive = directive;
         }

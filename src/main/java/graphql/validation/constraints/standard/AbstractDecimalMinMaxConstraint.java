@@ -1,14 +1,16 @@
 package graphql.validation.constraints.standard;
 
 import graphql.GraphQLError;
-import graphql.schema.GraphQLDirective;
+import graphql.schema.GraphQLAppliedDirective;
 import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLScalarType;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
 import graphql.validation.rules.ValidationEnvironment;
+
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
+
 import static graphql.validation.constraints.GraphQLScalars.GRAPHQL_NUMBER_AND_STRING_TYPES;
 
 abstract class AbstractDecimalMinMaxConstraint extends AbstractDirectiveConstraint {
@@ -29,7 +31,7 @@ abstract class AbstractDecimalMinMaxConstraint extends AbstractDirectiveConstrai
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
 
-        GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
+        GraphQLAppliedDirective directive = validationEnvironment.getContextObject(GraphQLAppliedDirective.class);
         String value = getStrArg(directive, "value");
         boolean inclusive = getBoolArg(directive, "inclusive");
 

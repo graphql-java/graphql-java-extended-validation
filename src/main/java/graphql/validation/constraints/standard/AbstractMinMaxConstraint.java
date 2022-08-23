@@ -1,12 +1,13 @@
 package graphql.validation.constraints.standard;
 
 import graphql.GraphQLError;
-import graphql.schema.GraphQLDirective;
+import graphql.schema.GraphQLAppliedDirective;
 import graphql.schema.GraphQLInputType;
 import graphql.schema.GraphQLScalarType;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
 import graphql.validation.constraints.GraphQLScalars;
 import graphql.validation.rules.ValidationEnvironment;
+
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +30,7 @@ abstract class AbstractMinMaxConstraint extends AbstractDirectiveConstraint {
     @Override
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
-        GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
+        GraphQLAppliedDirective directive = validationEnvironment.getContextObject(GraphQLAppliedDirective.class);
         int value = getIntArg(directive, "value");
 
         boolean isOK;

@@ -4,18 +4,11 @@ import graphql.Assert;
 import graphql.GraphQLError;
 import graphql.PublicSpi;
 import graphql.Scalars;
-import graphql.schema.GraphQLArgument;
-import graphql.schema.GraphQLDirective;
-import graphql.schema.GraphQLFieldDefinition;
-import graphql.schema.GraphQLFieldsContainer;
-import graphql.schema.GraphQLInputObjectType;
-import graphql.schema.GraphQLInputType;
-import graphql.schema.GraphQLNamedInputType;
-import graphql.schema.GraphQLScalarType;
-import graphql.schema.GraphQLTypeUtil;
+import graphql.schema.*;
 import graphql.validation.rules.ValidationEnvironment;
 import graphql.validation.util.DirectivesAndTypeWalker;
 import graphql.validation.util.Util;
+
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -25,6 +18,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import static graphql.schema.GraphQLTypeUtil.isList;
 import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.FIELD;
 import static graphql.validation.util.Util.mkMap;
@@ -138,17 +132,17 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
     private List<GraphQLError> runConstraintOnDirectives(ValidationEnvironment validationEnvironment) {
 
         List<GraphQLError> errors = new ArrayList<>();
-        List<GraphQLDirective> directives = validationEnvironment.getDirectives();
-        directives = Util.sort(directives, GraphQLDirective::getName);
+        List<GraphQLAppliedDirective> directives = validationEnvironment.getDirectives();
+        directives = Util.sort(directives, GraphQLAppliedDirective::getName);
 
-        for (GraphQLDirective directive : directives) {
+        for (GraphQLAppliedDirective directive : directives) {
             // we get called for arguments and input field and field types which can have multiple directive constraints on them and hence no just for this one
             boolean isOurDirective = directive.getName().equals(this.getName());
             if (!isOurDirective) {
                 continue;
             }
 
-            validationEnvironment = validationEnvironment.transform(b -> b.context(GraphQLDirective.class, directive));
+            validationEnvironment = validationEnvironment.transform(b -> b.context(GraphQLAppliedDirective.class, directive));
             //
             // now run the directive rule with this directive instance
             List<GraphQLError> ruleErrors = this.runConstrainOnPossibleListElements(validationEnvironment);
@@ -201,18 +195,15 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      * @param argName   the argument name
      * @return a non null value
      */
-    protected int getIntArg(GraphQLDirective directive, String argName) {
-        GraphQLArgument argument = directive.getArgument(argName);
+    protected int getIntArg(GraphQLAppliedDirective directive, String argName) {
+        GraphQLAppliedDirectiveArgument argument = directive.getArgument(argName);
         if (argument == null) {
             return assertExpectedArgType(argName, "Int");
         }
 
-        Number value = GraphQLArgument.getArgumentValue(argument);
+        Number value = argument.getValue();
         if (value == null) {
-            value = GraphQLArgument.getArgumentDefaultValue(argument);
-            if (value == null) {
-                return assertExpectedArgType(argName, "Int");
-            }
+            return assertExpectedArgType(argName, "Int");
         }
         return value.intValue();
     }
@@ -224,17 +215,14 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      * @param argName   the argument name
      * @return a non null value
      */
-    protected String getStrArg(GraphQLDirective directive, String argName) {
-        GraphQLArgument argument = directive.getArgument(argName);
+    protected String getStrArg(GraphQLAppliedDirective directive, String argName) {
+        GraphQLAppliedDirectiveArgument argument = directive.getArgument(argName);
         if (argument == null) {
             return assertExpectedArgType(argName, "String");
         }
-        String value = GraphQLArgument.getArgumentValue(argument);
+        String value = argument.getValue();
         if (value == null) {
-            value = GraphQLArgument.getArgumentDefaultValue(argument);
-            if (value == null) {
-                return assertExpectedArgType(argName, "String");
-            }
+            return assertExpectedArgType(argName, "String");
         }
         return value;
     }
@@ -246,17 +234,14 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      * @param argName   the argument name
      * @return a non null value
      */
-    protected boolean getBoolArg(GraphQLDirective directive, String argName) {
-        GraphQLArgument argument = directive.getArgument(argName);
+    protected boolean getBoolArg(GraphQLAppliedDirective directive, String argName) {
+        GraphQLAppliedDirectiveArgument argument = directive.getArgument(argName);
         if (argument == null) {
             return assertExpectedArgType(argName, "Boolean");
         }
-        Object value = GraphQLArgument.getArgumentValue(argument);
+        Object value = argument.getValue();
         if (value == null) {
-            value = GraphQLArgument.getArgumentDefaultValue(argument);
-            if (value == null) {
-                return assertExpectedArgType(argName, "Boolean");
-            }
+            return assertExpectedArgType(argName, "Boolean");
         }
         return Boolean.parseBoolean(String.valueOf(value));
     }
@@ -268,14 +253,11 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      * @param directive the directive to check
      * @return a non null value
      */
-    protected String getMessageTemplate(GraphQLDirective directive) {
+    protected String getMessageTemplate(GraphQLAppliedDirective directive) {
         String msg = null;
-        GraphQLArgument arg = directive.getArgument("message");
+        GraphQLAppliedDirectiveArgument arg = directive.getArgument("message");
         if (arg != null) {
-            msg = GraphQLArgument.getArgumentValue(arg);
-            if (msg == null) {
-                msg = GraphQLArgument.getArgumentDefaultValue(arg);
-            }
+            msg = arg.getValue();
         }
         if (msg == null) {
             msg = "graphql.validation." + getName() + ".message";
@@ -310,14 +292,14 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      * @param msgParams             the map of parameters
      * @return a list of a single error
      */
-    protected List<GraphQLError> mkError(ValidationEnvironment validationEnvironment, GraphQLDirective directive, Map<String, Object> msgParams) {
+    protected List<GraphQLError> mkError(ValidationEnvironment validationEnvironment, GraphQLAppliedDirective directive, Map<String, Object> msgParams) {
         String messageTemplate = getMessageTemplate(directive);
         GraphQLError error = validationEnvironment.getInterpolator().interpolate(messageTemplate, msgParams, validationEnvironment);
         return singletonList(error);
     }
 
     protected List<GraphQLError> mkError(ValidationEnvironment validationEnvironment, Object... messageParameters) {
-        GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
+        GraphQLAppliedDirective directive = validationEnvironment.getContextObject(GraphQLAppliedDirective.class);
         String messageTemplate = getMessageTemplate(directive);
         Object validatedValue = validationEnvironment.getValidatedValue();
         GraphQLError error = validationEnvironment.getInterpolator().interpolate(messageTemplate, mkMessageParams(validatedValue, validationEnvironment, messageParameters), validationEnvironment);

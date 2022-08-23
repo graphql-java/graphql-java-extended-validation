@@ -4,17 +4,7 @@ import graphql.Assert;
 import graphql.GraphQLError;
 import graphql.PublicApi;
 import graphql.execution.ResultPath;
-import graphql.schema.DataFetchingEnvironment;
-import graphql.schema.GraphQLArgument;
-import graphql.schema.GraphQLDirective;
-import graphql.schema.GraphQLDirectiveContainer;
-import graphql.schema.GraphQLFieldDefinition;
-import graphql.schema.GraphQLInputObjectField;
-import graphql.schema.GraphQLInputObjectType;
-import graphql.schema.GraphQLInputType;
-import graphql.schema.GraphQLList;
-import graphql.schema.GraphQLObjectType;
-import graphql.schema.GraphQLTypeUtil;
+import graphql.schema.*;
 import graphql.util.FpKit;
 import graphql.validation.interpolation.MessageInterpolator;
 import graphql.validation.locale.LocaleUtil;
@@ -112,7 +102,7 @@ public class TargetedValidationRules {
                     .validatedType(inputType)
                     .validatedValue(argValue)
                     .validatedPath(fieldPath.segment(fieldArg.getName()))
-                    .directives(fieldArg.getDirectives())
+                    .directives(fieldArg.getAppliedDirectives())
                     .messageInterpolator(interpolator)
                     .locale(defaultLocale)
                     .build();
@@ -173,7 +163,7 @@ public class TargetedValidationRules {
                     .validatedPath(newPath)
                     .validatedValue(validatedValue)
                     .validatedType(fieldType)
-                    .directives(inputField.getDirectives())
+                    .directives(inputField.getAppliedDirectives())
                     .validatedElement(INPUT_OBJECT_FIELD)
             );
 
@@ -187,11 +177,11 @@ public class TargetedValidationRules {
         List<GraphQLError> errors = new ArrayList<>();
 
         GraphQLInputType listItemType = Util.unwrapOneAndAllNonNull(argumentType);
-        List<GraphQLDirective> directives;
+        List<GraphQLAppliedDirective> directives;
         if (!(listItemType instanceof GraphQLDirectiveContainer)) {
             directives = Collections.emptyList();
         } else {
-            directives = ((GraphQLDirectiveContainer) listItemType).getDirectives();
+            directives = ((GraphQLDirectiveContainer) listItemType).getAppliedDirectives();
         }
         int ix = 0;
         for (Object value : objectList) {

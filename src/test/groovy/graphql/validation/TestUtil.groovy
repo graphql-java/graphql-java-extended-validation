@@ -15,6 +15,7 @@ import graphql.language.Type
 import graphql.parser.Parser
 import graphql.schema.Coercing
 import graphql.schema.DataFetcher
+import graphql.schema.GraphQLAppliedDirective
 import graphql.schema.GraphQLArgument
 import graphql.schema.GraphQLDirective
 import graphql.schema.GraphQLFieldDefinition
@@ -189,8 +190,8 @@ class TestUtil {
                 definition)
     }
 
-    static GraphQLDirective mockDirective(String name) {
-        new GraphQLDirective(name, name, EnumSet.noneOf(DirectiveLocation.class), Collections.emptyList(), false, false, false)
+    static GraphQLAppliedDirective mockDirective(String name) {
+        new GraphQLAppliedDirective(name, name, EnumSet.noneOf(DirectiveLocation.class), Collections.emptyList(), false, false, false)
     }
 
     static TypeRuntimeWiring mockTypeRuntimeWiring(String typeName, boolean withResolver) {
