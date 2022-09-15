@@ -1,10 +1,7 @@
 package graphql.validation.constraints.standard;
 
 import graphql.GraphQLError;
-import graphql.schema.GraphQLDirective;
-import graphql.schema.GraphQLFieldDefinition;
-import graphql.schema.GraphQLFieldsContainer;
-import graphql.schema.GraphQLInputType;
+import graphql.schema.*;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
 import graphql.validation.constraints.Documentation;
 import graphql.validation.el.ELSupport;
@@ -50,7 +47,7 @@ public class ExpressionConstraint extends AbstractDirectiveConstraint {
 
     @Override
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
-        GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
+        GraphQLAppliedDirective directive = validationEnvironment.getContextObject(GraphQLAppliedDirective.class);
         String expression = helpWithCurlyBraces(getStrArg(directive, "value"));
 
         Map<String, Object> variables = StandardELVariables.standardELVars(validationEnvironment);

@@ -2,18 +2,12 @@ package graphql.validation.constraints
 
 import graphql.GraphQLError
 import graphql.GraphqlErrorBuilder
-import graphql.execution.ResultPath
 import graphql.execution.ExecutionStepInfo
 import graphql.execution.MergedField
+import graphql.execution.ResultPath
 import graphql.language.Field
 import graphql.language.SourceLocation
-import graphql.schema.DataFetchingEnvironmentImpl
-import graphql.schema.GraphQLArgument
-import graphql.schema.GraphQLDirective
-import graphql.schema.GraphQLFieldDefinition
-import graphql.schema.GraphQLFieldsContainer
-import graphql.schema.GraphQLObjectType
-import graphql.schema.GraphQLSchema
+import graphql.schema.*
 import graphql.validation.TestUtil
 import graphql.validation.interpolation.MessageInterpolator
 import graphql.validation.rules.TargetedValidationRules
@@ -102,7 +96,7 @@ class BaseConstraintTestSupport extends Specification {
                 .fieldsContainer(fieldsContainer)
                 .executionPath(ResultPath.rootPath().segment(fieldDefinition.getName()))
                 .validatedPath(ResultPath.rootPath().segment(argName))
-                .context(GraphQLDirective.class, argUnderTest.getDirective(targetDirective))
+                .context(GraphQLAppliedDirective.class, argUnderTest.getAppliedDirective(targetDirective))
                 .messageInterpolator(interpolator)
                 .build()
         ruleEnvironment
@@ -120,8 +114,8 @@ class BaseConstraintTestSupport extends Specification {
                 .executionPath(path)
                 .validatedElement(ValidationEnvironment.ValidatedElement.FIELD)
                 .validatedPath(path)
-                .directives(fieldDefinition.getDirectives())
-                .context(GraphQLDirective.class, fieldDefinition.getDirective(targetDirective.name))
+                .directives(fieldDefinition.getAppliedDirectives())
+                .context(GraphQLAppliedDirective.class, fieldDefinition.getAppliedDirective(targetDirective.name))
                 .messageInterpolator(interpolator)
                 .build()
         ruleEnvironment

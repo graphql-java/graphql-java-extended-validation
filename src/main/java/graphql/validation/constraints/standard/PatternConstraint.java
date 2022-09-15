@@ -2,6 +2,7 @@ package graphql.validation.constraints.standard;
 
 import graphql.GraphQLError;
 import graphql.Scalars;
+import graphql.schema.GraphQLAppliedDirective;
 import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLInputType;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
@@ -47,7 +48,7 @@ public class PatternConstraint extends AbstractDirectiveConstraint {
 
         String strValue = String.valueOf(validatedValue);
 
-        GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
+        GraphQLAppliedDirective directive = validationEnvironment.getContextObject(GraphQLAppliedDirective.class);
 
         String patternArg = getStrArg(directive, "regexp");
         Pattern pattern = cachedPattern(patternArg);

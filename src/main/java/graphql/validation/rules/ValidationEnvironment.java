@@ -3,12 +3,7 @@ package graphql.validation.rules;
 import graphql.PublicApi;
 import graphql.execution.ResultPath;
 import graphql.language.SourceLocation;
-import graphql.schema.DataFetchingEnvironment;
-import graphql.schema.GraphQLArgument;
-import graphql.schema.GraphQLDirective;
-import graphql.schema.GraphQLFieldDefinition;
-import graphql.schema.GraphQLFieldsContainer;
-import graphql.schema.GraphQLInputType;
+import graphql.schema.*;
 import graphql.validation.interpolation.MessageInterpolator;
 
 import java.util.Collections;
@@ -55,7 +50,7 @@ public class ValidationEnvironment {
     private final Object validatedValue;
     private final GraphQLInputType validatedType;
     private final ValidatedElement validatedElement;
-    private final List<GraphQLDirective> directives;
+    private final List<GraphQLAppliedDirective> directives;
 
     private ValidationEnvironment(Builder builder) {
         this.argument = builder.argument;
@@ -131,7 +126,7 @@ public class ValidationEnvironment {
         return validatedElement;
     }
 
-    public List<GraphQLDirective> getDirectives() {
+    public List<GraphQLAppliedDirective> getDirectives() {
         return directives;
     }
 
@@ -155,7 +150,7 @@ public class ValidationEnvironment {
         private Object validatedValue;
         private GraphQLInputType validatedType;
         private ValidatedElement validatedElement;
-        private List<GraphQLDirective> directives = Collections.emptyList();
+        private List<GraphQLAppliedDirective> directives = Collections.emptyList();
 
         public Builder validationEnvironment(ValidationEnvironment validationEnvironment) {
             this.argument = validationEnvironment.argument;
@@ -176,9 +171,9 @@ public class ValidationEnvironment {
         }
 
         public Builder dataFetchingEnvironment(DataFetchingEnvironment dataFetchingEnvironment) {
-            fieldsContainer(dataFetchingEnvironment.getExecutionStepInfo().getFieldContainer());
+            fieldsContainer(dataFetchingEnvironment.getExecutionStepInfo().getObjectType());
             fieldDefinition(dataFetchingEnvironment.getFieldDefinition());
-            directives(dataFetchingEnvironment.getFieldDefinition().getDirectives());
+            directives(dataFetchingEnvironment.getFieldDefinition().getAppliedDirectives());
             executionPath(dataFetchingEnvironment.getExecutionStepInfo().getPath());
             validatedPath(dataFetchingEnvironment.getExecutionStepInfo().getPath());
             location(dataFetchingEnvironment.getField().getSourceLocation());
@@ -252,7 +247,7 @@ public class ValidationEnvironment {
             return this;
         }
 
-        public Builder directives(List<GraphQLDirective> directives) {
+        public Builder directives(List<GraphQLAppliedDirective> directives) {
             this.directives = directives;
             return this;
         }

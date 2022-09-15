@@ -1,14 +1,16 @@
 package graphql.validation.constraints.standard;
 
 import graphql.GraphQLError;
-import graphql.schema.GraphQLDirective;
+import graphql.schema.GraphQLAppliedDirective;
 import graphql.schema.GraphQLInputType;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
 import graphql.validation.constraints.Documentation;
 import graphql.validation.rules.ValidationEnvironment;
+
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
+
 import static graphql.validation.constraints.GraphQLScalars.GRAPHQL_NUMBER_AND_STRING_TYPES;
 
 public class RangeConstraint extends AbstractDirectiveConstraint {
@@ -40,7 +42,7 @@ public class RangeConstraint extends AbstractDirectiveConstraint {
     protected List<GraphQLError> runConstraint(ValidationEnvironment validationEnvironment) {
         Object validatedValue = validationEnvironment.getValidatedValue();
 
-        GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
+        GraphQLAppliedDirective directive = validationEnvironment.getContextObject(GraphQLAppliedDirective.class);
         BigDecimal min = asBigDecimal(getIntArg(directive, "min"));
         BigDecimal max = asBigDecimal(getIntArg(directive, "max"));
 

@@ -1,10 +1,11 @@
 package graphql.validation.constraints.standard;
 
 import graphql.GraphQLError;
-import graphql.schema.GraphQLDirective;
+import graphql.schema.GraphQLAppliedDirective;
 import graphql.schema.GraphQLInputType;
 import graphql.validation.constraints.AbstractDirectiveConstraint;
 import graphql.validation.rules.ValidationEnvironment;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public abstract class AbstractSizeConstraint extends AbstractDirectiveConstraint
         Object validatedValue = validationEnvironment.getValidatedValue();
         GraphQLInputType argType = validationEnvironment.getValidatedType();
 
-        GraphQLDirective directive = validationEnvironment.getContextObject(GraphQLDirective.class);
+        GraphQLAppliedDirective directive = validationEnvironment.getContextObject(GraphQLAppliedDirective.class);
         int min = getIntArg(directive, "min");
         int max = getIntArg(directive, "max");
 
