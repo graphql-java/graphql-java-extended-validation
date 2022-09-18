@@ -1,11 +1,14 @@
 package graphql.validation.schemawiring;
 
 import graphql.GraphQLError;
-import graphql.schema.*;
+import graphql.schema.DataFetcher;
+import graphql.schema.DataFetchingEnvironment;
+import graphql.schema.GraphQLFieldDefinition;
+import graphql.schema.GraphQLFieldsContainer;
+import graphql.schema.GraphQLType;
 import graphql.validation.interpolation.MessageInterpolator;
 import graphql.validation.rules.OnValidationErrorStrategy;
 import graphql.validation.rules.TargetedValidationRules;
-import graphql.validation.rules.ValidationRule;
 import graphql.validation.rules.ValidationRules;
 import graphql.validation.util.Util;
 

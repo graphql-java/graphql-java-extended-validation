@@ -3,7 +3,12 @@ package graphql.validation.rules;
 import graphql.PublicApi;
 import graphql.execution.ResultPath;
 import graphql.language.SourceLocation;
-import graphql.schema.*;
+import graphql.schema.DataFetchingEnvironment;
+import graphql.schema.GraphQLAppliedDirective;
+import graphql.schema.GraphQLArgument;
+import graphql.schema.GraphQLFieldDefinition;
+import graphql.schema.GraphQLFieldsContainer;
+import graphql.schema.GraphQLInputType;
 import graphql.validation.interpolation.MessageInterpolator;
 
 import java.util.Collections;
