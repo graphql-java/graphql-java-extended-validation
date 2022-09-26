@@ -7,7 +7,7 @@ on:
   pull_request:
     branches:
       - master
-      - 19.x-validator-6.2.0.Final
+      - v19.x-validator-6.2.0.Final
 jobs:
   buildAndTest:
     runs-on: ubuntu-latest
