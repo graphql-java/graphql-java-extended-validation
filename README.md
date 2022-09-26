@@ -19,12 +19,12 @@ This library provides extended validation of fields and field arguments for [gra
 <dependency>
   <groupId>com.graphql-java</groupId>
   <artifactId>graphql-java-extended-validation</artifactId>
-  <version>18.1</version>
+  <version>19.0</version>
 </dependency>
 ```
 
 ```groovy
-compile 'com.graphql-java:graphql-java-extended-validation:18.1'
+compile 'com.graphql-java:graphql-java-extended-validation:19.0'
 ```
 
 > Note:
@@ -38,6 +38,8 @@ compile 'com.graphql-java:graphql-java-extended-validation:18.1'
 > use 18.1 or above for graphql-java 18.x and above
 >
 > use 18.1-hibernate-validator-6.2.0.Final for graphql-java 18.x and SpringBoot 2.x support
+>
+> use 19.0 or above for graphql-java 19.x and above
 
 It's currently available from Maven central.
 
@@ -134,14 +136,13 @@ Like javax.validation, this library ships with some default error message templa
 # I18n Locale Support
 
 The validation library aims to offer Internationalisation (18N) of the error messages.  When the validation rules
-run they are passed in a `java.util.Locale`.  A `ResourceBundleMessageInterpolator` can then be used to build up messages
+run they are passed in a `java.util.Locale`. A `ResourceBundleMessageInterpolator` can then be used to build up messages
 that come from I18N bundles.
 
-A `Locale` should be created per graphql execution.  However at the time of writing graphql-java does not
-pass in a `Locale` per request `ExecutionInput` .  A PR exists to fix this and it will be released in v14.0.  This
-library will then be updated to to take advantage of this.  
+A `Locale` should be created per graphql execution, and can be passed to `ExecutionInput`. More i18n is being added to graphql-java 
+and later this library will then be updated to to take advantage of i18n.  
 
-In the mean time you can work around this by having the `context`, `source` or `root` implement `graphql.validation.locale.LocaleProvider` and
+In the meantime you can work around this by having the `context`, `source` or `root` implement `graphql.validation.locale.LocaleProvider` and
 the library will extract a `Locale` from that.
 
 # Schema Directive Wiring
