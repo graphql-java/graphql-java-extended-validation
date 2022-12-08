@@ -19,12 +19,12 @@ This library provides extended validation of fields and field arguments for [gra
 <dependency>
   <groupId>com.graphql-java</groupId>
   <artifactId>graphql-java-extended-validation</artifactId>
-  <version>19.0</version>
+  <version>19.1</version>
 </dependency>
 ```
 
 ```groovy
-compile 'com.graphql-java:graphql-java-extended-validation:19.0'
+compile 'com.graphql-java:graphql-java-extended-validation:19.1'
 ```
 
 > Note:
