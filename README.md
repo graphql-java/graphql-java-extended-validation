@@ -24,7 +24,7 @@ This library provides extended validation of fields and field arguments for [gra
 ```
 
 ```groovy
-compile 'com.graphql-java:graphql-java-extended-validation:20.0'
+implementation 'com.graphql-java:graphql-java-extended-validation:20.0'
 ```
 
 > Note:
