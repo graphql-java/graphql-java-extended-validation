@@ -8,6 +8,7 @@ on:
     branches:
       - master
       - v19.x-validator-6.2.0.Final
+      - v20.x-validator-6.2.0.Final
 jobs:
   buildAndTest:
     runs-on: ubuntu-latest
