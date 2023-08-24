@@ -27,16 +27,13 @@ public class LocaleUtil {
         //
         Locale locale = environment.getLocale();
         if (locale == null) {
-            locale = extractLocale(environment);
+            locale = extractLocale(environment.getContext());
             if (locale == null) {
-                locale = extractLocale(environment.getContext());
+                locale = extractLocale(environment.getSource());
                 if (locale == null) {
-                    locale = extractLocale(environment.getSource());
+                    locale = extractLocale(environment.getRoot());
                     if (locale == null) {
-                        locale = extractLocale(environment.getRoot());
-                        if (locale == null) {
-                            locale = defaultLocale;
-                        }
+                        locale = defaultLocale;
                     }
                 }
             }
