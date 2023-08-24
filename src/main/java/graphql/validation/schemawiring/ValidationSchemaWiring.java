@@ -1,6 +1,7 @@
 package graphql.validation.schemawiring;
 
 import graphql.PublicApi;
+import graphql.TrivialDataFetcher;
 import graphql.schema.DataFetcher;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLFieldsContainer;
@@ -8,7 +9,6 @@ import graphql.schema.idl.SchemaDirectiveWiring;
 import graphql.schema.idl.SchemaDirectiveWiringEnvironment;
 import graphql.validation.interpolation.MessageInterpolator;
 import graphql.validation.rules.OnValidationErrorStrategy;
-import graphql.validation.rules.TargetedValidationRules;
 import graphql.validation.rules.ValidationRules;
 
 import java.util.Locale;
@@ -51,6 +51,16 @@ public class ValidationSchemaWiring implements SchemaDirectiveWiring {
                                                            MessageInterpolator messageInterpolator,
                                                            DataFetcher<?> currentDF,
                                                            final Locale defaultLocale) {
+        if (currentDF instanceof TrivialDataFetcher) {
+           return new TrivialFieldValidatorDataFetcher(
+                   errorStrategy,
+                   messageInterpolator,
+                   currentDF,
+                   defaultLocale,
+                   ruleCandidates
+           );
+        }
+        
         return new FieldValidatorDataFetcher(
                 errorStrategy,
                 messageInterpolator,
