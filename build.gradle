@@ -23,30 +23,25 @@ def getDevelopmentVersion() {
     "0.0.0-" + new SimpleDateFormat('yyyy-MM-dd\'T\'HH-mm-ss').format(new Date()) + "-" + gitHash
 }
 
-
 def releaseVersion = System.env.RELEASE_VERSION
 version = releaseVersion ? releaseVersion : getDevelopmentVersion()
 println "Building version = " + version
 group = 'com.graphql-java'
 
-if (JavaVersion.current() != JavaVersion.VERSION_11) {
-    def msg = String.format("This build must be run with Java 11 - you are running %s - gradle finds the JDK via JAVA_HOME=%s",
-            JavaVersion.current(), System.getenv("JAVA_HOME"))
-    throw new GradleException(msg)
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
 }
-
-sourceCompatibility = JavaVersion.VERSION_11.toString()
-targetCompatibility = JavaVersion.VERSION_11.toString()
 
 repositories {
     mavenCentral()
     mavenLocal()
 }
 
-
 dependencies {
-    api "com.graphql-java:graphql-java:20.0"
-    api "com.graphql-java:graphql-java-extended-scalars:20.0"
+    api "com.graphql-java:graphql-java:21.0"
+    api "com.graphql-java:graphql-java-extended-scalars:21.0"
     api "org.hibernate.validator:hibernate-validator:7.0.1.Final"
     api "org.glassfish:jakarta.el:4.0.2"
 
@@ -91,7 +86,7 @@ publishing {
                 asNode().children().last() + {
                     resolveStrategy = Closure.DELEGATE_FIRST
                     name 'graphql-java-extended-validation'
-                    description 'A library fo extended validation for graphql-java'
+                    description 'A library of extended validation for graphql-java'
                     url 'https://github.com/graphql-java/graphql-java-extended-validation'
                     inceptionYear '2019'
 
@@ -137,9 +132,7 @@ signing {
     sign publishing.publications
 }
 
-
 // all publish tasks depend on the build task
 tasks.withType(PublishToMavenRepository) {
     dependsOn build
 }
-
