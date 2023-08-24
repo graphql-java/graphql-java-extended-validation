@@ -1,7 +1,7 @@
 package graphql.validation.locale
 
+import graphql.GraphQLContext
 import graphql.GraphQLError
-import graphql.GraphqlErrorBuilder
 import graphql.execution.ExecutionStepInfo
 import graphql.execution.MergedField
 import graphql.schema.DataFetchingEnvironment
@@ -17,6 +17,8 @@ import graphql.validation.rules.ValidationCoordinates
 import graphql.validation.rules.ValidationEnvironment
 import graphql.validation.rules.ValidationRule
 import spock.lang.Specification
+
+import static graphql.GraphqlErrorBuilder.newError
 
 class LocaleUtilTest extends Specification {
 
@@ -99,7 +101,10 @@ class LocaleUtilTest extends Specification {
 
             @Override
             List<GraphQLError> runValidation(ValidationEnvironment validationEnvironment) {
-                return [GraphqlErrorBuilder.newError().message("Locale=" + validationEnvironment.getLocale().getCountry()).build()]
+                return [
+                        newError().message("Locale=" + validationEnvironment.getLocale().getCountry()).build(),
+                        newError().message("Context=" + (validationEnvironment.getGraphQLContext() != null)).build()
+                ]
             }
         }
 
@@ -176,5 +181,31 @@ class LocaleUtilTest extends Specification {
         errors = targetedValidationRules.runValidationRules(dfe, new ResourceBundleMessageInterpolator(), Locale.CHINA)
         then:
         errors[0].message == "Locale=GB"
+
+        // use DFE direct
+        when:
+
+        dfe = DataFetchingEnvironmentImpl.newDataFetchingEnvironment(dfe)
+                .locale(Locale.UK)
+                .build()
+
+        errors = targetedValidationRules.runValidationRules(dfe, new ResourceBundleMessageInterpolator(), Locale.CHINA)
+        then:
+        errors[0].message == "Locale=GB"
+        errors[1].message == "Context=false"
+
+        // sneaking in a test that graphql context gets picked up here
+        // cheeky I know but the setup of a clean test in the exact right place is not worth it
+        when:
+
+        dfe = DataFetchingEnvironmentImpl.newDataFetchingEnvironment(dfe)
+                .locale(Locale.UK)
+                .graphQLContext(GraphQLContext.of([x: "present"]))
+                .build()
+
+        errors = targetedValidationRules.runValidationRules(dfe, new ResourceBundleMessageInterpolator(), Locale.CHINA)
+        then:
+        errors[0].message == "Locale=GB"
+        errors[1].message == "Context=true"
     }
 }
