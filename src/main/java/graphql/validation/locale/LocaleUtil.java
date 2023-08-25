@@ -23,9 +23,9 @@ public class LocaleUtil {
      */
     public static Locale determineLocale(DataFetchingEnvironment environment, Locale defaultLocale) {
         //
-        // in a future version of graphql java the DFE will have the Locale but in the mean time
-        Locale locale;
-        locale = extractLocale(environment);
+        // The DFE has a locale now, but we retain the old look-ups for backwards compat reasons
+        //
+        Locale locale = environment.getLocale();
         if (locale == null) {
             locale = extractLocale(environment.getContext());
             if (locale == null) {

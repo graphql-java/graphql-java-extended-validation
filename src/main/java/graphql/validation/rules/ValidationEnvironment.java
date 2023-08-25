@@ -1,5 +1,6 @@
 package graphql.validation.rules;
 
+import graphql.GraphQLContext;
 import graphql.PublicApi;
 import graphql.execution.ResultPath;
 import graphql.language.SourceLocation;
@@ -55,6 +56,8 @@ public class ValidationEnvironment {
     private final Object validatedValue;
     private final GraphQLInputType validatedType;
     private final ValidatedElement validatedElement;
+
+    private final GraphQLContext graphQLContext;
     private final List<GraphQLAppliedDirective> directives;
 
     private ValidationEnvironment(Builder builder) {
@@ -71,6 +74,7 @@ public class ValidationEnvironment {
         this.location = builder.location;
         this.validatedValue = builder.validatedValue;
         this.validatedElement = builder.validatedElement;
+        this.graphQLContext = builder.graphQLContext;
         this.directives = builder.directives;
     }
 
@@ -135,6 +139,10 @@ public class ValidationEnvironment {
         return directives;
     }
 
+    public GraphQLContext getGraphQLContext() {
+        return graphQLContext;
+    }
+
     public ValidationEnvironment transform(Consumer<Builder> builderConsumer) {
         Builder builder = newValidationEnvironment().validationEnvironment(this);
         builderConsumer.accept(builder);
@@ -156,6 +164,7 @@ public class ValidationEnvironment {
         private GraphQLInputType validatedType;
         private ValidatedElement validatedElement;
         private List<GraphQLAppliedDirective> directives = Collections.emptyList();
+        private GraphQLContext graphQLContext = GraphQLContext.getDefault();
 
         public Builder validationEnvironment(ValidationEnvironment validationEnvironment) {
             this.argument = validationEnvironment.argument;
@@ -172,6 +181,7 @@ public class ValidationEnvironment {
             this.validatedValue = validationEnvironment.validatedValue;
             this.validatedElement = validationEnvironment.validatedElement;
             this.directives = validationEnvironment.directives;
+            this.graphQLContext = validationEnvironment.graphQLContext;
             return this;
         }
 
@@ -184,6 +194,7 @@ public class ValidationEnvironment {
             location(dataFetchingEnvironment.getField().getSourceLocation());
             argumentValues(dataFetchingEnvironment.getArguments());
             validatedElement(ValidatedElement.FIELD);
+            graphQLContext(dataFetchingEnvironment.getGraphQlContext());
             return this;
         }
 
@@ -249,6 +260,11 @@ public class ValidationEnvironment {
 
         public Builder locale(Locale locale) {
             this.locale = locale;
+            return this;
+        }
+
+        public Builder graphQLContext(GraphQLContext graphQLContext) {
+            this.graphQLContext = graphQLContext;
             return this;
         }
 
