@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static graphql.schema.GraphQLTypeUtil.isList;
 import static graphql.validation.rules.ValidationEnvironment.ValidatedElement.FIELD;
@@ -198,7 +199,7 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
     }
 
     /**
-     * Returns an integer argument from a directive (or its default) and throws an assertion of the argument is null
+     * Returns an integer argument from a directive (or its default) and throws an assertion if the argument is null
      *
      * @param directive the directive to check
      * @param argName   the argument name
@@ -215,6 +216,19 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
             return assertExpectedArgType(argName, "Int");
         }
         return value.intValue();
+    }
+
+    /**
+     * Returns an optional integer argument from a directive (or its default), or empty Optional if the argument is null.
+     *
+     * @param directive the directive to check
+     * @param argName   the argument name
+     * @return an optional null value
+     */
+    protected Optional<Integer> getIntArgOpt(GraphQLAppliedDirective directive, String argName) {
+        return Optional.ofNullable(directive.getArgument(argName))
+            .map(GraphQLAppliedDirectiveArgument::<Number>getValue)
+            .map(Number::intValue);
     }
 
     /**
