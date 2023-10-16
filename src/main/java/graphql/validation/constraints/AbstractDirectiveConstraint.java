@@ -206,16 +206,8 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      * @return a non null value
      */
     protected int getIntArg(GraphQLAppliedDirective directive, String argName) {
-        GraphQLAppliedDirectiveArgument argument = directive.getArgument(argName);
-        if (argument == null) {
-            return assertExpectedArgType(argName, "Int");
-        }
-
-        Number value = argument.getValue();
-        if (value == null) {
-            return assertExpectedArgType(argName, "Int");
-        }
-        return value.intValue();
+        return getIntArgOpt(directive, argName)
+            .orElseThrow(assertExpectedArgType(argName, "Int"));
     }
 
     /**
