@@ -313,7 +313,7 @@ The element must be a number inside the specified `integer` and `fraction` range
 
 - Applies to : `String`, `Byte`, `Short`, `Int`, `Long`, `BigDecimal`, `BigInteger`, `Float`, `Lists`
 
-- SDL : `directive @Digits(integer : Int!, fraction : Int!, message : String = "graphql.validation.Digits.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
+- SDL : `directive @Digits(integer : Int!, fraction : Int, message : String = "graphql.validation.Digits.message") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION`
 
 - Message : `graphql.validation.Digits.message`
 
