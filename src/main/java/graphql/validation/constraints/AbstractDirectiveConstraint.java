@@ -207,7 +207,7 @@ public abstract class AbstractDirectiveConstraint implements DirectiveConstraint
      */
     protected int getIntArg(GraphQLAppliedDirective directive, String argName) {
         return getIntArgOpt(directive, argName)
-            .orElseThrow(assertExpectedArgType(argName, "Int"));
+            .orElseGet(() -> assertExpectedArgType(argName, "Int"));
     }
 
     /**
