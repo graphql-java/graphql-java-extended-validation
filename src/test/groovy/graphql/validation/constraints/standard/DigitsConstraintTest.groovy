@@ -23,6 +23,7 @@ class DigitsConstraintTest extends BaseConstraintTestSupport {
         'field( arg : String @Digits(integer : 5, fraction : 2) ) : ID'     | null                           | ''
         'field( arg : String @Digits(integer : 5, fraction : 2) ) : ID'     | Byte.valueOf("0")              | ''
         'field( arg : String @Digits(integer : 5, fraction : 2) ) : ID'     | Double.valueOf("500.2")        | ''
+        'field( arg : String @Digits(integer : 5) ) : ID'                   | Double.valueOf("500.2345678")  | ''
 
         'field( arg : String @Digits(integer : 5, fraction : 2) ) : ID'     | new BigDecimal("-12345.12")    | ''
         'field( arg : String @Digits(integer : 5, fraction : 2) ) : ID'     | new BigDecimal("-123456.12")   | 'Digits;path=/arg;val:-123456.12;\t'
