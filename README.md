@@ -2,7 +2,7 @@
 
 
 [![Build Status](https://github.com/graphql-java/graphql-java-extended-validation/actions/workflows/master.yml/badge.svg)](https://github.com/graphql-java/graphql-java-extended-validation/actions/workflows/master.yml)
-[![Latest Release](https://maven-badges.herokuapp.com/maven-central/com.graphql-java/graphql-java-extended-validation/badge.svg?versionPrefix=21.)](https://maven-badges.herokuapp.com/maven-central/com.graphql-java/graphql-java-extended-validation/)
+[![Latest Release](https://maven-badges.herokuapp.com/maven-central/com.graphql-java/graphql-java-extended-validation/badge.svg?versionPrefix=22.)](https://maven-badges.herokuapp.com/maven-central/com.graphql-java/graphql-java-extended-validation/)
 [![Latest Snapshot](https://img.shields.io/maven-central/v/com.graphql-java/graphql-java-extended-validation?label=maven-central%20snapshot&versionPrefix=0.0.0)](https://maven-badges.herokuapp.com/maven-central/com.graphql-java/graphql-java-extended-validation/)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-green)](https://github.com/graphql-java/graphql-java-extended-validation/blob/master/LICENSE.md)
 
@@ -18,7 +18,7 @@ This library provides extended validation of fields and field arguments for [gra
 <dependency>
   <groupId>com.graphql-java</groupId>
   <artifactId>graphql-java-extended-validation</artifactId>
-  <version>21.0</version>
+  <version>22.0</version>
 </dependency>
 ```
 
@@ -35,10 +35,6 @@ implementation 'com.graphql-java:graphql-java-extended-validation:22.0'
 > use 20.0 for graphql-java 20.x and above
 >
 > use 20.0-hibernate-validator-6.2.0.Final for graphql-java 20.x and SpringBoot 2.x support
-> 
-> use 19.1 for graphql-java 19.x and above
-> 
-> use 19.1-hibernate-validator-6.2.0.Final for graphql-java 19.x and SpringBoot 2.x support
 
 The library is currently available on Maven Central.
 
