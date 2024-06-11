@@ -77,7 +77,7 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
     }
 
     /**
-     * Override this method to build your own error extension
+     * Override this method to build your own error extensions
      *
      * @param messageTemplate       the message template
      * @param messageParams         the parameters
@@ -86,7 +86,7 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
      * @return an Map<String, Object> of extensions
      */
     @SuppressWarnings("unused")
-    protected Map<String, Object> buildErrorExtension(String messageTemplate, Map<String, Object> messageParams, ValidationEnvironment validationEnvironment) {
+    protected Map<String, Object> buildErrorExtensions(String messageTemplate, Map<String, Object> messageParams, ValidationEnvironment validationEnvironment) {
         return Map.of();
     }
 
@@ -106,7 +106,7 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
     public GraphQLError interpolate(String messageTemplate, Map<String, Object> messageParams, ValidationEnvironment validationEnvironment) {
 
         ErrorClassification errorClassification = buildErrorClassification(messageTemplate, messageParams, validationEnvironment);
-        Map<String, Object> errorExtensions = buildErrorExtension(messageTemplate, messageParams, validationEnvironment);
+        Map<String, Object> errorExtensions = buildErrorExtensions(messageTemplate, messageParams, validationEnvironment);
 
         String message = interpolateMessageImpl(messageTemplate, messageParams, validationEnvironment);
 
