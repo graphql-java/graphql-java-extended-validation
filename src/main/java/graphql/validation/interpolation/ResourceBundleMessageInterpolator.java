@@ -156,6 +156,7 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
         );
 
         Map<String, Object> expressionVariables = StandardELVariables.standardELVars(validationEnvironment);
+        expressionVariables.putAll(messageParams);
 
         Class<?> rootBeanType = null;
         Path propertyPath = null;
