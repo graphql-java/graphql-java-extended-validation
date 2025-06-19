@@ -51,7 +51,7 @@ class ResourceBundleMessageInterpolatorTest extends Specification {
         def interpolatorUnderTest = new ResourceBundleMessageInterpolator()
 
         def validatedValue = [zig: "zag"]
-        def messageParams = ["validatedValue": validatedValue, "p1": "pv1", "p2": "pv2", "min": "5", "max": "10", path : "a/b/c"]
+        def messageParams = ["validatedValue": validatedValue, "p1": "pv1", "p2": "pv2", "min": "5", "max": "10", path : "a/b/c", "value" : "100", "inclusive" : true]
         ValidationEnvironment validationEnvironment = buildEnv(schema, "arg", validatedValue, interpolatorUnderTest, null)
 
         expect:
@@ -66,6 +66,8 @@ class ResourceBundleMessageInterpolatorTest extends Specification {
         'graphql.test.message'            | 'Test message with expressions : zag and replacements : pv1'
         // system level message finding from graphql.validation
         'graphql.validation.Size.message' | 'a/b/c size must be between 5 and 10'
+        // message with el expression
+        'graphql.validation.DecimalMax.message' | 'a/b/c must be less than or equal to 100'
         // expressions
         'Could not ${validatedValue.zig}' | 'Could not zag'
         // message param replacement
