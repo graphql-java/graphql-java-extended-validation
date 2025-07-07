@@ -97,7 +97,7 @@ public class ValidationRules {
      * @return a list of zero or more input data validation errors
      */
     public List<GraphQLError> runValidationRules(DataFetchingEnvironment env) {
-        GraphQLFieldsContainer fieldsContainer = env.getExecutionStepInfo().getFieldContainer();
+        GraphQLFieldsContainer fieldsContainer = env.getExecutionStepInfo().getObjectType();
         GraphQLFieldDefinition fieldDefinition = env.getFieldDefinition();
 
         MessageInterpolator messageInterpolator = this.getMessageInterpolator();
