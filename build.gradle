@@ -42,7 +42,7 @@ repositories {
 dependencies {
     api "com.graphql-java:graphql-java:24.1"
     api "com.graphql-java:graphql-java-extended-scalars:22.0"
-    api "org.hibernate.validator:hibernate-validator:7.0.1.Final"
+    api "org.hibernate.validator:hibernate-validator:9.0.1.Final"
     api "org.glassfish:jakarta.el:4.0.2"
 
     testImplementation 'org.slf4j:slf4j-simple:1.7.31'
