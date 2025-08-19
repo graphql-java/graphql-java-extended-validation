@@ -45,7 +45,6 @@ dependencies {
     api "org.hibernate.validator:hibernate-validator:7.0.1.Final"
     api "org.glassfish:jakarta.el:4.0.2"
 
-    testImplementation 'org.slf4j:slf4j-simple:1.7.31'
     testImplementation 'org.spockframework:spock-core:2.3-groovy-3.0'
     testImplementation 'org.codehaus.groovy:groovy-all:3.0.25'
 }
