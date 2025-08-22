@@ -77,6 +77,20 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
     }
 
     /**
+     * Override this method to build your own error extensions
+     *
+     * @param messageTemplate       the message template
+     * @param messageParams         the parameters
+     * @param validationEnvironment the rule environment
+     *
+     * @return an Map<String, Object> of extensions
+     */
+    @SuppressWarnings("unused")
+    protected Map<String, Object> buildErrorExtensions(String messageTemplate, Map<String, Object> messageParams, ValidationEnvironment validationEnvironment) {
+        return Map.of();
+    }
+
+    /**
      * You can override this to provide your own resource bundles for a given locale
      *
      * @param locale the locale in question
@@ -92,11 +106,14 @@ public class ResourceBundleMessageInterpolator implements MessageInterpolator {
     public GraphQLError interpolate(String messageTemplate, Map<String, Object> messageParams, ValidationEnvironment validationEnvironment) {
 
         ErrorClassification errorClassification = buildErrorClassification(messageTemplate, messageParams, validationEnvironment);
+        Map<String, Object> errorExtensions = buildErrorExtensions(messageTemplate, messageParams, validationEnvironment);
+
         String message = interpolateMessageImpl(messageTemplate, messageParams, validationEnvironment);
 
         GraphqlErrorBuilder errorBuilder = GraphqlErrorBuilder.newError()
                 .message(message)
                 .errorType(errorClassification)
+                .extensions(errorExtensions)
                 .path(validationEnvironment.getExecutionPath());
         if (validationEnvironment.getLocation() != null) {
             errorBuilder.location(validationEnvironment.getLocation());
