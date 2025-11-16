@@ -65,6 +65,7 @@ artifacts {
 }
 
 test {
+    useJUnitPlatform()
     testLogging {
         exceptionFormat = 'full'
     }
@@ -74,9 +75,9 @@ publishing {
     publications {
         maven(MavenPublication) {
             from components.java
-            groupId group
-            artifactId 'graphql-java-extended-validation'
-            version version
+            groupId = group
+            artifactId = 'graphql-java-extended-validation'
+            version = version
 
             artifact sourcesJar
             artifact javadocJar
